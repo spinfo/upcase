@@ -1,6 +1,8 @@
 ## UpCASE – *Up*load, *C*orrect, *A*nnotate, *S*earch, *E*xport 
 UpCASE is a web application for building and maintaining language resources. It provides a wide range of options for viewing, evaluating, manipulating and enriching text collections. UpCASE is conceived as a multifunctional webapp where users can upload plain text, pdf or scanned texts whose characters are automatically recognized (OCR). While being able to search over the uploaded text, users can correct, annotate and export it into different formats.
 
+![Biblioteca Digitala](https://cloud.githubusercontent.com/assets/182226/12010611/f0964164-acad-11e5-9e9d-c2ee7efcf1fa.png)
+
 ### Background
 UpCASE is the result of years of work with Romansh texts and lexical resources. In a number of earlier projects we have developed a web-based editing environment for collaborative OCR correction ([DRC](http://www.crestomazia.ch), [github](https://github.com/spinfo/drc)), a tool for collaborative annotation ([ARC](http://www.spinfo.phil-fak.uni-koeln.de/forschung-arc.html), [github](https://github.com/spinfo/arc)), and a framework for collaborative lexicon creation and maintenance ([maalr](http://www.spinfo.phil-fak.uni-koeln.de/maalr.html), [github](https://github.com/spinfo/maalr-core)). UpCASE comprises the experiences of these projects and combines the key features of collaborative corpus construction, enrichment and maintenance. Based on UpCASE, we started to build a collection of Romansh texts ([Biblioteca Digitala](http://www.biblioteca-digitala.ch)). UpCASE is still work in progress, for a showcase app see http://upcase.biblioteca-digitala.ch.   
 
