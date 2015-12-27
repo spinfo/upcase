@@ -6,6 +6,9 @@ UpCASE is the result of years of work with Romansh texts and lexical resources. 
 
 ![Biblioteca Digitala](https://cloud.githubusercontent.com/assets/182226/12010611/f0964164-acad-11e5-9e9d-c2ee7efcf1fa.png)
 
+### Motivation 
+Romansh is the smallest of the four national languages of Switzerland. With approx. 50.000 native speakers Romansh is considered an endangered language. Our interest is to show the relevance of using tools like UpCASE for other small languages having little or no support by official institutions: While in the first place UpCASE was developed for a specific historical text collection, namely the Romansh Chrestomathy compiled by Caspar Decurtins (1888-1919), the concepts and features can be transposed to other text collections and can be seen as an approach for preserving the cultural heritage of minority and endangered languages.
+
 ### Implementation Details
 UpCASE is based on several state-of-the-art web technologies such as Spring WebMVC, Spring Data, JAXB, and JQuery. Using robust and scalable software on server side and lightweight, clean and interactive components on client side, UpCASE offers several options to treat text collections for searching, statistics, exporting, or to modify the data at hand, e.g. to edit, annotate or enrich. The data is persisted in MongoDB, whose records are structurally similar to JSON objects. The use of JSON enables a straightforward communication with other (language) resources, using predefined REST (Representational State Transfer) interfaces. 
 
@@ -30,6 +33,4 @@ UpCASE is based on several state-of-the-art web technologies such as Spring WebM
 
 Coming soon.
 
-### Motivation 
-Romansh is the smallest of the four national languages of Switzerland. With approx. 50.000 native speakers Romansh is considered an endangered language. Our interest is to show the relevance of using tools like UpCASE for other small languages having little or no support by official institutions: While in the first place UpCASE was developed for a specific historical text collection, namely the Romansh Chrestomathy compiled by Caspar Decurtins (1888-1919), the concepts and features can be transposed to other text collections and can be seen as an approach for preserving the cultural heritage of minority and endangered languages.
 
