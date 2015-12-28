@@ -32,8 +32,11 @@ UpCASE is based on several state-of-the-art web technologies such as Spring WebM
 + The annotation view allows the user to create annotations like POS-tags on the fly that are indexed and thus allowing complex searches on the search view. 
 + Finally, in the translation view we make use of a separate resource, the [Pledari Grond](http://www.pledarigrond.ch), an online dictionary for Romansh that we have developed in collaboration with the Lia Rumantscha an basis of our [maalr](https://github.com/spinfo/maalr-core)-framework.
 
-### Installation
+###Quickstart
 
-Coming soon.
+UpCASE is a [Maven](http://maven.apache.org/) based Java project developed within the [Eclipse IDE](https://www.eclipse.org/).
 
+After downloading the code import the project into your Eclipse workspace. Make sure you have the [M2Eclipse](https://www.eclipse.org/m2e/) plugin installed. To run the application you may simply execute the [upcase.launch](https://github.com/spinfo/upcase/blob/master/upcase.launch) file by right clicking the file > Run As > m2 upcase… or if you are used to Maven you also may run the application from command line: e.g. ```mvn clean install jetty:run```
+
+The compiled .war file will be deployed into the embedded jetty web server. Open the URL [http://localhost:8080/](http://localhost:8080/) in your browser (JavaScript has to be enabled). 
 
