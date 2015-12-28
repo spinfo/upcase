@@ -1,4 +1,6 @@
-## UpCASE – *Up*load, *C*orrect, *A*nnotate, *S*earch, *E*xport 
+# UpCASE
+**Up**load | **C**orrect | **A**nnotate | **S**earch | **E**xport 
+
 UpCASE is a web application for building and maintaining language resources. It provides a wide range of options for viewing, evaluating, manipulating and enriching text collections. UpCASE is conceived as a multifunctional webapp where users can upload plain text, pdf or scanned texts whose characters are automatically recognized (OCR). While being able to search over the uploaded text, users can correct, annotate and export it into different formats.
 
 ### Background
