@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div th:fragment="searchForm">
+		<div class="col-sm-12" style="margin-top: 200px;">
+			<form action="/drc/searchResult">
+				<input 
+					type="text" 
+					class="form-control" 
+					placeholder="Suche..." 
+					name="searchForm" 
+					th:value="*{searchPhrase}"
+					autofocus="autofocus" 
+					autocomplete="on" 
+					style="width:250px;"/>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

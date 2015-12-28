@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Search results</title>
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
+<style type="text/css">
+body {
+	padding-top: 70px;
+}
+</style>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" th:href="@{volumes}">UpCASE -
+					Crestomazia Retoromontscha</a>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-md-3 well">
+				<h4>
+					Treffer <em class="text-info" th:text="${offset} + 1"></em> - <em
+						class="text-info" th:text="${totalHits}"></em> von <em
+						class="text-info" th:text="${totalHits}"></em>
+				</h4>
+				<p>Neue Suche:</p>
+				<form class="form-search">
+					<input type="text" class="form-control" placeholder="Suche..."
+						name="searchForm" th:value="*{searchPhrase}" autofocus="autofocus"
+						autocomplete="on" />
+				</form>
+				<br /> <a th:href="@{extendedSearch}">Erweiterte Suche</a>
+			</div>
+			<div class="col-md-8">
+				<h4><strong>Suchergebnis für "<em class="text-info"
+					th:text="${searchPhrase}"> </em>"
+				</strong></h4>
+				<table class="table table-hover">
+					<tr th:each="result : ${hits}">
+						<td><span th:text="${result.volume}"></span></td>
+						<td><span th:text="${result.chapter}"></span></td>
+						<td><span th:text="${result.language}"></span></td>
+						<td><span> <a
+								th:href="@{page(pageId=${result.pageId}, chapterId=${result.chapterId}, chapterTitle=${result.chapter}, volumeId=${result.volumeId}, volumeTitle=${result.volume})}"
+								th:text="${result.filename}"></a></span></td>
+					</tr>
+				</table>
+				<!-- / RESULT TABLE -->
+			</div>
+		</div>
+	</div>
+</body>
+</html>

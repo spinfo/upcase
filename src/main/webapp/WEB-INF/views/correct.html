@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title th:text="${page.url}">Page</title>
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"
+	type="text/css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript" src="../bootstrap/js/jquery.knob.js"></script>
+
+<style type="text/css">
+@font-face {
+	font-family: 'oldNewspaperTypes'; /*a name to be used later*/
+	src: url('../bootstrap/fonts/OldNewspaperTypes.ttf'); /*URL to font*/
+}
+
+body {
+	padding-top: 70px;
+}
+
+#selectable .ui-selectee {
+	font-size: 31px;
+	float: left;
+}
+
+#selectable .ui-selecting {
+	color: #07C78E;
+	background: #CCCCCC;
+}
+
+#selectable .ui-selected {
+	color: #f63a0b;
+	background-color: #0bc7f6;
+}
+
+.splitter {
+	float: left;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.updated {
+	background-color: #0bf6b0;
+	color: white;
+}
+
+.updatedSelected {
+	background: -webkit-repeating-linear-gradient(0deg, #07A0C7, #07A0C7 3px, #0bf6b0
+		3px, #0bf6b0 6px);
+	background: repeating-linear-gradient(0deg, #07A0C7, #07A0C7 3px, #0bf6b0 3px,
+		#0bf6b0 6px);
+	color: #C72E07;
+}
+
+.typewritten {
+	font-family: oldNewspaperTypes;
+	border: 1px solid #000000;
+}
+
+.selectingItem {
+	color: #07C78E;
+}
+
+.breadCrumb {
+	padding-bottom: 19px;
+	border-bottom: 1px solid #EEEEEE;
+}
+
+.box {
+	position: absolute;
+}
+
+.input-xl {
+	width: 300px
+}
+
+form {
+	display: table;
+	margin: 0 auto;
+}
+
+.vertical-adjust {
+	min-height: 50%; /* Fallback for browsers do NOT support vh unit */
+	min-height: 50vh;
+	display: flex;
+	align-items: center;
+}
+</style>
+</head>
+<body>
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" th:href="@{volumes}">UpCASE -
+					Crestomazia Retoromontscha</a>
+			</div>
+		</div>
+	</nav>
+	<div class="container">
+
+		<div class="">
+			<!-- BREADCRUMB -->
+			<div class="row breadCrumb">
+				<div class="col-md-12">
+					<a th:href="@{/}">Start</a> <span> > </span> <a
+						th:href="@{volumes}">RC Bände</a> <span> > </span> <a
+						th:href="@{chapters(volumeId=${volumeId}, volumeTitle=${volumeTitle})}"
+						th:text="${volumeTitle}"></a> <span> > </span> <a
+						th:href="@{pages(chapterId=${chapterId}, chapterTitle=${chapterTitle}, volumeId=${volumeId}, volumeTitle=${volumeTitle})}"
+						th:text="${chapterTitle}"></a> <span> > </span> <span
+						th:text="${page.url}" th:attr="data-pageid=${page.id}" id="pageId"></span>
+				</div>
+			</div>
+			<!-- / BREADCRUMB -->
+
+			<div class="row">
+				<div style="margin-top: 19px;">
+					<div>
+						<!-- NAV-TABS -->
+						<ul class="nav nav-tabs" role="tablist">
+							<li role="presentation"><a href="#upload"
+								aria-controls="upload" role="tab" data-toggle="tab">Upload</a></li>
+							<li role="presentation" class="active"><a href="#correct"
+								aria-controls="correct" role="tab" data-toggle="tab">Correct</a></li>
+							<li role="presentation"><a href="#annotate"
+								aria-controls="annotate" role="tab" data-toggle="tab">Annotate</a></li>
+							<li role="presentation"><a href="#search"
+								aria-controls="search" role="tab" data-toggle="tab">Search</a></li>
+							<li role="presentation"><a href="#export"
+								aria-controls="export" role="tab" data-toggle="tab">Export</a></li>
+						</ul>
+						<!-- / NAV-TABS -->
+
+						<!-- TAB-PANES -->
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane" id="upload">Upload
+								some files...</div>
+							<div role="tabpanel" class="tab-pane active" id="correct">
+								<div class="container-fluid">
+									<div class="row" style="margin-top: 25px;">
+										<div class="col-md-2">
+											<h6>
+												<span>Font-size in pixel</span>
+											</h6>
+											<!-- .font dial -->
+											<input type="text" class="dial" data-thickness=".1"
+												data-cursor="true" data-min="10" data-max="100" value="31"
+												data-fgcolor="#617C58" data-linecap="round" data-width="100" />
+											<!-- / .font dial -->
+										</div>
+										<div class="col-md-2">
+											<form>
+												<div class="checkbox">
+													<label><input id="typeWriter" type="checkbox" />Typewriter</label>
+												</div>
+												<div class="checkbox">
+													<label><input id="multiSelect" type="checkbox" />Multi
+														select</label>
+												</div>
+											</form>
+										</div>
+										<div class="col-md-8">
+											<h6>
+												Current selection:
+												<samp id="select-result"></samp>
+											</h6>
+											<h6>
+												Word position:
+												<samp id="select-result-pos-word"></samp>
+											</h6>
+											<h6>
+												Text position:
+												<samp id="select-result-pos-text"></samp>
+											</h6>
+											<h6>
+												Word IDs:
+												<samp id="select-result-word"></samp>
+											</h6>
+											<h6>
+												<a id="showInContextBtn" href="#" data-toggle="modal"
+													data-target="#myModal">Show in document</a>
+											</h6>
+										</div>
+									</div>
+									<div class="row" style="margin-top: 25px;">
+										<div class="col-md-6 lead">
+											<div
+												style="height: 852.65px; width: auto; overflow: scroll; border: 1px solid #CCCCCC; border-radius: 5px;">
+												<div id="selectable"
+													style="float: left; width: 100%; padding: 15px;"></div>
+											</div>
+										</div>
+										<div class="col-md-6" id="imgContainer"></div>
+									</div>
+								</div>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="annotate">Annotate
+								...</div>
+							<div role="tabpanel" class="tab-pane" id="search">
+								<div th:replace="fragments/search :: searchForm"></div>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="export">Export
+								...</div>
+						</div>
+						<!-- / TAB-PANES -->
+						<div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal"
+											aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+										<h4 class="modal-title" th:text="${page.url}">Seite XYZ</h4>
+									</div>
+									<div class="modal-body"></div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default"
+											data-dismiss="modal">Schließen</button>
+									</div>
+								</div>
+								<!-- /.modal-content -->
+							</div>
+							<!-- /.modal-dialog -->
+						</div>
+						<!-- /.modal -->
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script th:inline="javascript">
+		//<![CDATA[
+		
+		var colors = new Array();
+		colors[1] = "#82CAFF";
+		colors[2] = "#FFB682";
+		colors[3] = "#FFB682";
+		colors[4] = "#1756E8";
+		colors[5] = "#C11B17";
+		colors[6] = "#17BFC2";
+		colors[7] = "#9E7BFF";
+		colors[8] = "#DCFF7A";
+		
+		var imgPath = "http://hydra.spinfo.uni-koeln.de/img/";
+		var typeWriterSelected = false;
+		var multiSelectSelected = false;
+		var fontSize = 31; // DEFAULT FONT SIZE
+		var letters = /*[[${letters}]]*/;
+		var initialWordIndex = letters[0].wordIndex;
+		var container = $('#selectable'); // CONTAINER FOR LETTER WIDGETS
+		var currentItems;
+		var pageId = $("#pageId").text();
+		var rectangles = /*[[${rectangles}]]*/;
+		var originalImageWidth;
+		var originalImageHeight;
+		
+		// CREATE LETTER WIDGETS
+		$.each(letters, function(i) {
+			var wordId = letters[i].wordId;
+			var wordIndex = letters[i].wordIndex;
+			var character = letters[i].character;
+			var charPosInText = letters[i].charPosInText;
+			var charPosInWord = letters[i].charPosInWord;
+			if(wordIndex == initialWordIndex) {
+				$('<div/>').attr("data-word-id", wordId).attr("data-word-index", wordIndex).attr("data-charpos-word", charPosInWord).attr("data-charpos-text", charPosInText).text(character).appendTo(container);
+			} else {
+				$('<div/>').addClass("splitter").text("●").appendTo(container);
+				$('<div/>').attr("data-word-id", wordId).attr("data-word-index", wordIndex).attr("data-charpos-word", charPosInWord).attr("data-charpos-text", charPosInText).text(character).appendTo(container);
+				initialWordIndex = wordIndex;
+			}
+		});
+		
+		// INIT FONT SIZE WIDGET
+		 $(".dial").knob({
+			 'stopper' : 100, 
+			 'release' : function(currentValue) {
+				fontSize = currentValue; // UPDATE FONT SIZE VALUE
+				$('.ui-selectee').css({"font-size": "" + fontSize + "px"});
+			},
+			'width': 100,
+			'height': 100,
+			'inputColor': '#337AB7',
+			'fgColor': '#337AB7'
+		});
+		
+		$("#showInContextBtn").click(function() {
+			var file = imgPath.concat(pageId.replace("xml", "")).concat("png");
+		});
+		
+		$(document).ready(function() {
+			var _imgContainer = $(this).find('#imgContainer');
+			var imgFile = imgPath.concat(pageId.replace("xml", "")).concat("png");
+			$('<img src="'+ imgFile +'" class="thumbnail" id="drcImg">').load(function() {
+				originalImageWidth = this.width;
+				originalImageHeight = this.height;
+				$(this).css({"maxWidth":"100%","maxHeight":"852px"}).appendTo(_imgContainer);
+			});
+		});
+		
+		$('#myModal').on('show.bs.modal', function (event) {
+			var button = $(event.relatedTarget) // Button that triggered the modal
+			var recipient = button.data('whatever') // Extract info from data-* attributes
+			var file = imgPath.concat(pageId.replace("xml", "")).concat("png");
+			var _modalBody = $(this).find('.modal-body');
+			_modalBody.empty();
+			$('<img src="'+ file +'" class="thumbnail">').load(function() {
+				$(this).css({"maxWidth":"100%","maxHeight":"100%"}).appendTo(_modalBody);
+			});
+		});
+
+		// TYPEWRITER WIDGET
+		$('#typeWriter:checkbox').on("click", function() {
+			typeWriterSelected = $(this).is(':checked');
+			if(typeWriterSelected) {
+				$('#select-result').css({"font-family":"oldNewspaperTypes"});
+				$('.ui-selectee').addClass("typewritten");
+			} else {
+				$('.ui-selectee').removeClass("typewritten");
+				$('#select-result').css({"font-family":""});
+			}
+		});
+		
+		$('#multiSelect:checkbox').on("click", function() {
+			multiSelectSelected = $(this).is(':checked');
+		});
+		
+		// CHARACTER SELCTION FUNCTION
+		$(function() {
+			$( "#selectable" ).selectable({
+				start: function(event, ui) {
+					$(".ui-selectee.updated").removeClass("updatedSelected");
+				},
+				selected: function(event, ui) {
+					$(".ui-selected.updated").addClass("updatedSelected");
+				}, 
+				stop: function(event, ui) {
+					if($(".ui-selected").first().position().top != 
+						$(".ui-selected").last().position().top) {
+						$(".ui-selectee").removeClass("ui-selected updatedSelected");
+						return false;
+					}
+					if(multiSelectSelected && $(".ui-selected").length == 1) {
+						// SELECT EVERY ELEMENT CONTAINING THE SELECED TEXT	
+						if(!$(".ui-selected").hasClass("splitter")) {
+							var text = $(".ui-selected").text();
+							var ran = Math.floor((Math.random() * 8) + 1);
+							$('div.ui-selectee:contains(' + text + ')').css('background-color', colors[ran]);
+						}
+					} else {
+						var result = $("#select-result").empty();
+						var resultPosText = $("#select-result-pos-text").empty();
+						var resultPosWord = $("#select-result-pos-word").empty();
+						var resultWord = $("#select-result-word").empty();
+						var charPosTexts = new Array();
+						var charPosWords = new Array();
+						var indices = new Array();
+						var wordIds = new Array();
+						currentItems = new Array();
+						$(".ui-selected", this ).each(function() {
+							currentItems.push(this);
+							var text = $(this).text();
+							var wordIndex = $(this).attr("data-word-index");
+							var wordId = $(this).attr("data-word-id");
+							var charPosWord = $(this).attr("data-charpos-word");
+							var charPosText = $(this).attr("data-charpos-text");
+							if(!$(this).hasClass("splitter")) {
+								charPosWords.push(charPosWord);
+								charPosTexts.push(charPosText);
+								var contains = $.inArray(wordIndex, indices);
+								if(contains === -1) {
+									indices.push(wordIndex);
+									wordIds.push(wordId);
+								}
+							}
+							result.append(text);
+						});
+						
+						var jIndices = indices.join(' ');
+						var jCharPosWords = charPosWords.join(' ');
+						var jCharPosTexts = charPosTexts.join(' ');
+						resultWord.append(jIndices);
+						resultPosText.append(jCharPosTexts);
+						resultPosWord.append(jCharPosWords);
+						drawRectangle(wordIds);
+					}
+				}
+			});
+		});
+		
+		var highLighting;
+		function drawRectangle(wordIds) {
+			var wordId = wordIds[0];
+			for (var i = 0; i < rectangles.length; i++) {
+				var rect = rectangles[i];
+				if(rect.id == wordId) {
+					// BOX
+					var rectX = rect.x;
+					var rectY = rect.y;
+					var rectHeight = rect.height;
+					var rectWidth = rect.width;
+					
+					// CURRENT IMAGE DIMENSIONS
+					var clientWidth = document.getElementById("drcImg").clientWidth;
+					var clientHeight = document.getElementById("drcImg").clientHeight;
+					
+					// NEW BOX
+					var scaledHeight = (clientHeight / originalImageHeight) * rectHeight;
+					var scaledWidth = (clientWidth / originalImageWidth) * rectWidth;
+					var scaledX = (clientHeight / originalImageHeight) * rectX;
+					var scaledY = (clientWidth / originalImageWidth) * rectY;
+					
+					if(highLighting != null)
+						highLighting.remove();
+					
+					highLighting = $('<div class="box"/>')
+						.appendTo($("#imgContainer"))
+						.css("top", scaledY + "px")
+						.css("width", clientWidth +"px")
+						.css("height", (scaledHeight * 2) +"px")
+						.css("backgroundColor", "green")
+						.css("opacity", "0.3")
+						.css("border", "2px solid green");
+				}
+			}
+		}
+		
+		// CNTRL + X  - KEY FEATURE
+		var meta = true;
+		var xKey = 88; // key 'X'
+		$(document).keydown(function(e)  {
+			if (e.ctrlKey && meta)  { 
+				if(e.keyCode == xKey) { // CTRL + X
+					if(currentItems.length > 0) {
+						var _first = $(currentItems[0]);
+						var _last = $(currentItems[currentItems.length - 1]);
+						if(currentItems.length == 1) { // STOP FUNCTION IF SELECTED ITEM IS A SPLITTER
+							if(_first.hasClass("splitter")) {
+								return false;
+							}
+						}
+						var _boundLeft = _first.prev();
+						var _boundRight = _last.next();
+						var dataWordIndex = parseInt(_first.attr("data-word-index"));
+						var dataCharposText = parseInt(_first.attr("data-charpos-text"));
+						var wordId = _first.attr("data-word-id");
+						var newWord = new Array();
+						
+						var classes;
+						if(typeWriterSelected)
+							classes = "ui-selectee updated typewritten";
+						else 
+							classes = "ui-selectee updated";
+						for(var i = 0; i < currentItems.length; i++) {
+							var _current = $(currentItems[i]);
+							if(_current.hasClass("splitter")) {
+								_current.remove();
+								continue;
+							}
+							var content = _current.text();
+							var _element = $('<div/>')
+							.attr("data-word-id", wordId)
+							.attr("data-word-index", dataWordIndex)
+							.attr("data-charpos-word", i)
+							.attr("data-charpos-text", dataCharposText)
+							.css({"float": "left", "fontSize": fontSize})
+							.addClass(classes)
+							.text(content);
+							dataCharposText++;
+							newWord.push(_element);
+							_current.remove();
+						}
+						
+						if(typeWriterSelected)
+							classes = "ui-selectee splitter typewritten";
+						else 
+							classes = "ui-selectee splitter";
+						
+						var addFromRight = _boundLeft.length == 0;
+						if(_boundLeft.hasClass("splitter") && !addFromRight) {
+							_boundLeft.after(newWord);
+						} else {
+							var splitter = $('<div/>')
+							.addClass(classes)
+							.css("fontSize", fontSize)
+							.text("●");
+							_boundLeft.after(splitter);
+							splitter.after(newWord);
+						}
+						if(!_boundRight.hasClass("splitter")) {
+							var splitter = $('<div/>')
+							.addClass(classes)
+							.css("fontSize", fontSize)
+							.text("●");
+							_boundRight.before(splitter);
+							if(addFromRight) {
+								splitter.before(newWord);
+							}
+						} else {
+							if(addFromRight) {
+								_boundRight.before(newWord);
+							}
+						}
+						// TODO: RECALCULATE INDICES !!!
+						// TODO: PUSH UPDATE TO SERVER !!!
+					}
+					meta = false;
+				}
+			}
+		}).keyup(function(e) {
+			if (e.ctrlKey) {
+				meta = true;
+			}
+		});
+		
+		//]]>
+	</script>
+</body>
+</html>
