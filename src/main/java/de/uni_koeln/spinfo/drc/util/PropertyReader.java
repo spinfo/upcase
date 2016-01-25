@@ -27,6 +27,8 @@ public class PropertyReader {
 
 	private static final String MAXHITS = "lucene.search.maxHits";
 
+	private static final String PAGEHITS = "lucene.search.pageHits";
+
 	@Inject
 	public PropertyReader(ResourceLoader resourceLoader) throws IOException {
 		this.resourceLoader = resourceLoader;
@@ -55,6 +57,10 @@ public class PropertyReader {
 
 	public int getMaxHits() {
 		return Integer.parseInt(properties.getProperty(MAXHITS));
+	}
+	
+	public int getHitsPerPage() {
+		return Integer.parseInt(properties.getProperty(PAGEHITS));
 	}
 
 

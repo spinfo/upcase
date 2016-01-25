@@ -37,7 +37,7 @@ body {
 									style="text-align: left;">Suche</label>
 								<div class="col-sm-8">
 									<input type="text" class="form-control" placeholder="Suche..."
-										id="searchForm" name="searchForm" th:value="*{searchPhrase}"
+										id="searchForm" name="searchPhrase" th:value="*{searchPhrase}"
 										autofocus="autofocus" autocomplete="off" />
 								</div>
 								<div class="checkbox col-sm-2">
@@ -95,8 +95,8 @@ body {
 					<strong>Suchergebnis für <span class="text-info"
 						th:text="${searchPhrase}"> </span>
 					</strong> (Treffer <span class="text-info" th:text="${offset} + 1"></span> -
-					<span class="text-info" th:text="${totalHits}"></span> von <span
-						class="text-info" th:text="${totalHits}"></span>)
+					<span class="text-info" th:text="${offset + hits.size()}"></span>
+					von <span class="text-info" th:text="${totalHits}"></span>)
 				</h4>
 				<table class="table table-hover table-condensed">
 					<thead>
@@ -110,7 +110,7 @@ body {
 						</tr>
 					</thead>
 					<tr th:each="result, stats : ${hits}">
-						<td><span th:text="${stats.count}">1</span></td>
+						<td><span th:text="${offset + stats.count}">1</span></td>
 						<td><a
 							th:href="@{volume/title(volumeTitle=${result.volume})}"
 							th:text="${result.volume}">Band I</a></td>
@@ -127,14 +127,24 @@ body {
 						<td colspan="6">
 							<div>
 								<nav>
-									<ul class="pagination">
-										<li class="disabled"><a href="#" aria-label="Previous"><span
+									<ul class="pagination pagination-sm">
+										<li th:class="${prev == true ? 'disabled' : ''}"><a
+											th:if="${prev} == false"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page - 1})}"
+											aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+											<a th:if="${prev} == true" href="#" aria-label="Previous"><span
 												aria-hidden="true">&laquo;</span></a></li>
-										<li class="active"><a href="#">1 <span
-												class="sr-only">(current)</span></a></li>
-										<li class="disabled"><a href="#" aria-label="Next"> <span
-												aria-hidden="true">&raquo;</span>
+										<li th:class="${(page - 1) == i ? 'active' : ''}"
+											th:each="i : ${#numbers.sequence(0, chunks/1)}"><a
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${i + 1})}"
+											th:text="${i + 1}">1 <span class="sr-only">(current)</span>
 										</a></li>
+										<li th:class="${next == true ? 'disabled' : ''}"><a
+											th:if="${next} == false"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page + 1})}"
+											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+										</a> <a th:if="${next} == true" href="#" aria-label="Next"><span
+												aria-hidden="true">&raquo;</span></a></li>
 									</ul>
 								</nav>
 							</div>

@@ -15,13 +15,13 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.search.highlight.SimpleSpanFragmenter;
 import org.apache.lucene.search.highlight.TextFragment;
-import org.apache.lucene.search.highlight.TokenSources;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.slf4j.Logger;
@@ -55,13 +55,10 @@ public class Searcher {
 	public List<SearchResult> search(String q) throws IOException,
 			ParseException {
 
-		String indexDir = propertyReader.getIndexDir();
-		Directory dir = new SimpleFSDirectory(new File(indexDir).toPath());
-		DirectoryReader dirReader = DirectoryReader.open(dir);
+		DirectoryReader dirReader = openDirectory();
 		IndexSearcher is = new IndexSearcher(dirReader);
-		StandardAnalyzer analyzer = new StandardAnalyzer();
 
-		QueryParser parser = new QueryParser("contents", analyzer);
+		QueryParser parser = new QueryParser("contents", new StandardAnalyzer());
 		Query query = parser.parse(q);
 		TopDocs hits = is.search(query, propertyReader.getMaxHits());
 		this.setTotalHits(hits.totalHits);
@@ -71,6 +68,12 @@ public class Searcher {
 
 		dirReader.close();
 		return resultList;
+	}
+
+	private Directory getLuceneDir() throws IOException {
+		String indexDir = propertyReader.getIndexDir();
+		Directory dir = new SimpleFSDirectory(new File(indexDir).toPath());
+		return dir;
 	}
 
 	private List<SearchResult> toResult(IndexSearcher is, TopDocs hits)
@@ -85,7 +88,7 @@ public class Searcher {
 		return resultList;
 	}
 
-	/*
+	/**
 	 * Wrap up all field contents of a hit.
 	 * 
 	 * @param doc
@@ -114,12 +117,6 @@ public class Searcher {
 		result.setVolume(volume);
 		result.setURL("localhost:8080/drc/page?pageId=" + pageId);
 
-		// das gleiche, etwas kompakter:
-		// result = new SearchResult(doc.get("url"), doc.get("pageId"),
-		// doc.get("contents"), doc.get("languages"),
-		// doc.get("chapterId"), doc.get("chapters"), doc.get("volumeId"),
-		// doc.get("volume"));
-
 		return result;
 	}
 
@@ -137,21 +134,27 @@ public class Searcher {
 		this.totalHits = totalHits;
 	}
 
-	public List<SearchResult> withQuotations(String searchPhrase, int numFragments)
-			throws IOException, ParseException, InvalidTokenOffsetsException {
+	public List<SearchResult> withQuotations(String searchPhrase,
+			int numFragments, int page) throws IOException, ParseException,
+			InvalidTokenOffsetsException {
 
-		String indexDir = propertyReader.getIndexDir();
-		Directory dir = new SimpleFSDirectory(new File(indexDir).toPath());
-		DirectoryReader dirReader = DirectoryReader.open(dir);
+		DirectoryReader dirReader = openDirectory();
 		IndexSearcher is = new IndexSearcher(dirReader);
 		StandardAnalyzer analyzer = new StandardAnalyzer();
+		
+		int hitsPerPage = propertyReader.getHitsPerPage();
+		TopScoreDocCollector collector = TopScoreDocCollector.create(dirReader.maxDoc());   
+		int startIndex = (page - 1) * hitsPerPage;  
 
 		QueryParser parser = new QueryParser("contents", analyzer);
 		String q = "contents:" + "\"" + searchPhrase + "\"" + "~10";
 		Query query = parser.parse(q);
-		TopDocs hits = is.search(query, propertyReader.getMaxHits());
+		is.search(query, collector);
+		TopDocs hits = collector.topDocs(startIndex, hitsPerPage);
+		
 		this.setTotalHits(hits.totalHits);
-		SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter("<span class=\"quotation\">", "</span>");
+		SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter(
+				"<span class=\"quotation\">", "</span>");
 		QueryScorer queryScorer = new QueryScorer(query, "contents");
 		Highlighter highlighter = new Highlighter(htmlFormatter, queryScorer);
 		highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, 50));
@@ -161,18 +164,25 @@ public class Searcher {
 			Document doc = is.doc(id);
 			String contents = doc.get("contents");
 			TokenStream tokenStream = analyzer.tokenStream("contents", contents);
-			TextFragment[] frag = highlighter.getBestTextFragments(tokenStream, contents, false, numFragments);
+			TextFragment[] frag = highlighter.getBestTextFragments(tokenStream,
+					contents, false, numFragments);
 			List<String> quots = new ArrayList<>();
 			for (TextFragment textFragment : frag) {
 				if ((textFragment != null) && (textFragment.getScore() > 0)) {
-					String quotation = "[...] " + textFragment.toString() + " [...]";
+					String quotation = "[...] " + textFragment.toString()
+							+ " [...]";
 					quots.add(quotation);
 				}
 			}
 			SearchResult result = wrapFieldResults(doc, quots);
 			resultList.add(result);
 		}
+
 		return resultList;
+	}
+
+	private DirectoryReader openDirectory() throws IOException {
+		return DirectoryReader.open(getLuceneDir());
 	}
 
 	private SearchResult wrapFieldResults(Document doc, List<String> quotations) {

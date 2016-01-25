@@ -2,6 +2,7 @@ package de.uni_koeln.spinfo.drc.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -26,6 +27,8 @@ import de.uni_koeln.spinfo.drc.mongodb.DataBase;
 import de.uni_koeln.spinfo.drc.mongodb.data.document.Chapter;
 import de.uni_koeln.spinfo.drc.mongodb.data.document.Language;
 import de.uni_koeln.spinfo.drc.mongodb.data.document.Volume;
+import de.uni_koeln.spinfo.drc.util.PropertyReader;
+import de.uni_koeln.spinfo.drc.util.VolumeComparator;
 
 @Controller()
 @RequestMapping(value = "/drc")
@@ -38,6 +41,9 @@ public class SearchController {
 
 	@Autowired
 	private DataBase db;
+
+	@Autowired
+	PropertyReader propertyReader;
 
 	/**
 	 * The search page
@@ -66,11 +72,13 @@ public class SearchController {
 		findAll.forEach(l -> volumes.add(l.getTitle()));
 		return volumes;
 	}
-	
+
 	@RequestMapping(value = "chapters/by/volume/title/{volumeTitle}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-	public @ResponseBody List<String> getChapterNamesByVolTitle(@PathVariable String volumeTitle) {
+	public @ResponseBody List<String> getChapterNamesByVolTitle(
+			@PathVariable String volumeTitle) {
 		Volume volume = db.getVolumeRepository().findByTitle(volumeTitle);
-		List<Chapter> chapters = db.getChapterRepository().findByVolumeId(volume.getId());
+		List<Chapter> chapters = db.getChapterRepository().findByVolumeId(
+				volume.getId());
 		List<String> chapterNames = new ArrayList<>();
 		chapterNames.add("alle");
 		chapters.forEach(c -> chapterNames.add(c.getTitle()));
@@ -81,22 +89,35 @@ public class SearchController {
 	 * The result view
 	 */
 	@RequestMapping(value = "/searchResult")
-	public ModelAndView simpleResult(@RequestParam("searchForm") String searchPhrase) {
-		logger.info("searching for '" + searchPhrase +"'");
+	public ModelAndView simpleResult(
+			@RequestParam("searchPhrase") String searchPhrase,
+			@RequestParam(value = "page", required = false) Integer page) {
+
+		logger.info("searching for '" + searchPhrase + "'");
+
+		page = page == null ? 1 : page;
+
 		List<SearchResult> resultList = null;
 		try {
-			resultList = searcher.withQuotations(searchPhrase, 1);
+			resultList = searcher.withQuotations(searchPhrase, 1, page);
+			Collections.sort(resultList, new VolumeComparator());
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
 		} catch (InvalidTokenOffsetsException e) {
 			e.printStackTrace();
 		}
+
+		int chunks = searcher.getTotalHits() / propertyReader.getHitsPerPage();
+
 		ModelAndView mv = new ModelAndView("searchResult");
+		mv.addObject("page", page);
 		mv.addObject("searchPhrase", searchPhrase);
 		mv.addObject("hits", resultList);
 		mv.addObject("totalHits", searcher.getTotalHits());
-		mv.addObject("offset", 0);
-		mv.addObject("resultPage", 1);
+		mv.addObject("offset", (page - 1) * propertyReader.getHitsPerPage());
+		mv.addObject("chunks", chunks);
+		mv.addObject("prev", (page - 1) == 0);
+		mv.addObject("next", (page - 1) == chunks);
 		return mv;
 	}
 
