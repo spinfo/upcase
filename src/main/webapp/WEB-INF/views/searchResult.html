@@ -2,18 +2,22 @@
 <html lang="de" xmlns:th="http://www.thymeleaf.org">
 <head>
 <title>Search results</title>
-<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"
+	type="text/css" />
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 <script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
 <style type="text/css">
 body {
 	padding-top: 70px;
 }
+
+.quotation {
+	color: #015c3d;
+	font-weight: 700;
+}
 </style>
 </head>
-
 <body>
-
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
@@ -22,40 +26,146 @@ body {
 			</div>
 		</div>
 	</nav>
-
 	<div class="container">
 		<div class="row">
-			<div class="col-md-3 well">
-				<h4>
-					Treffer <em class="text-info" th:text="${offset} + 1"></em> - <em
-						class="text-info" th:text="${totalHits}"></em> von <em
-						class="text-info" th:text="${totalHits}"></em>
-				</h4>
-				<p>Neue Suche:</p>
-				<form class="form-search">
-					<input type="text" class="form-control" placeholder="Suche..."
-						name="searchForm" th:value="*{searchPhrase}" autofocus="autofocus"
-						autocomplete="on" />
+			<div class="col-md-12">
+				<form class="form-horizontal">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="searchForm" class="col-sm-2 control-label"
+									style="text-align: left;">Suche</label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control" placeholder="Suche..."
+										id="searchForm" name="searchForm" th:value="*{searchPhrase}"
+										autofocus="autofocus" autocomplete="off" />
+								</div>
+								<div class="checkbox col-sm-2">
+									<label style="text-align: right; font-weight: bold;"> <input
+										type="checkbox" value="true" name="regex" />Regex
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="volumeSelection" class="col-sm-2 control-label"
+									style="text-align: left;">Band</label>
+								<div class="col-sm-4">
+									<select class="form-control" id="volumeSelection"
+										name="volumeSelection">
+										<option th:each="vol: ${volumeList}" th:value="${vol}"
+											th:text="${vol}">Band I</option>
+									</select>
+								</div>
+								<label for="chapterSelection" class="col-sm-2 control-label"
+									style="text-align: left;">Kapitel</label>
+								<div class="col-sm-4">
+									<select class="form-control" id="chapterSelection"
+										name="chapterSelection">
+										<option>alle</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-sm-2 control-label" style="text-align: left;">Idiom</label>
+								<div class="col-sm-4">
+									<select class="form-control" name="langSelection">
+										<option th:each="lang : ${languageList}" th:value="${lang}"
+											th:text="${lang}">Sursilvan</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<button type="submit" class="btn btn-success">Suchen</button>
+							</div>
+						</div>
+					</div>
 				</form>
-				<br /> <a th:href="@{extendedSearch}">Erweiterte Suche</a>
 			</div>
-			<div class="col-md-8">
-				<h4><strong>Suchergebnis für "<em class="text-info"
-					th:text="${searchPhrase}"> </em>"
-				</strong></h4>
-				<table class="table table-hover">
-					<tr th:each="result : ${hits}">
-						<td><span th:text="${result.volume}"></span></td>
-						<td><span th:text="${result.chapter}"></span></td>
-						<td><span th:text="${result.language}"></span></td>
-						<td><span> <a
-								th:href="@{page(pageId=${result.pageId}, chapterId=${result.chapterId}, chapterTitle=${result.chapter}, volumeId=${result.volumeId}, volumeTitle=${result.volume})}"
-								th:text="${result.filename}"></a></span></td>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<hr />
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<h4>
+					<strong>Suchergebnis für <span class="text-info"
+						th:text="${searchPhrase}"> </span>
+					</strong> (Treffer <span class="text-info" th:text="${offset} + 1"></span> -
+					<span class="text-info" th:text="${totalHits}"></span> von <span
+						class="text-info" th:text="${totalHits}"></span>)
+				</h4>
+				<table class="table table-hover table-condensed">
+					<thead>
+						<tr>
+							<th width="5%">#</th>
+							<th width="10%">Band</th>
+							<th width="20%">Kapitel</th>
+							<th width="5%">Idiom</th>
+							<th width="40%">Kontext</th>
+							<th width="20%">Referenz</th>
+						</tr>
+					</thead>
+					<tr th:each="result, stats : ${hits}">
+						<td><span th:text="${stats.count}">1</span></td>
+						<td><a
+							th:href="@{volume/title(volumeTitle=${result.volume})}"
+							th:text="${result.volume}">Band I</a></td>
+						<td><a
+							th:href="@{chapter/title(chapterTitle=${result.chapter})}"
+							th:text="${result.chapter}">Daniel Bonifaci</a></td>
+						<td><span th:text="${result.language}">Sursilvan</span></td>
+						<td><span th:utext="${result.quotations[0]}"></span></td>
+						<td><a
+							th:href="@{page(pageId=${result.pageId}, chapterId=${result.chapterId}, chapterTitle=${result.chapter}, volumeId=${result.volumeId}, volumeTitle=${result.volume})}"
+							th:text="${result.filename}"></a></td>
+					</tr>
+					<tr>
+						<td colspan="6">
+							<div>
+								<nav>
+									<ul class="pagination">
+										<li class="disabled"><a href="#" aria-label="Previous"><span
+												aria-hidden="true">&laquo;</span></a></li>
+										<li class="active"><a href="#">1 <span
+												class="sr-only">(current)</span></a></li>
+										<li class="disabled"><a href="#" aria-label="Next"> <span
+												aria-hidden="true">&raquo;</span>
+										</a></li>
+									</ul>
+								</nav>
+							</div>
+						</td>
 					</tr>
 				</table>
-				<!-- / RESULT TABLE -->
 			</div>
 		</div>
 	</div>
+	<div id="divy"></div>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		$("#volumeSelection")
+				.change(
+						function() {
+							var volume = $("#volumeSelection option:selected")
+									.text();
+							var url = "http://localhost:8080/drc/chapters/by/volume/title/"
+									+ volume;
+							// console.log(url);
+							$.get(url, function(data) {
+								var options = "";
+								for (var i = 0; i < data.length; i++) {
+									options += "<option value='"+data[i]+"'>"
+											+ data[i] + "</option>";
+								}
+								// console.log(options);
+								$("#chapterSelection").empty().html(options);
+							});
+						});
+		/*]]>*/
+	</script>
 </body>
 </html>

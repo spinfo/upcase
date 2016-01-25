@@ -19,7 +19,9 @@ import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
+import org.apache.lucene.search.highlight.SimpleSpanFragmenter;
 import org.apache.lucene.search.highlight.TextFragment;
+import org.apache.lucene.search.highlight.TokenSources;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.slf4j.Logger;
@@ -27,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.uni_koeln.spinfo.drc.lucene.json.PGQuery;
-import de.uni_koeln.spinfo.drc.lucene.json.PGResult;
 import de.uni_koeln.spinfo.drc.util.PropertyReader;
 
 @Service
@@ -137,11 +137,8 @@ public class Searcher {
 		this.totalHits = totalHits;
 	}
 
-	public List<PGResult> findQuotation(PGQuery pgQuery)
+	public List<SearchResult> withQuotations(String searchPhrase, int numFragments)
 			throws IOException, ParseException, InvalidTokenOffsetsException {
-
-		String language = pgQuery.getLanguage();
-		String searchPhrase = pgQuery.getQuery();
 
 		String indexDir = propertyReader.getIndexDir();
 		Directory dir = new SimpleFSDirectory(new File(indexDir).toPath());
@@ -150,34 +147,38 @@ public class Searcher {
 		StandardAnalyzer analyzer = new StandardAnalyzer();
 
 		QueryParser parser = new QueryParser("contents", analyzer);
-		String q = "contents:" + "\"" + searchPhrase + "\"" + "~10" + " AND languages: " + language;
+		String q = "contents:" + "\"" + searchPhrase + "\"" + "~10";
 		Query query = parser.parse(q);
 		TopDocs hits = is.search(query, propertyReader.getMaxHits());
+		this.setTotalHits(hits.totalHits);
 		SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter("<span class=\"quotation\">", "</span>");
-		Highlighter highlighter = new Highlighter(htmlFormatter, new QueryScorer(query));
-		
-		List<PGResult> resultList = new ArrayList<>();
+		QueryScorer queryScorer = new QueryScorer(query, "contents");
+		Highlighter highlighter = new Highlighter(htmlFormatter, queryScorer);
+		highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, 50));
+		List<SearchResult> resultList = new ArrayList<>();
 		for (ScoreDoc scoreDoc : hits.scoreDocs) {
 			int id = scoreDoc.doc;
 			Document doc = is.doc(id);
 			String contents = doc.get("contents");
 			TokenStream tokenStream = analyzer.tokenStream("contents", contents);
-			TextFragment[] frag = highlighter.getBestTextFragments(tokenStream, contents, false, 10);
+			TextFragment[] frag = highlighter.getBestTextFragments(tokenStream, contents, false, numFragments);
+			List<String> quots = new ArrayList<>();
 			for (TextFragment textFragment : frag) {
 				if ((textFragment != null) && (textFragment.getScore() > 0)) {
-					String quotation = "... " + textFragment.toString() + " ...";
-					PGResult result = wrapFieldPgResults(doc, quotation);
-					resultList.add(result);
+					String quotation = "[...] " + textFragment.toString() + " [...]";
+					quots.add(quotation);
 				}
 			}
+			SearchResult result = wrapFieldResults(doc, quots);
+			resultList.add(result);
 		}
 		return resultList;
 	}
 
-	private PGResult wrapFieldPgResults(Document doc, String quotation) {
-		PGResult result = new PGResult();
+	private SearchResult wrapFieldResults(Document doc, List<String> quotations) {
+		SearchResult result = new SearchResult();
 		result.setFilename(doc.get("url"));
-		result.setQuotation(quotation);
+		result.setQuotations(quotations);
 		result.setLanguage(doc.get("languages"));
 		result.setChapter(doc.get("chapters"));
 		result.setVolume(doc.get("volume"));

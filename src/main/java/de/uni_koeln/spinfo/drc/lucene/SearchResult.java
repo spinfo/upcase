@@ -1,5 +1,7 @@
 package de.uni_koeln.spinfo.drc.lucene;
 
+import java.util.List;
+
 /**
  * Container to wrap up page infos to be displayed in a result view.
  * 
@@ -16,7 +18,7 @@ public class SearchResult {
 	private String volume;
 	private String chapterId;
 	private String volumeId;
-	private String quotation;
+	private List<String> quotations;
 	private String url;
 
 	public SearchResult() {
@@ -36,7 +38,7 @@ public class SearchResult {
 	 */
 	public SearchResult(String filename, String pageId, String content,
 			String language, String chapterId, String chapter, String volumeId,
-			String volume, String quotation) {
+			String volume, List<String> quotations) {
 		this.filename = filename;
 		this.pageId = pageId;
 		this.content = content;
@@ -45,7 +47,7 @@ public class SearchResult {
 		this.chapter = chapter;
 		this.volumeId = volumeId;
 		this.volume = volume;
-		this.quotation = quotation;
+		this.quotations = quotations;
 	}
 
 	/**
@@ -168,12 +170,12 @@ public class SearchResult {
 		this.volumeId = volumeId;
 	}
 
-	public String getQuotation() {
-		return quotation;
+	public List<String> getQuotations() {
+		return quotations;
 	}
 
-	public void setQuotation(String quotation) {
-		this.quotation = quotation;
+	public void setQuotations(List<String> quotations) {
+		this.quotations = quotations;
 	}
 
 	@Override
@@ -183,7 +185,7 @@ public class SearchResult {
 				+ content.substring(0, Math.min(50, content.length()))
 				+ ", language=" + language + ", chapter=" + chapter
 				+ ", volume=" + volume + ", chapterId=" + chapterId
-				+ ", volumeId=" + volumeId + ", quotation=" + quotation + "]";
+				+ ", volumeId=" + volumeId + ", quotations=" + quotations + "]";
 	}
 
 	public void setURL(String url) {
