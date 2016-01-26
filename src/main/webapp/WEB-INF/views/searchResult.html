@@ -132,18 +132,18 @@ body {
 									<ul class="pagination pagination-sm">
 										<li th:class="${prev == true ? 'disabled' : ''}"><a
 											th:if="${prev} == false"
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page - 1}, volumeSort=${volumeSort})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page - 1}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
 											aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 											<a th:if="${prev} == true" href="#" aria-label="Previous"><span
 												aria-hidden="true">&laquo;</span></a></li>
 										<li th:class="${(page - 1) == i ? 'active' : ''}"
 											th:each="i : ${#numbers.sequence(0, chunks/1)}"><a
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${i + 1}, volumeSort=${volumeSort})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${i + 1}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
 											th:text="${i + 1}">1 <span class="sr-only">(current)</span>
 										</a></li>
 										<li th:class="${next == true ? 'disabled' : ''}"><a
 											th:if="${next} == false"
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page + 1}, volumeSort=${volumeSort})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page + 1}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
 											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 										</a> <a th:if="${next} == true" href="#" aria-label="Next"><span
 												aria-hidden="true">&raquo;</span></a></li>
