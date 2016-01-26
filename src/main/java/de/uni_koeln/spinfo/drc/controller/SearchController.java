@@ -27,6 +27,7 @@ import de.uni_koeln.spinfo.drc.mongodb.DataBase;
 import de.uni_koeln.spinfo.drc.mongodb.data.document.Chapter;
 import de.uni_koeln.spinfo.drc.mongodb.data.document.Language;
 import de.uni_koeln.spinfo.drc.mongodb.data.document.Volume;
+import de.uni_koeln.spinfo.drc.util.ChapterComparator;
 import de.uni_koeln.spinfo.drc.util.PropertyReader;
 import de.uni_koeln.spinfo.drc.util.VolumeComparator;
 
@@ -91,16 +92,27 @@ public class SearchController {
 	@RequestMapping(value = "/searchResult")
 	public ModelAndView simpleResult(
 			@RequestParam("searchPhrase") String searchPhrase,
-			@RequestParam(value = "page", required = false) Integer page) {
+			@RequestParam(value = "page", required = false) Integer page,
+			@RequestParam(value = "volumeSort", required = false) String volumeSort,
+			@RequestParam(value = "chapterSort", required = false) String chapterSort) {
 
-		logger.info("searching for '" + searchPhrase + "'");
-
+		logger.info(volumeSort);
 		page = page == null ? 1 : page;
 
 		List<SearchResult> resultList = null;
 		try {
 			resultList = searcher.withQuotations(searchPhrase, 1, page);
-			Collections.sort(resultList, new VolumeComparator());
+			
+			if(volumeSort != null) {
+				if (!volumeSort.equals("none")) {
+					Collections.sort(resultList, new VolumeComparator(volumeSort));
+				}
+			}
+			if(chapterSort != null) {
+				if (!chapterSort.equals("none")) {
+					Collections.sort(resultList, new ChapterComparator(chapterSort));
+				}
+			}
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
 		} catch (InvalidTokenOffsetsException e) {
@@ -116,6 +128,8 @@ public class SearchController {
 		mv.addObject("totalHits", searcher.getTotalHits());
 		mv.addObject("offset", (page - 1) * propertyReader.getHitsPerPage());
 		mv.addObject("chunks", chunks);
+		mv.addObject("volumeSort", volumeSort);
+		mv.addObject("chapterSort", chapterSort);
 		mv.addObject("prev", (page - 1) == 0);
 		mv.addObject("next", (page - 1) == chunks);
 		return mv;

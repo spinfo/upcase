@@ -102,8 +102,10 @@ body {
 					<thead>
 						<tr>
 							<th width="5%">#</th>
-							<th width="10%">Band</th>
-							<th width="20%">Kapitel</th>
+							<th width="10%">Band <a id="sortVolume" href="#"><span
+									class="glyphicon" aria-hidden="true"></span></a></th>
+							<th width="20%">Kapitel <a id="sortChapter" href="#"><span
+									class="glyphicon" aria-hidden="true"></span></a></th>
 							<th width="5%">Idiom</th>
 							<th width="40%">Kontext</th>
 							<th width="20%">Referenz</th>
@@ -130,18 +132,18 @@ body {
 									<ul class="pagination pagination-sm">
 										<li th:class="${prev == true ? 'disabled' : ''}"><a
 											th:if="${prev} == false"
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page - 1})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page - 1}, volumeSort=${volumeSort})}"
 											aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 											<a th:if="${prev} == true" href="#" aria-label="Previous"><span
 												aria-hidden="true">&laquo;</span></a></li>
 										<li th:class="${(page - 1) == i ? 'active' : ''}"
 											th:each="i : ${#numbers.sequence(0, chunks/1)}"><a
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${i + 1})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${i + 1}, volumeSort=${volumeSort})}"
 											th:text="${i + 1}">1 <span class="sr-only">(current)</span>
 										</a></li>
 										<li th:class="${next == true ? 'disabled' : ''}"><a
 											th:if="${next} == false"
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page + 1})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page + 1}, volumeSort=${volumeSort})}"
 											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 										</a> <a th:if="${next} == true" href="#" aria-label="Next"><span
 												aria-hidden="true">&raquo;</span></a></li>
@@ -157,24 +159,84 @@ body {
 	<div id="divy"></div>
 	<script th:inline="javascript">
 		/*<![CDATA[*/
-		$("#volumeSelection")
-				.change(
-						function() {
-							var volume = $("#volumeSelection option:selected")
-									.text();
-							var url = "http://localhost:8080/drc/chapters/by/volume/title/"
-									+ volume;
-							// console.log(url);
-							$.get(url, function(data) {
-								var options = "";
-								for (var i = 0; i < data.length; i++) {
-									options += "<option value='"+data[i]+"'>"
-											+ data[i] + "</option>";
-								}
-								// console.log(options);
-								$("#chapterSelection").empty().html(options);
-							});
-						});
+
+		$( document ).ready(function() {
+			
+			var volumeSort = getURLParameter("volumeSort");
+			var chapterSort = getURLParameter("chapterSort");
+			
+			var _sortImgVol = $("#sortVolume").children().first();
+			setSortImg(volumeSort, _sortImgVol);
+			
+			var _sortImgChap = $("#sortChapter").children().first();
+			setSortImg(chapterSort, _sortImgChap);
+			
+			$("#volumeSelection").change(function() {
+				var volume = $("#volumeSelection option:selected").text();
+				var url = "http://localhost:8080/drc/chapters/by/volume/title/" + volume;
+				$.get(url, function(data) {
+					var options = "";
+					for (var i = 0; i < data.length; i++) {
+						options += "<option value='"+data[i]+"'>" + data[i] + "</option>";
+					}
+					$("#chapterSelection").empty().html(options);
+				});
+			});
+	
+			$("#sortVolume").click(function(event) {
+				event.preventDefault();
+				if(typeof volumeSort == 'undefined' || volumeSort == "none") {
+					volumeSort = "asc";
+					chapterSort = "none"
+				} else {
+					volumeSort = (volumeSort == "asc") ? "des" : "asc";
+				}
+				window.location = buildURL(volumeSort, chapterSort);
+			});
+			
+			$("#sortChapter").click(function(event) {
+				event.preventDefault();
+				if(typeof chapterSort == 'undefined' || chapterSort == "none") {
+					chapterSort = "asc";
+					volumeSort = "none"
+				} else {
+					chapterSort = (chapterSort == "asc") ? "des" : "asc";
+				}
+				window.location = buildURL(volumeSort, chapterSort);
+			});
+		
+		});
+		
+		function setSortImg(sortType, selector) {
+			if(sortType == "asc") {
+				selector.removeClass("glyphicon-sort-by-alphabet-alt").addClass("glyphicon-sort-by-alphabet");
+			} else if(sortType == "des"){
+				selector.removeClass("glyphicon-sort-by-alphabet").addClass("glyphicon-sort-by-alphabet-alt");
+			} else {
+				selector.removeClass("glyphicon-sort-by-alphabet-alt glyphicon-sort-by-alphabet").addClass("glyphicon-sort");
+			}
+		}
+		
+		function buildURL(volumeSort, chapterSort) {
+			var searchPhrase = getURLParameter("searchPhrase");
+			var page = getURLParameter("page");
+			var baseURL = "http://localhost:8080/drc/searchResult?";
+			if (typeof page == 'undefined') {
+				page = 1;
+			}
+			return baseURL + "searchPhrase=" + searchPhrase + "&" + "page=" + page + "&" + "volumeSort=" + volumeSort + "&" + "chapterSort=" + chapterSort;
+		}
+		
+		function getURLParameter(sParam) {
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+			for (var i = 0; i < sURLVariables.length; i++) {
+				var sParameterName = sURLVariables[i].split('=');
+				if (sParameterName[0] == sParam) {
+					return sParameterName[1];
+				}
+			}
+		}
 		/*]]>*/
 	</script>
 </body>
