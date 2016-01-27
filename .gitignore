@@ -16,5 +16,3 @@ buildNumber.properties
 *.csv
 *.class
 hs_err_pid*
-
-
