@@ -104,7 +104,7 @@ public class Searcher {
 		String chapterId = doc.get("chapterId");
 		String chapter = doc.get("chapters");
 		String volumeId = doc.get("volumeId");
-		String volume = doc.get("volume");
+		String volumeTitle = doc.get("volumeTitle");
 
 		SearchResult result = new SearchResult();
 		result.setFilename(filename);
@@ -114,7 +114,7 @@ public class Searcher {
 		result.setChapterId(chapterId);
 		result.setChapter(chapter);
 		result.setVolumeId(volumeId);
-		result.setVolume(volume);
+		result.setVolumeTitle(volumeTitle);
 		result.setURL("localhost:8080/drc/page?pageId=" + pageId);
 
 		return result;
@@ -135,35 +135,53 @@ public class Searcher {
 	}
 
 	public List<SearchResult> withQuotations(String searchPhrase,
-			int numFragments, int page) throws IOException, ParseException,
+			String volumeSelection, String chapterSelection, int numFragments,
+			int page) throws IOException, ParseException,
 			InvalidTokenOffsetsException {
 
 		DirectoryReader dirReader = openDirectory();
 		IndexSearcher is = new IndexSearcher(dirReader);
 		StandardAnalyzer analyzer = new StandardAnalyzer();
-		
+
 		int hitsPerPage = propertyReader.getHitsPerPage();
-		TopScoreDocCollector collector = TopScoreDocCollector.create(dirReader.maxDoc());   
-		int startIndex = (page - 1) * hitsPerPage;  
+		TopScoreDocCollector collector = TopScoreDocCollector.create(dirReader
+				.maxDoc());
+		int startIndex = (page - 1) * hitsPerPage;
+
+		String volumeQuery = "";
+		if (!volumeSelection.equals("alle")) {
+			volumeQuery = "AND volumeTitle:\"" + volumeSelection + "\" ";
+		}
+
+		String chapterQuery = "";
+		if (!chapterSelection.equals("alle")) {
+			chapterQuery = "AND chapters:\"" + chapterSelection + "\" ";
+		}
 
 		QueryParser parser = new QueryParser("contents", analyzer);
-		String q = "contents:" + "\"" + searchPhrase + "\"" + "~10";
+		String q = "contents:" + "\"" + searchPhrase + "\"" + "~10 "
+				+ volumeQuery + chapterQuery;
+		logger.info("QUERY:" + q);
+		
 		Query query = parser.parse(q);
+
 		is.search(query, collector);
 		TopDocs hits = collector.topDocs(startIndex, hitsPerPage);
-		
+
 		this.setTotalHits(hits.totalHits);
 		SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter(
 				"<span class=\"quotation\">", "</span>");
 		QueryScorer queryScorer = new QueryScorer(query, "contents");
 		Highlighter highlighter = new Highlighter(htmlFormatter, queryScorer);
-		highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, 50));
+		highlighter
+				.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, 100));
 		List<SearchResult> resultList = new ArrayList<>();
 		for (ScoreDoc scoreDoc : hits.scoreDocs) {
 			int id = scoreDoc.doc;
 			Document doc = is.doc(id);
 			String contents = doc.get("contents");
-			TokenStream tokenStream = analyzer.tokenStream("contents", contents);
+			TokenStream tokenStream = analyzer
+					.tokenStream("contents", contents);
 			TextFragment[] frag = highlighter.getBestTextFragments(tokenStream,
 					contents, false, numFragments);
 			List<String> quots = new ArrayList<>();
@@ -191,7 +209,7 @@ public class Searcher {
 		result.setQuotations(quotations);
 		result.setLanguage(doc.get("languages"));
 		result.setChapter(doc.get("chapters"));
-		result.setVolume(doc.get("volume"));
+		result.setVolumeTitle(doc.get("volumeTitle"));
 		result.setURL("localhost:8080/drc/page?pageName=" + doc.get("url"));
 		return result;
 	}

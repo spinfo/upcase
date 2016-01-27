@@ -15,9 +15,9 @@ public class VolumeComparator implements Comparator<SearchResult> {
 	@Override
 	public int compare(SearchResult o1, SearchResult o2) {
 		if(asc.equals("asc"))
-			return o1.getVolume().compareTo(o2.getVolume());
+			return o1.getVolumeTitle().compareTo(o2.getVolumeTitle());
 		else 
-			return o2.getVolume().compareTo(o1.getVolume());
+			return o2.getVolumeTitle().compareTo(o1.getVolumeTitle());
 	}
 
 }

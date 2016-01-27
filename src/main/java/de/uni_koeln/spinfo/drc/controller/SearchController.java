@@ -91,17 +91,20 @@ public class SearchController {
 	 */
 	@RequestMapping(value = "/searchResult")
 	public ModelAndView simpleResult(
-			@RequestParam("searchPhrase") String searchPhrase,
+			@RequestParam("searchPhrase") String searchPhrase, 
+			@RequestParam(value = "volumeSelection", required = false) String volumeSelection,
+			@RequestParam(value = "chapterSelection", required = false) String chapterSelection,
 			@RequestParam(value = "page", required = false) Integer page,
 			@RequestParam(value = "volumeSort", required = false) String volumeSort,
 			@RequestParam(value = "chapterSort", required = false) String chapterSort) {
 
-		logger.info(volumeSort);
 		page = page == null ? 1 : page;
-
+		volumeSelection = volumeSelection == null ? "alle" : volumeSelection;
+		chapterSelection = chapterSelection == null ? "alle" : chapterSelection;
+		
 		List<SearchResult> resultList = null;
 		try {
-			resultList = searcher.withQuotations(searchPhrase, 1, page);
+			resultList = searcher.withQuotations(searchPhrase, volumeSelection, chapterSelection,  1, page);
 			
 			if(volumeSort != null) {
 				if (!volumeSort.equals("none")) {

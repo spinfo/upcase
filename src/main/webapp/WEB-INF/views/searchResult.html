@@ -114,15 +114,15 @@ body {
 					<tr th:each="result, stats : ${hits}">
 						<td><span th:text="${offset + stats.count}">1</span></td>
 						<td><a
-							th:href="@{volume/title(volumeTitle=${result.volume})}"
-							th:text="${result.volume}">Band I</a></td>
+							th:href="@{volume/title(volumeTitle=${result.volumeTitle})}"
+							th:text="${result.volumeTitle}">Band I</a></td>
 						<td><a
 							th:href="@{chapter/title(chapterTitle=${result.chapter})}"
 							th:text="${result.chapter}">Daniel Bonifaci</a></td>
 						<td><span th:text="${result.language}">Sursilvan</span></td>
 						<td><span th:utext="${result.quotations[0]}"></span></td>
 						<td><a
-							th:href="@{page(pageId=${result.pageId}, chapterId=${result.chapterId}, chapterTitle=${result.chapter}, volumeId=${result.volumeId}, volumeTitle=${result.volume})}"
+							th:href="@{page(pageId=${result.pageId}, chapterId=${result.chapterId}, chapterTitle=${result.chapter}, volumeId=${result.volumeId}, volumeTitle=${result.volumeTitle})}"
 							th:text="${result.filename}"></a></td>
 					</tr>
 					<tr>

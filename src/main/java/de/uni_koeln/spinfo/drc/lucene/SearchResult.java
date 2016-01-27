@@ -15,7 +15,7 @@ public class SearchResult {
 	private String content;
 	private String language;
 	private String chapter;
-	private String volume;
+	private String volumeTitle;
 	private String chapterId;
 	private String volumeId;
 	private List<String> quotations;
@@ -34,11 +34,11 @@ public class SearchResult {
 	 * @param chapterId
 	 * @param chapter
 	 * @param volumeId
-	 * @param volume
+	 * @param volumeTitle
 	 */
 	public SearchResult(String filename, String pageId, String content,
 			String language, String chapterId, String chapter, String volumeId,
-			String volume, List<String> quotations) {
+			String volumeTitle, List<String> quotations) {
 		this.filename = filename;
 		this.pageId = pageId;
 		this.content = content;
@@ -46,7 +46,7 @@ public class SearchResult {
 		this.chapterId = chapterId;
 		this.chapter = chapter;
 		this.volumeId = volumeId;
-		this.volume = volume;
+		this.volumeTitle = volumeTitle;
 		this.quotations = quotations;
 	}
 
@@ -128,16 +128,16 @@ public class SearchResult {
 	/**
 	 * @return the volume
 	 */
-	public String getVolume() {
-		return volume;
+	public String getVolumeTitle() {
+		return volumeTitle;
 	}
 
 	/**
 	 * @param volume
 	 *            the volume to set
 	 */
-	public void setVolume(String volume) {
-		this.volume = volume;
+	public void setVolumeTitle(String volumeTitle) {
+		this.volumeTitle = volumeTitle;
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class SearchResult {
 				+ ", content="
 				+ content.substring(0, Math.min(50, content.length()))
 				+ ", language=" + language + ", chapter=" + chapter
-				+ ", volume=" + volume + ", chapterId=" + chapterId
+				+ ", volumeTitle=" + volumeTitle + ", chapterId=" + chapterId
 				+ ", volumeId=" + volumeId + ", quotations=" + quotations + "]";
 	}
 

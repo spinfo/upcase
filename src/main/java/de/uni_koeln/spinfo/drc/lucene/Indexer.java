@@ -62,8 +62,7 @@ public class Indexer {
 	public void init(final String path) throws IOException {
 		String indexDir = path == null ? propertyReader.getIndexDir() : path;
 		Directory dir = new SimpleFSDirectory(new File(indexDir).toPath());
-		IndexWriterConfig writerConfig = new IndexWriterConfig(
-				new StandardAnalyzer());
+		IndexWriterConfig writerConfig = new IndexWriterConfig(new StandardAnalyzer());
 		this.writer = new IndexWriter(dir, writerConfig);
 	}
 
@@ -79,8 +78,7 @@ public class Indexer {
 		long start = System.currentTimeMillis();
 		logger.info("Indexing collection...");
 		logger.info("MAXSIZE: " + propertyReader.getMaxIndexSize());
-		logger.info("Docs to index: "
-				+ db.getMongoTemplate().count(new Query(), Page.class));
+		logger.info("Docs to index: " + db.getMongoTemplate().count(new Query(), Page.class));
 
 		Iterable<Volume> volumes = db.getVolumeRepository().findAll();
 		int pageCount = 0;
@@ -140,9 +138,8 @@ public class Indexer {
 		doc.add(new TextField("chapterId", chapterIds(page), Store.YES));
 		doc.add(new TextField("chapters", chapters(page), Store.YES));
 		doc.add(new StringField("volumeId", page.getVolumeId(), Store.YES));
-		String volume = db.getVolumeRepository().findOne(page.getVolumeId())
-				.getTitle();
-		doc.add(new TextField("volume", volume, Store.YES));
+		String volume = db.getVolumeRepository().findOne(page.getVolumeId()).getTitle();
+		doc.add(new TextField("volumeTitle", volume, Store.YES));
 		String ppn = page.getPrintedPageNuber();
 		if (ppn != null)
 			doc.add(new StringField("pageNumber", ppn, Store.YES));
