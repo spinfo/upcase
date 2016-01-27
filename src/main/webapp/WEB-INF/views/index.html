@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="de" xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>Index</title>
+<title>UpCASE</title>
+<link rel="stylesheet"
+	href="//cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.min.css" />
+<!--[if lt IE 9]>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.ie.min.css" />
+<![endif]-->
 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="assets/css/upcase.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
-<style type="text/css">
-body {
-	padding-top: 70px;
-}
-</style>
 </head>
 <body>
+	<div class="github-fork-ribbon-wrapper right">
+		<div class="github-fork-ribbon">
+			<a href="https://github.com/spinfo/upcase" target="_blank">Fork me on GitHub</a>
+		</div>
+	</div>
 
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
@@ -20,38 +26,87 @@ body {
 			</div>
 		</div>
 	</nav>
-	
-	<div class="container">
-		<div class="row">
-		
-			<div class="col-md-4 well">
-				<h5> Digital verfügbar: </h5>
-				<p><small><a th:href="@{/drc/volumes}">Rätoromanische Chrestomathie</a></small></p>
-				<h4> In Vorbereitung: </h4>
-				<p class="muted"><small>Gartner Theodor: Das Neue Testament (1560)</small></p>
-				<p class="muted"><small>Bibliografia retoromontscha</small></p>
-				<p class="muted"><small>Schorta, Andrea: Tschantamaints d’EngiadinaBassa.</small></p>
-				<p class="muted"><small>Peer, Oscar: Dicziunari rumantschladin-tudais-ch.</small></p>
-				<p class="muted"><small>Halter, Toni; Toja Isenring-Maissen: Praulas.</small></p>
-				<p class="muted"><small>Spescha, Arnold: Grammatica sursilvana.</small></p>
-			</div>
 
-			<div class="col-md-8 lead text-left">
-				<p align="left" style="float:left; width:275px;">
-					<img src="../images/Biblioteca-Digitala-500px.jpg" width="250px" />
+	<div class="container">
+		<div class="row lead">
+			<div class="col-md-12">
+				<span>| <b>Up</b>load | <b>C</b>orrect | <b>A</b>nnotate | <b>S</b>earch
+					| <b>E</b>xport |
+				</span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<p style="margin-top: 17px;">
+					UpCASE is an
+					<ins>open source</ins>
+					web application for building and maintaining language resources. It
+					provides a wide range of options for viewing, evaluating,
+					manipulating and enriching text collections. UpCASE is conceived as
+					a multifunctional webapp where users can upload text documents
+					(plain, pdf or scanned and ocr'ed). While being able to search over
+					the uploaded text, users can correct, annotate and export it into
+					different formats.
 				</p>
-				<p style="text-align: justify;">
-					Hier entsteht die <em>Biblioteca Digitala</em>, eine digitale
-					Bibliothek rätoromanischer Texte. Bereits digital verfügbar ist die
-					<a th:href="@{/drc/volumes}">Rätoromanische Chrestomathie</a> von Caspar
-					Decurtins (Erlangen 1888-1919, 13 Bände [als Faksimile mit Register
-					in 15 Bänden neu hgg. von Octopus-Verlag / Società Retorumantscha,
-					Chur 1982-1986]). Weitere Werke werden in Kürze zur Verfügung
-					gestellt. Nähere Informationen zum Vorhaben und den geplanten
-					Titeln finden Sie<a th:href="@{about}"> hier </a>.
+				<p style="margin-top: 17px;">
+					UpCASE comprises the experiences of years of work on Romansh texts
+					and lexical resources. In several earlier projects we have
+					developed web-based editing tools for collaborative OCR correction
+					and annotation and a framework for collaborative lexicon creation
+					and maintenance. UpCASE combines the key features of these
+					projects, namely collaborative corpus construction, enrichment and
+					maintenance (for more info on previous projects please check the
+					link list below).
+				</p>
+				<p style="margin-top: 17px;">
+					UpCASE is continuously being developed on <a
+						href="https://github.com/spinfo/upcase" target="_blank">GitHub</a>. Under the
+					following link you can try out a prototype as applied to the <a
+						href="/drc/volumes"> Romansh Chrestomathy</a> (RC) compiled by
+					Caspar Decurtins. The RC is meant to be the starting point of <a
+						href="http://www.biblioteca-digitala.ch/">Biblioteca Digitala</a>,
+					a collection of Romansh texts.
 				</p>
 			</div>
 		</div>
+		<div class="row" style="margin-top: 20px;">
+			<div class="col-md-4 lead" style="margin-top: 70px;">
+				<p>Other projects on Romansh:</p>
+			</div>
+			<div class="col-md-8">
+				<dl class="dl-horizontal">
+					<dt>DRC</dt>
+					<dd>
+						<b>D</b>igital <b>R</b>omansh <b>C</b>hrestomathy <br /> <a
+							href="http://www.crestomazia.ch/">http://www.crestomazia.ch/</a>
+						<br /> <a
+							href="http://www.spinfo.phil-fak.uni-koeln.de/forschung-drc.html">http://www.spinfo.phil-fak.uni-koeln.de/forschung-drc</a>
+						<br /> <a href="https://github.com/spinfo/drc" target="_blank">GitHub
+							repository</a>
+					</dd>
+					<dt>ARC</dt>
+					<dd>
+						<b>A</b>nnotated <b>R</b>omansch <b>C</b>hrestomathy <br /> <a
+							href="http://www.spinfo.phil-fak.uni-koeln.de/forschung-arc.html">http://www.spinfo.phil-fak.uni-koeln.de/forschung-arc</a><br />
+						<a href="https://github.com/spinfo/arc" target="_blank">Git repository</a>
+					</dd>
+					<dt>maalr</dt>
+					<dd>
+						A <b>M</b>odern <b>A</b>proach to <b>A</b>ggregate <b>L</b>exical
+						<b>R</b>esources<br /> <a
+							href="http://www.spinfo.phil-fak.uni-koeln.de/maalr.html">http://www.spinfo.phil-fak.uni-koeln.de/forschung-maalr</a><br />
+						<a href="https://github.com/spinfo/maalr-core" target="_blank">GitHub
+							repository</a>
+					</dd>
+					<dt>Pledari Grond</dt>
+					<dd>
+						A collaborative online dictionary for Romansh based on maalr<br />
+						<a href="http://pledarigrond.ch/rumantschgrischun/" target="_blank">http://pledarigrond.ch</a>
+					</dd>
+				</dl>
+			</div>
+		</div>
 	</div>
+	<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>

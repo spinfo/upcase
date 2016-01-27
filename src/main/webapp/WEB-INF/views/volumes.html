@@ -2,46 +2,35 @@
 <html lang="de" xmlns:th="http://www.thymeleaf.org">
 <head>
 <title>Volumes</title>
-<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"
+	type="text/css" />
+<link href="../assets/css/upcase.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
+	<div th:replace="fragments/drc-nav :: drc-nav"></div>
 	<div class="container">
 		<div class="row">
-			<div class="page-header text-center">
-				<h1>
-					<a style="color: black;" th:href="@{volumes}">Crestomazia Retoromontscha
-						<small>Caspar Decurtins</small>
-					</a>
-				</h1>
-			</div>
+			<ol class="breadcrumb">
+				<li><a th:href="@{/}">Start</a></li>
+				<li class="active">RC Bände</li>
+			</ol>
 		</div>
 		<div class="row">
-			<div class=".col-md-12 lead">
-				<a th:href="@{/}">Start</a>
-				<span> > </span>
-				<span>RC Bände</span>
-			</div>
-		</div>
-	</div>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-4 well">
+			<div class="col-md-4">
 				<h4>Rätoromanische Chrestomathie</h4>
-				<h5 >Wählen Sie einen Band:</h5>
-				<ul>
-					<li th:each="volume : ${volumes}">
-						<a th:href="@{chapters(volumeId=${volume.id})}" th:text="${volume.title}"></a>
-					</li>
-				</ul>
+				<div id="side-nav">
+					<div th:replace="fragments/volume-list :: volume-list"></div>
+				</div>
 			</div>
-			<div class="col-md-8 lead text-left">
-				<p align="left" style="float:left; width:175px;">
+			<div class="col-md-8 text-left">
+				<p align="left" style="float: left; width: 175px;">
 					<img src="../images/494px-Decurtins_Caspar.jpg" class="img-rounded"
 						width="150px" />
 				</p>
-				<p style="text-align: justify;">La Crestomazia Retoromontscha ei la raccolta da texts la pli
+				<p>La Crestomazia Retoromontscha ei la raccolta da texts la pli
 					impurtonta e la pli gronda dils Romontschs. Ella ensiara sin pli
 					che 7000 paginas differents geners da texts: raquents,
 					tschentaments da vischnaunca, poesias, dramas, scartiras
@@ -90,7 +79,7 @@
 					ha giu per consequenza diversas midadas dils principis d’ediziun.
 					Era quei ein ina raschun daco che la raccolta da texts semuossa al
 					lectur a moda aschi heterogena.</p>
-				<p style="text-align: justify;">Caspar Decurtins, „il Liun da Trun“ ei naschius 1855 a Trun
+				<p>Caspar Decurtins, „il Liun da Trun“ ei naschius 1855 a Trun
 					sco fegl d’in miedi e mistral. El ha absolviu ilg gimnasi a Mustér
 					en claustra ed a Cuera. Silsuenter eis el serendius a Heidelberg,
 					Minca e Strassburg per sededicar als studi dalla historiografia,
@@ -112,5 +101,43 @@
 			</div>
 		</div>
 	</div>
+	<div id="stack"></div>
+	<div th:replace="fragments/footer :: footer"></div>
+	<script th:inline="javascript">
+		//<![CDATA[
+
+		function locationHashChanged() {
+			console.log(location.hash);
+		}
+
+		window.onhashchange = locationHashChanged;
+		
+		$(".list-group-item a").click(function(event) {
+			event.preventDefault();
+			
+			var state = {};
+			var title = document.title;
+			var url = window.location.href;
+			history.pushState(state, title, url);
+			window.location.hash = window.location.pathname;
+			
+			$(".wrapper-list").addClass("prev").hide("slide", {
+				direction : "left"
+			}, "slow", function() {
+				$(".prev").remove();
+			});
+
+			var href = $(this).attr('href');
+
+			$("#stack").load(href, function(response, status, xhr) {
+				$(".next").hide().appendTo("#side-nav");
+				$(".next").show("slide", {
+					direction : "right"
+				}, "slow");
+			}).hide();
+
+		});
+		//]]>
+	</script>
 </body>
 </html>
