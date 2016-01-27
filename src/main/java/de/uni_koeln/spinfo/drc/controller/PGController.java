@@ -30,7 +30,8 @@ public class PGController {
 	public @ResponseBody List<PGResult> find(@RequestBody PGQuery pgQuery)
 			throws IOException, ParseException, InvalidTokenOffsetsException {
 		logger.debug("Request on [/drc/pg/quotation], query: " + pgQuery);
-		return searcher.findQuotation(pgQuery);
+		// return searcher.findQuotation(pgQuery);
+		return null;
 	}
 
 }
