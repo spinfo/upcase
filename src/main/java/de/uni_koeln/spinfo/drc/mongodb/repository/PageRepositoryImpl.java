@@ -83,9 +83,9 @@ public class PageRepositoryImpl implements PageRepository {
 	
 	@Override
 	public List<Page> findByRange(int from, int to) {
-		List<Page> wordRange = operations.find(new Query(Criteria.where("index").gte(from)
-				.andOperator(Criteria.where("index").lte(to))), Page.class);
-		return wordRange;
+		List<Page> pages = operations.find(new Query(Criteria.where("start").gte(from)
+				.andOperator(Criteria.where("end").lte(to))), Page.class);
+		return pages;
 	}
 
 }
