@@ -9,6 +9,7 @@ import de.uni_koeln.spinfo.drc.mongodb.data.core.RangeDocument;
 public class Volume extends RangeDocument {
 	
 	private String title;
+	private int chapterNumber;
 	
 	public Volume() {
 		super();
@@ -35,5 +36,12 @@ public class Volume extends RangeDocument {
 	public String toString() {
 		return "Volume {title: " + title + ", _id: " + getId() + "}";
 	}
+
+	public void setChapterNumber(int chapterNumber) {
+		this.chapterNumber = chapterNumber;
+	}
 	
+	public int getChapterNumber() {
+		return chapterNumber;
+	}
 }
