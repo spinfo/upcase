@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div class="wrapper-list next" th:fragment="chapter-list">
+		<ul class="list-group">
+			<li class="list-group-item" th:each="chapter : ${chapters}"><a
+				th:href="@{pages(chapterId=${chapter.id}, chapterTitle=${chapter.title}, volumeId=${volume.id}, volumeTitle=${volume.title})}"
+				th:text="${chapter.title.length() > 35 ? chapter.title.substring(0,35) + '...' : chapter.title}"></a>
+				<span class="badge" th:text="${chapter.pageNumber} + ' Pages'">Pages 99</span></li>
+		</ul>
+	</div>
+</body>
+</html>
