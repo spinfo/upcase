@@ -17,7 +17,7 @@
 		<jetty.version>9.3.3.v20150827</jetty.version>
 		<project.build.directory>../drcWebApp/target</project.build.directory>
 		<project.build.finalName>drcWebApp-${project.version}</project.build.finalName>
-		<lucene.version>5.3.1</lucene.version>
+		<lucene.version>5.4.1</lucene.version>
 	</properties>
 
 	<dependencies>
