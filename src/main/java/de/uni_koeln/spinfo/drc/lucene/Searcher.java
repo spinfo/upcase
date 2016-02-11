@@ -135,8 +135,8 @@ public class Searcher {
 	}
 
 	public List<SearchResult> withQuotations(String searchPhrase,
-			String volumeSelection, String chapterSelection, int numFragments,
-			int page) throws IOException, ParseException,
+			boolean regex, String volumeSelection, String chapterSelection,
+			int numFragments, int page) throws IOException, ParseException,
 			InvalidTokenOffsetsException {
 
 		DirectoryReader dirReader = openDirectory();
@@ -148,22 +148,8 @@ public class Searcher {
 				.maxDoc());
 		int startIndex = (page - 1) * hitsPerPage;
 
-		String volumeQuery = "";
-		if (!volumeSelection.equals("alle")) {
-			volumeQuery = "AND volumeTitle:\"" + volumeSelection + "\" ";
-		}
-
-		String chapterQuery = "";
-		if (!chapterSelection.equals("alle")) {
-			chapterQuery = "AND chapters:\"" + chapterSelection + "\" ";
-		}
-
-		QueryParser parser = new QueryParser("contents", analyzer);
-		String q = "contents:" + "\"" + searchPhrase + "\"" + "~10 "
-				+ volumeQuery + chapterQuery;
-		logger.info("QUERY:" + q);
-		
-		Query query = parser.parse(q);
+		Query query = getQuery(searchPhrase, regex, volumeSelection,
+				chapterSelection, analyzer);
 
 		is.search(query, collector);
 		TopDocs hits = collector.topDocs(startIndex, hitsPerPage);
@@ -179,11 +165,10 @@ public class Searcher {
 		for (ScoreDoc scoreDoc : hits.scoreDocs) {
 			int id = scoreDoc.doc;
 			Document doc = is.doc(id);
-			String contents = doc.get("contents");
-			TokenStream tokenStream = analyzer
-					.tokenStream("contents", contents);
+			String text = doc.get("contents");
+			TokenStream tokenStream = analyzer.tokenStream("contents", text);
 			TextFragment[] frag = highlighter.getBestTextFragments(tokenStream,
-					contents, false, numFragments);
+					text, false, numFragments);
 			List<String> quots = new ArrayList<>();
 			for (TextFragment textFragment : frag) {
 				if ((textFragment != null) && (textFragment.getScore() > 0)) {
@@ -197,6 +182,31 @@ public class Searcher {
 		}
 
 		return resultList;
+	}
+
+	private Query getQuery(String searchPhrase, boolean regex,
+			String volumeSelection, String chapterSelection,
+			StandardAnalyzer analyzer) throws ParseException {
+		String contents = "";
+		if (regex) {
+			contents = "contents:/" + searchPhrase + "/ ";
+		} else {
+			contents = "contents:" + "\"" + searchPhrase + "\"" + "~10 ";
+		}
+		String volumeQuery = "";
+		if (!volumeSelection.equals("alle")) {
+			volumeQuery = "AND volumeTitle:\"" + volumeSelection + "\" ";
+		}
+		String chapterQuery = "";
+		if (!chapterSelection.equals("alle")) {
+			chapterQuery = "AND chapters:\"" + chapterSelection + "\" ";
+		}
+		QueryParser parser = new QueryParser("contents", analyzer);
+		String q = contents + volumeQuery + chapterQuery;
+
+		Query query = parser.parse(q);
+		logger.info("QUERY:" + query);
+		return query;
 	}
 
 	private DirectoryReader openDirectory() throws IOException {

@@ -92,6 +92,7 @@ public class SearchController {
 	@RequestMapping(value = "/searchResult")
 	public ModelAndView simpleResult(
 			@RequestParam("searchPhrase") String searchPhrase, 
+			@RequestParam(value = "regex", required = false) boolean regex, 
 			@RequestParam(value = "volumeSelection", required = false) String volumeSelection,
 			@RequestParam(value = "chapterSelection", required = false) String chapterSelection,
 			@RequestParam(value = "page", required = false) Integer page,
@@ -104,7 +105,8 @@ public class SearchController {
 		
 		List<SearchResult> resultList = null;
 		try {
-			resultList = searcher.withQuotations(searchPhrase, volumeSelection, chapterSelection,  1, page);
+			
+			resultList = searcher.withQuotations(searchPhrase, regex, volumeSelection, chapterSelection,  1, page);
 			
 			if(volumeSort != null) {
 				if (!volumeSort.equals("none")) {
