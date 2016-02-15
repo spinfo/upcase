@@ -128,6 +128,7 @@ public class SearchController {
 
 		ModelAndView mv = new ModelAndView("searchResult");
 		mv.addObject("page", page);
+		mv.addObject("regex", regex);
 		mv.addObject("searchPhrase", searchPhrase);
 		mv.addObject("hits", resultList);
 		mv.addObject("totalHits", searcher.getTotalHits());
