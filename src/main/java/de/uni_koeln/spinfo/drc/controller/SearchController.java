@@ -58,7 +58,6 @@ public class SearchController {
 	public List<String> getLanguageList() {
 		Iterable<Language> findAll = db.getLanguageRepository().findAll();
 		List<String> languages = new ArrayList<>();
-		languages.add("alle");
 		Set<String> set = new TreeSet<>();
 		findAll.forEach(l -> set.add(l.getTitle()));
 		languages.addAll(set);
@@ -69,7 +68,6 @@ public class SearchController {
 	public List<String> getVolumeList() {
 		Iterable<Volume> findAll = db.getVolumeRepository().findAll();
 		List<String> volumes = new ArrayList<>();
-		volumes.add("alle");
 		findAll.forEach(l -> volumes.add(l.getTitle()));
 		return volumes;
 	}
@@ -78,10 +76,12 @@ public class SearchController {
 	public @ResponseBody List<String> getChapterNamesByVolTitle(
 			@PathVariable String volumeTitle) {
 		Volume volume = db.getVolumeRepository().findByTitle(volumeTitle);
+		if (volume == null) {
+			return new ArrayList<>();
+		}
 		List<Chapter> chapters = db.getChapterRepository().findByVolumeId(
 				volume.getId());
 		List<String> chapterNames = new ArrayList<>();
-		chapterNames.add("alle");
 		chapters.forEach(c -> chapterNames.add(c.getTitle()));
 		return chapterNames;
 	}
@@ -91,31 +91,38 @@ public class SearchController {
 	 */
 	@RequestMapping(value = "/searchResult")
 	public ModelAndView simpleResult(
-			@RequestParam("searchPhrase") String searchPhrase, 
-			@RequestParam(value = "regex", required = false) boolean regex, 
+			@RequestParam("searchPhrase") String searchPhrase,
+			@RequestParam(value = "regex", required = false) boolean regex,
 			@RequestParam(value = "volumeSelection", required = false) String volumeSelection,
 			@RequestParam(value = "chapterSelection", required = false) String chapterSelection,
+			@RequestParam(value = "langSelection", required = false) String langSelection,
 			@RequestParam(value = "page", required = false) Integer page,
 			@RequestParam(value = "volumeSort", required = false) String volumeSort,
 			@RequestParam(value = "chapterSort", required = false) String chapterSort) {
 
-		page = page == null ? 1 : page;
-		volumeSelection = volumeSelection == null ? "alle" : volumeSelection;
-		chapterSelection = chapterSelection == null ? "alle" : chapterSelection;
-		
 		List<SearchResult> resultList = null;
 		try {
-			
-			resultList = searcher.withQuotations(searchPhrase, regex, volumeSelection, chapterSelection,  1, page);
-			
-			if(volumeSort != null) {
+
+			page = page == null ? 1 : page;
+			volumeSelection = volumeSelection == null ? "alle"
+					: volumeSelection;
+			chapterSelection = chapterSelection == null ? "alle"
+					: chapterSelection;
+			langSelection = langSelection == null ? "alle" : langSelection;
+
+			resultList = searcher.withQuotations(searchPhrase, regex,
+					volumeSelection, chapterSelection, langSelection, 1, page);
+
+			if (volumeSort != null) {
 				if (!volumeSort.equals("none")) {
-					Collections.sort(resultList, new VolumeComparator(volumeSort));
+					Collections.sort(resultList, new VolumeComparator(
+							volumeSort));
 				}
 			}
-			if(chapterSort != null) {
+			if (chapterSort != null) {
 				if (!chapterSort.equals("none")) {
-					Collections.sort(resultList, new ChapterComparator(chapterSort));
+					Collections.sort(resultList, new ChapterComparator(
+							chapterSort));
 				}
 			}
 		} catch (ParseException | IOException e) {
@@ -129,6 +136,9 @@ public class SearchController {
 		ModelAndView mv = new ModelAndView("searchResult");
 		mv.addObject("page", page);
 		mv.addObject("regex", regex);
+		mv.addObject("volumeSelection", volumeSelection);
+		mv.addObject("chapterSelection", chapterSelection);
+		mv.addObject("langSelection", langSelection);
 		mv.addObject("searchPhrase", searchPhrase);
 		mv.addObject("hits", resultList);
 		mv.addObject("totalHits", searcher.getTotalHits());

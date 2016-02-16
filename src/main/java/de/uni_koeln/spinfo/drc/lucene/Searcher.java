@@ -134,8 +134,9 @@ public class Searcher {
 		this.totalHits = totalHits;
 	}
 
-	public List<SearchResult> withQuotations(String searchPhrase,
-			boolean regex, String volumeSelection, String chapterSelection,
+	public List<SearchResult> withQuotations(final String searchPhrase,
+			boolean regex, final String volumeSelection,
+			final String chapterSelection, final String langSelection,
 			int numFragments, int page) throws IOException, ParseException,
 			InvalidTokenOffsetsException {
 
@@ -149,7 +150,7 @@ public class Searcher {
 		int startIndex = (page - 1) * hitsPerPage;
 
 		Query query = getQuery(searchPhrase, regex, volumeSelection,
-				chapterSelection, analyzer);
+				chapterSelection, langSelection, analyzer);
 
 		is.search(query, collector);
 		TopDocs hits = collector.topDocs(startIndex, hitsPerPage);
@@ -184,9 +185,11 @@ public class Searcher {
 		return resultList;
 	}
 
-	private Query getQuery(String searchPhrase, boolean regex,
-			String volumeSelection, String chapterSelection,
-			StandardAnalyzer analyzer) throws ParseException {
+	private Query getQuery(final String searchPhrase, boolean regex,
+			final String volumeSelection, final String chapterSelection,
+			final String langSelection, StandardAnalyzer analyzer)
+			throws ParseException {
+		
 		String contents = "";
 		if (regex) {
 			contents = "contents:/" + searchPhrase + "/ ";
@@ -201,8 +204,13 @@ public class Searcher {
 		if (!chapterSelection.equals("alle")) {
 			chapterQuery = "AND chapters:\"" + chapterSelection + "\" ";
 		}
+		String langQuery = "";
+		if (!langSelection.equals("alle")) {
+			logger.info(langSelection);
+			chapterQuery = "AND languages:\"" + langSelection + "\" ";
+		}
 		QueryParser parser = new QueryParser("contents", analyzer);
-		String q = contents + volumeQuery + chapterQuery;
+		String q = contents + volumeQuery + chapterQuery + langQuery;
 
 		Query query = parser.parse(q);
 		logger.info("QUERY:" + query);

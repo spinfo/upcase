@@ -12,8 +12,8 @@ body {
 }
 
 .quotation {
-	color: #015c3d;
-	font-weight: 700;
+	color: #990000;
+	font-weight: 800;
 }
 </style>
 </head>
@@ -50,18 +50,17 @@ body {
 								<label for="volumeSelection" class="col-sm-2 control-label"
 									style="text-align: left;">Band</label>
 								<div class="col-sm-4">
-									<select class="form-control" id="volumeSelection"
-										name="volumeSelection">
+									<select class="form-control" id="volumeSelection" name="volumeSelection">
+										<option  value="">- alle -</option>
 										<option th:each="vol: ${volumeList}" th:value="${vol}"
-											th:text="${vol}">Band I</option>
+											th:text="${vol}" th:selected="${#strings.equals(vol, volumeSelection)}">Band I</option>
 									</select>
 								</div>
 								<label for="chapterSelection" class="col-sm-2 control-label"
 									style="text-align: left;">Kapitel</label>
 								<div class="col-sm-4">
-									<select class="form-control" id="chapterSelection"
-										name="chapterSelection">
-										<option>alle</option>
+									<select class="form-control" id="chapterSelection" name="chapterSelection">
+										<option value="alle">- alle -</option>
 									</select>
 								</div>
 							</div>
@@ -71,8 +70,9 @@ body {
 								<label class="col-sm-2 control-label" style="text-align: left;">Idiom</label>
 								<div class="col-sm-4">
 									<select class="form-control" name="langSelection">
+										<option  value="alle">- alle -</option>
 										<option th:each="lang : ${languageList}" th:value="${lang}"
-											th:text="${lang}">Sursilvan</option>
+											th:text="${lang}" th:selected="${#strings.equals(lang, langSelection)}">Sursilvan</option>
 									</select>
 								</div>
 							</div>
@@ -92,8 +92,7 @@ body {
 		<div class="row">
 			<div class="col-md-12">
 				<h4>
-					<strong>Suchergebnis für <span class="text-info"
-						th:text="${searchPhrase}"> </span>
+					<strong>Suchergebnis für <span class="text-info" th:text="${searchPhrase}"> </span>
 					</strong> (Treffer <span class="text-info" th:text="${offset} + 1"></span> -
 					<span class="text-info" th:text="${offset + hits.size()}"></span>
 					von <span class="text-info" th:text="${totalHits}"></span>)
@@ -102,10 +101,8 @@ body {
 					<thead>
 						<tr>
 							<th width="5%">#</th>
-							<th width="10%">Band <a id="sortVolume" href="#"><span
-									class="glyphicon" aria-hidden="true"></span></a></th>
-							<th width="20%">Kapitel <a id="sortChapter" href="#"><span
-									class="glyphicon" aria-hidden="true"></span></a></th>
+							<th width="10%">Band <a id="sortVolume" href="#"><span class="glyphicon" aria-hidden="true"></span></a></th>
+							<th width="20%">Kapitel <a id="sortChapter" href="#"><span class="glyphicon" aria-hidden="true"></span></a></th>
 							<th width="5%">Idiom</th>
 							<th width="40%">Kontext</th>
 							<th width="20%">Referenz</th>
@@ -132,18 +129,18 @@ body {
 									<ul class="pagination pagination-sm">
 										<li th:class="${prev == true ? 'disabled' : ''}"><a
 											th:if="${prev} == false"
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, regex=${regex}, page=${page - 1}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, regex=${regex}, page=${page - 1}, langSelection=${langSelection}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
 											aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 											<a th:if="${prev} == true" href="#" aria-label="Previous"><span
 												aria-hidden="true">&laquo;</span></a></li>
 										<li th:class="${(page - 1) == i ? 'active' : ''}"
 											th:each="i : ${#numbers.sequence(0, chunks/1)}"><a
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, regex=${regex}, page=${i + 1}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, regex=${regex}, page=${i + 1}, langSelection=${langSelection}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
 											th:text="${i + 1}">1 <span class="sr-only">(current)</span>
 										</a></li>
 										<li th:class="${next == true ? 'disabled' : ''}"><a
 											th:if="${next} == false"
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, regex=${regex}, page=${page + 1}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, regex=${regex}, page=${page + 1}, langSelection=${langSelection}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
 											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 										</a> <a th:if="${next} == true" href="#" aria-label="Next"><span
 												aria-hidden="true">&raquo;</span></a></li>
@@ -182,7 +179,7 @@ body {
 				var volume = $("#volumeSelection option:selected").text();
 				var url = "http://localhost:8080/drc/chapters/by/volume/title/" + volume;
 				$.get(url, function(data) {
-					var options = "";
+					var options = "<option value='alle'>- alle -</option>";
 					for (var i = 0; i < data.length; i++) {
 						options += "<option value='"+data[i]+"'>" + data[i] + "</option>";
 					}
@@ -225,13 +222,28 @@ body {
 		}
 		
 		function buildURL(volumeSort, chapterSort) {
+			
 			var searchPhrase = getURLParameter("searchPhrase");
 			var page = getURLParameter("page");
+			var regex = getURLParameter("regex");
+			var volumeSelection = getURLParameter("volumeSelection");
+			var chapterSelection = getURLParameter("chapterSelection");
+			var langSelection = getURLParameter("langSelection");
+			
 			var baseURL = "http://localhost:8080/drc/searchResult?";
+			
 			if (typeof page == 'undefined') {
 				page = 1;
 			}
-			return baseURL + "searchPhrase=" + searchPhrase + "&" + "page=" + page + "&" + "volumeSort=" + volumeSort + "&" + "chapterSort=" + chapterSort;
+			
+			return baseURL + "searchPhrase=" + searchPhrase 
+				+ "&" + "page=" + page 
+				+ "&" + "volumeSort=" + volumeSort 
+				+ "&" + "chapterSort=" + chapterSort 
+				+ "&" + "volumeSelection=" + volumeSelection
+				+ "&" + "chapterSelection=" + chapterSelection
+				+ "&" + "langSelection=" + langSelection
+				+ "&" + "regex=" + regex;
 		}
 		
 		function getURLParameter(sParam) {
