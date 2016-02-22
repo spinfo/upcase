@@ -223,6 +223,7 @@ public class Searcher {
 
 	private SearchResult wrapFieldResults(Document doc, List<String> quotations) {
 		SearchResult result = new SearchResult();
+		result.setPageId(doc.get("pageId"));
 		result.setFilename(doc.get("url"));
 		result.setQuotations(quotations);
 		result.setLanguage(doc.get("languages"));
