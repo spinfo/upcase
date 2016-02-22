@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="de" xmlns:th="http://www.thymeleaf.org">
 <head>
+
 <title>Search results</title>
-<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"
-	type="text/css" />
+
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 <script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
+
 <style type="text/css">
 body {
 	padding-top: 70px;
@@ -16,6 +18,7 @@ body {
 	font-weight: 800;
 }
 </style>
+
 </head>
 <body>
 	<nav class="navbar navbar-default navbar-fixed-top">
@@ -118,9 +121,15 @@ body {
 							th:text="${result.chapter}">Daniel Bonifaci</a></td>
 						<td><span th:text="${result.language}">Sursilvan</span></td>
 						<td><span th:utext="${result.quotations[0]}"></span></td>
-						<td><a
-							th:href="@{page(pageId=${result.pageId}, chapterId=${result.chapterId}, chapterTitle=${result.chapter}, volumeId=${result.volumeId}, volumeTitle=${result.volumeTitle})}"
-							th:text="${result.filename}"></a></td>
+<!-- 						th:href="@{showDocument(pageId=${result.pageId}, resultQuotations=${result.quotations})}"  -->
+						<td><a 
+							th:attr="data-pageId=${result.pageId}, data-resultQuotations=${result.quotations}"
+							data-toggle="modal"
+							data-target="#myModal"
+							href="#"
+							class="showInContextBtn">
+							<span th:text="${result.filename}"></span></a>
+						</td>
 					</tr>
 					<tr>
 						<td colspan="6">
@@ -153,11 +162,40 @@ body {
 			</div>
 		</div>
 	</div>
-	<div id="divy"></div>
+	<!-- .modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">MODAL</h4>
+				</div>
+				<div class="modal-body"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default"
+						data-dismiss="modal">Schließen</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 
 		$( document ).ready(function() {
+			
+			$('.showInContextBtn').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget); // Button that triggered the modal
+				var pageId = button.data('pageId'); // Extract info from data-* attributes
+				var resultQuotations = button.data('resultQuotations');
+				var _modalBody = $(this).find('.modal-body');
+				alert(pageId + ",  " + resultQuotations);
+			});
 			
 			// Turn on/off regex search option
 			$('#regex').click(function() {
