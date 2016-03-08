@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Upload</title>
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="assets/css/upcase.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<style type="text/css">
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #333;
+}
+.wrapper {
+	margin: 10px;
+	background-color: #fff;
+	border-color: #ddd;
+	border-width: 1px;
+	box-shadow: none;
+	position: relative;
+	padding: 0px 15px 15px;
+	border-style: solid;
+}
+.formError {
+	color:red;
+}
+</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="wrapper">
+				<h1>Upload a new collection</h1>
+				<h2>Basic settings</h2>
+				<form action="upload" th:action="@{/upload}" method="post"
+					enctype="multipart/form-data" name="uploadForm" th:object="${uploadForm}">
+					<div class="form-group">
+						<label for="workTitle">Title</label> <input name="workTitle"
+							type="text" class="form-control" id="workTitle"
+							placeholder="Bon-Bon" th:value="${uploadForm.workTitle}" />
+						<span th:if="${#fields.hasErrors('workTitle')}" th:errors="*{workTitle}" th:class="formError">Please enter a title.</span>
+					</div>
+					<div class="form-group">
+						<label for="workAuthor">Author</label> <input name="workAuthor"
+							type="text" class="form-control" id="workAuthor"
+							placeholder="Edgar Allan Poe" th:value="${uploadForm.workAuthor}" />
+						<span th:if="${#fields.hasErrors('workAuthor')}" th:errors="*{workAuthor}" th:class="formError">Please enter the author's name.</span>
+					</div>
+					<div class="form-group">
+						<label for="source">Source</label> <input name="source"
+							type="text" class="form-control" id="source"
+							placeholder="http://gutenberg.spiegel.de/autor/edgar-allan-poe-465" th:value="${uploadForm.source}" />
+						<span th:if="${#fields.hasErrors('source')}" th:errors="*{source}" th:class="formError">Please enter the work's source.</span>
+					</div>
+					<div class="form-group">
+						<label for="language">Language</label> <input name="language"
+							type="text" class="form-control" id="language"
+							placeholder="German" th:value="${uploadForm.language}" />
+						<span th:if="${#fields.hasErrors('language')}" th:errors="*{language}" th:class="formError">Please enter the work's language.</span>
+					</div>
+					<div class="form-group">
+						<label for="encoding">Encoding</label> 
+						<select id="encodingSelect" class="form-control"  th:field="*{encoding}">
+							<option value=""></option>
+							<option th:each="encoding : ${encodings}" th:text="${encoding}" th:value="${encoding}" th:selected="${uploadForm.encoding}" >"UTF-8"</option>
+						</select>
+						<span th:if="${#fields.hasErrors('encoding')}" th:errors="*{encoding}" th:class="formError">Please select an encoding.</span>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputFile">File input</label> <input
+							type="file" name="multiPart"
+							accept=".png, .jpg, .pdf" th:field="*{multiPart}" />
+						<span th:if="${#fields.hasErrors('multiPart')}" th:errors="*{multiPart}" th:class="formError">Please choose a file to upload.</span>
+						<p class="help-block">Selectable file types are: PDF, PNG, JPEG or DOCX</p>
+					</div>
+					<button type="submit" class="btn btn-default">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
