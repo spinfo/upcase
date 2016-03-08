@@ -3,6 +3,7 @@ package de.uni_koeln.spinfo.drc.model;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UploadForm {
@@ -17,6 +18,7 @@ public class UploadForm {
 	@NotBlank
 	private String workAuthor;
 	
+	@URL
 	@NotBlank
 	private String source;
 	
@@ -31,7 +33,7 @@ public class UploadForm {
 
 	}
 
-	public UploadForm(MultipartFile multiPart, String workTitle,
+	public UploadForm(MultipartFile multiPart, String workTitle, 
 			String workAuthor, String source, String language, String encoding) {
 		super();
 		this.multiPart = multiPart;
