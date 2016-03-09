@@ -22,10 +22,8 @@ public class UploadForm {
 	@NotBlank
 	private String source;
 	
-	@NotBlank
 	private String language;
 	
-	@NotBlank
 	private String encoding;
 	
 	
