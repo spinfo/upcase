@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
+	type="text/css" />
+<link href="assets/css/upcase.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<title>Signup</title>
+<style type="text/css">
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #333;
+}
+
+.wrapper {
+	margin: 10px;
+	background-color: #fff;
+	border-color: #ddd;
+	border-width: 1px;
+	box-shadow: none;
+	position: relative;
+	padding: 0px 15px 15px;
+	border-style: solid;
+}
+
+.formError {
+	color: red;
+}
+
+.greyish {
+	color: #999;
+}
+</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="wrapper">
+				<h1>Registration</h1>
+				<form action="signup" th:action="@{/signup}" method="post"
+					enctype="multipart/form-data" name="registrationForm"
+					th:object="${registrationForm}">
+					<div class="form-group">
+						<label for="firstName">First name<span class="greyish">*</span></label>
+						<input name="firstName" type="text" class="form-control"
+							id="firstName" placeholder="Erika"
+							th:value="${registrationForm.firstName}" /><span
+							th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"
+							th:class="formError">Please enter your first name</span>
+					</div>
+					<div class="form-group">
+						<label for="lastName">Last Name<span class="greyish">*</span></label>
+						<input name="lastName" type="text" class="form-control"
+							id="lastName" placeholder="Mustermann"
+							th:value="${registrationForm.lastName}" /> <span
+							th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"
+							th:class="formError">Please enter your last name.</span>
+					</div>
+					<div class="form-group">
+						<label for="email">Email<span class="greyish">*</span></label> <input
+							name="email" type="text" class="form-control" id="email"
+							placeholder="mustermann.erika@digitalhumanities.org"
+							th:value="${registrationForm.email}" /> <span
+							th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+							th:class="formError">Please enter your email address.</span>
+					</div>
+					<div class="form-group">
+						<label for="passwd">Password<span class="greyish">*</span></label>
+						<input name="passwd" type="password" class="form-control"
+							th:value="${registrationForm.password}" 
+							th:field="*{password}"/> <span
+							th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+							th:class="formError">Choose a password.</span>
+					</div>
+					<div class="form-group">
+						<label for="confirmPasswd">Re-type password<span
+							class="greyish">*</span></label> <input name="confirmPasswd"
+							type="password" class="form-control"
+							th:value="${registrationForm.confirmPassword}"
+							th:field="*{confirmPassword}" /> <span
+							th:if="${#fields.hasErrors('confirmPassword')}"
+							th:errors="*{confirmPassword}" th:class="formError">Please
+							confirm the password</span>
+					</div>
+					<div class="form-group">
+						<label for="institution">Institution</label> <input
+							name="institution" type="text" class="form-control"
+							id="institution" placeholder="University of Cologne"
+							th:value="${registrationForm.institution}" />
+					</div>
+					<button type="submit" class="btn btn-default">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
