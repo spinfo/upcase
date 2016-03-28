@@ -8,9 +8,11 @@ import javax.inject.Inject;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 
 import de.uni_koeln.spinfo.drc.mongodb.data.document.UpcaseUser;
 
+@Repository
 public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
 
 	private MongoOperations operations;

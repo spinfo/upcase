@@ -59,11 +59,11 @@ public class MongoDbConfiguration extends AbstractMongoConfiguration {
 	@Override
 	public MongoClient mongo() throws Exception {
 		ServerAddress address = new ServerAddress(host, port);
-		MongoCredential credential = MongoCredential.createCredential(userName, getDatabaseName(), password.toCharArray());
+		MongoCredential credential = MongoCredential.createMongoCRCredential(userName, getDatabaseName(), password.toCharArray());
 		List<MongoCredential> creds = new ArrayList<>();
 		creds.add(credential);
 		return new MongoClient(address, creds);
-		//return new MongoClient(host);
+//		return new MongoClient(host);
 	}
 
 	@Bean

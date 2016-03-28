@@ -18,9 +18,16 @@
 		<project.build.directory>../drcWebApp/target</project.build.directory>
 		<project.build.finalName>drcWebApp-${project.version}</project.build.finalName>
 		<lucene.version>5.4.1</lucene.version>
+		<nosqlunit-version>0.8.1</nosqlunit-version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.lordofthejars</groupId>
+			<artifactId>nosqlunit-mongodb</artifactId>
+			<version>${nosqlunit-version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -91,6 +98,11 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 			<version>4.0.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>4.2.5.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -182,6 +194,10 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.github.joelittlejohn.embedmongo</groupId>
+				<artifactId>embedmongo-maven-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>

@@ -20,6 +20,7 @@ import com.mongodb.DBCollection;
 import de.uni_koeln.spinfo.drc.mongodb.repository.ChapterRepository;
 import de.uni_koeln.spinfo.drc.mongodb.repository.LanguageRepository;
 import de.uni_koeln.spinfo.drc.mongodb.repository.PageRepository;
+import de.uni_koeln.spinfo.drc.mongodb.repository.UpcaseUserRepository;
 import de.uni_koeln.spinfo.drc.mongodb.repository.VolumeRepository;
 import de.uni_koeln.spinfo.drc.mongodb.repository.WordRepository;
 
@@ -38,6 +39,9 @@ public class DataBase {
 	private WordRepository wordRepository;
 	
 	@Autowired
+	private UpcaseUserRepository upcaseUserRepository;
+	
+	@Autowired
 	private PageRepository pageRepository;
 
 	@Inject
@@ -46,6 +50,14 @@ public class DataBase {
 		this.chapterRepository = dbFactory.getRepository(ChapterRepository.class);
 		this.LanguageRepository = dbFactory.getRepository(LanguageRepository.class);
 		this.volumeRepository = dbFactory.getRepository(VolumeRepository.class);
+	}
+	
+	public UpcaseUserRepository getUpcaseUserRepository() {
+		return upcaseUserRepository;
+	}
+
+	public void setUpcaseUserRepository(UpcaseUserRepository upcaseUserRepository) {
+		this.upcaseUserRepository = upcaseUserRepository;
 	}
 
 	public MongoTemplate getMongoTemplate() {
@@ -141,6 +153,5 @@ public class DataBase {
 		CommandResult commandResult = mongoTemplate.executeCommand(dbStatsCommand);
 		logger.debug("DB STATS: " + commandResult.toString());
 	}
-	
 
 }

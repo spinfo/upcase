@@ -3,15 +3,10 @@ package de.uni_koeln.spinfo.drc.model;
 public class RegistrationForm {
 
 	private String firstName;
-	
 	private String lastName;
-
 	private String email;
-
 	private String institution;
-
 	private String password;
-	
 	private String confirmPassword;
 
 	public RegistrationForm() {
