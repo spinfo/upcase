@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.mongodb;
+package de.uni_koeln.spinfo.upcase.mongodb;
 
 public interface Constans {
 

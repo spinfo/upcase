@@ -1,10 +1,10 @@
-package de.uni_koeln.spinfo.drc.mongodb.repository;
+package de.uni_koeln.spinfo.upcase.mongodb.repository;
 
 import java.util.List;
 
 import org.springframework.data.repository.Repository;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Word;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Word;
 
 public interface WordRepository extends Repository<Word, String> {
 	

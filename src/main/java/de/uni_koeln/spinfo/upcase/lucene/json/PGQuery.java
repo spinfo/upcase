@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.lucene.json;
+package de.uni_koeln.spinfo.upcase.lucene.json;
 
 public class PGQuery {
 

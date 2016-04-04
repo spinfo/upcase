@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.controller;
+package de.uni_koeln.spinfo.upcase.controller;
 
 import java.util.List;
 
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import de.uni_koeln.spinfo.drc.mongodb.DataBase;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Chapter;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Volume;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Chapter;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Volume;
+import de.uni_koeln.spinfo.upcase.mongodb.util.DataBase;
 
 @Controller
 @RequestMapping(value = "/drc")

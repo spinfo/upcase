@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.mongodb.data.document;
+package de.uni_koeln.spinfo.upcase.mongodb.data.document;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -10,9 +10,9 @@ import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.PoS;
-import de.uni_koeln.spinfo.drc.mongodb.data.Rectangle;
-import de.uni_koeln.spinfo.drc.mongodb.data.Version;
+import de.uni_koeln.spinfo.upcase.mongodb.data.PoS;
+import de.uni_koeln.spinfo.upcase.mongodb.data.Rectangle;
+import de.uni_koeln.spinfo.upcase.mongodb.data.Version;
 
 @Document(collection = "tokens")
 public class Token implements Serializable, Comparable<Token>  {

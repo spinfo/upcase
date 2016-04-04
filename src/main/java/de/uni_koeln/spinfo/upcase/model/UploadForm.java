@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.model;
+package de.uni_koeln.spinfo.upcase.model;
 
 import javax.validation.constraints.NotNull;
 

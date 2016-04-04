@@ -1,6 +1,6 @@
-package de.uni_koeln.spinfo.drc.mongodb.data.light;
+package de.uni_koeln.spinfo.upcase.mongodb.data.light;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.Rectangle;
+import de.uni_koeln.spinfo.upcase.mongodb.data.Rectangle;
 
 public class RectangleLight {
 

@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.model;
+package de.uni_koeln.spinfo.upcase.model;
 
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.springframework.validation.Errors;
@@ -27,6 +27,7 @@ public class RegistrationFormValidator implements Validator {
 		if(!emailValidator.isValid(form.getEmail(), null)) {
 			errors.rejectValue("email", "Invalid.registrationForm.email");
 		}
+		
 		if (!form.getConfirmPassword().equals(form.getPassword())) {
 			errors.rejectValue("confirmPassword", "NotEqual.registrationForm.confirmPassword");
 		}

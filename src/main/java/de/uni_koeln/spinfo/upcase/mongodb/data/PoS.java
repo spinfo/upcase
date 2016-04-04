@@ -1,6 +1,6 @@
-package de.uni_koeln.spinfo.drc.mongodb.data;
+package de.uni_koeln.spinfo.upcase.mongodb.data;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.core.AbstractDocument;
+import de.uni_koeln.spinfo.upcase.mongodb.data.core.AbstractDocument;
 
 public class PoS extends AbstractDocument implements Comparable<PoS> {
 	

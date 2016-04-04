@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.controller;
+package de.uni_koeln.spinfo.upcase.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.uni_koeln.spinfo.drc.lucene.Searcher;
-import de.uni_koeln.spinfo.drc.lucene.json.PGQuery;
-import de.uni_koeln.spinfo.drc.lucene.json.PGResult;
+import de.uni_koeln.spinfo.upcase.lucene.Searcher;
+import de.uni_koeln.spinfo.upcase.lucene.json.PGQuery;
+import de.uni_koeln.spinfo.upcase.lucene.json.PGResult;
 
 @RestController
 public class PGController {

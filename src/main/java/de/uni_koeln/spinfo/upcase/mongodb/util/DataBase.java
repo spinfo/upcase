@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.mongodb;
+package de.uni_koeln.spinfo.upcase.mongodb.util;
 
 import java.util.List;
 import java.util.Set;
@@ -17,12 +17,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.CommandResult;
 import com.mongodb.DBCollection;
 
-import de.uni_koeln.spinfo.drc.mongodb.repository.ChapterRepository;
-import de.uni_koeln.spinfo.drc.mongodb.repository.LanguageRepository;
-import de.uni_koeln.spinfo.drc.mongodb.repository.PageRepository;
-import de.uni_koeln.spinfo.drc.mongodb.repository.UpcaseUserRepository;
-import de.uni_koeln.spinfo.drc.mongodb.repository.VolumeRepository;
-import de.uni_koeln.spinfo.drc.mongodb.repository.WordRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.ChapterRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.LanguageRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.PageRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.UpcaseUserRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.VolumeRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.WordRepository;
 
 @Component("db")
 public class DataBase {

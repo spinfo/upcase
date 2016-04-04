@@ -1,10 +1,10 @@
-package de.uni_koeln.spinfo.drc.mongodb.repository;
+package de.uni_koeln.spinfo.upcase.mongodb.repository;
 
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Token;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Token;
 
 public interface TokenRepository extends CrudRepository<Token, String> {
 	

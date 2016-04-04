@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.mongodb.data;
+package de.uni_koeln.spinfo.upcase.mongodb.data;
 
 import java.io.Serializable;
 

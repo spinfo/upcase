@@ -1,8 +1,8 @@
-package de.uni_koeln.spinfo.drc.util;
+package de.uni_koeln.spinfo.upcase.util;
 
 import java.util.Comparator;
 
-import de.uni_koeln.spinfo.drc.lucene.SearchResult;
+import de.uni_koeln.spinfo.upcase.lucene.SearchResult;
 
 public class VolumeComparator implements Comparator<SearchResult> {
 

@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.mongodb.data.core;
+package de.uni_koeln.spinfo.upcase.mongodb.data.core;
 
 
 

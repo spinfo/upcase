@@ -1,8 +1,8 @@
-package de.uni_koeln.spinfo.drc.mongodb.data;
+package de.uni_koeln.spinfo.upcase.mongodb.data;
 
 import java.io.Serializable;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.core.AbstractDocument;
+import de.uni_koeln.spinfo.upcase.mongodb.data.core.AbstractDocument;
 
 public class Version extends AbstractDocument implements Comparable<Version>, Serializable {
 

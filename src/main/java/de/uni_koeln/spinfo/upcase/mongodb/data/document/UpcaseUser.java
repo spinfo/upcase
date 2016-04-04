@@ -1,12 +1,13 @@
-package de.uni_koeln.spinfo.drc.mongodb.data.document;
+package de.uni_koeln.spinfo.upcase.mongodb.data.document;
 
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
-import de.uni_koeln.spinfo.drc.model.RegistrationForm;
+import de.uni_koeln.spinfo.upcase.model.RegistrationForm;
 
 @Document(collection = "users")
 public class UpcaseUser {
@@ -21,6 +22,9 @@ public class UpcaseUser {
 	private String lastName;
 	private String hash;
 
+	public UpcaseUser() {
+	}
+	
 	public UpcaseUser(RegistrationForm registrationForm) {
 		super();
 		this.email = registrationForm.getEmail();

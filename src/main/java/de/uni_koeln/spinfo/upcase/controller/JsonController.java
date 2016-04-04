@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.controller;
+package de.uni_koeln.spinfo.upcase.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.uni_koeln.spinfo.drc.mongodb.DataBase;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Page;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Word;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Page;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Word;
+import de.uni_koeln.spinfo.upcase.mongodb.util.DataBase;
 
 @RestController()
 public class JsonController {

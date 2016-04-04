@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.lucene;
+package de.uni_koeln.spinfo.upcase.lucene;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,11 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import de.uni_koeln.spinfo.drc.mongodb.DataBase;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Page;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Volume;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Word;
-import de.uni_koeln.spinfo.drc.util.PropertyReader;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Page;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Volume;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Word;
+import de.uni_koeln.spinfo.upcase.mongodb.util.DataBase;
+import de.uni_koeln.spinfo.upcase.util.PropertyReader;
 
 @Service
 public class Indexer {

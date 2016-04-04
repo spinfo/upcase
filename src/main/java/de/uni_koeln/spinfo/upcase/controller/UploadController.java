@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.controller;
+package de.uni_koeln.spinfo.upcase.controller;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import de.uni_koeln.spinfo.drc.model.Encoding;
-import de.uni_koeln.spinfo.drc.model.UploadForm;
+import de.uni_koeln.spinfo.upcase.model.Encoding;
+import de.uni_koeln.spinfo.upcase.model.UploadForm;
 
 @Controller
 public class UploadController {

@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.mongodb.data.light;
+package de.uni_koeln.spinfo.upcase.mongodb.data.light;
 
 public class Letter {
 

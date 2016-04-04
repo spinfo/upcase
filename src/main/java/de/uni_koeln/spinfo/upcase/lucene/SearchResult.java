@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.lucene;
+package de.uni_koeln.spinfo.upcase.lucene;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
-package de.uni_koeln.spinfo.drc.mongodb.data.document;
+package de.uni_koeln.spinfo.upcase.mongodb.data.document;
 
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.core.RangeDocument;
+import de.uni_koeln.spinfo.upcase.mongodb.data.core.RangeDocument;
 
 @Document(collection = "volumes")
 public class Volume extends RangeDocument {

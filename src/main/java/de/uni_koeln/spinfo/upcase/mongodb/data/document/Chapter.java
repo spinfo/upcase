@@ -1,11 +1,11 @@
-package de.uni_koeln.spinfo.drc.mongodb.data.document;
+package de.uni_koeln.spinfo.upcase.mongodb.data.document;
 
 import java.io.Serializable;
 
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.core.RangeDocument;
+import de.uni_koeln.spinfo.upcase.mongodb.data.core.RangeDocument;
 
 @Document(collection = "chapters")
 public class Chapter extends RangeDocument implements Serializable {

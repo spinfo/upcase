@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.controller;
+package de.uni_koeln.spinfo.upcase.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,14 +18,14 @@ import org.springframework.web.servlet.ModelAndView;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import de.uni_koeln.spinfo.drc.mongodb.Constans;
-import de.uni_koeln.spinfo.drc.mongodb.DataBase;
-import de.uni_koeln.spinfo.drc.mongodb.data.Version;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Chapter;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Page;
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Word;
-import de.uni_koeln.spinfo.drc.mongodb.data.light.Letter;
-import de.uni_koeln.spinfo.drc.mongodb.data.light.RectangleLight;
+import de.uni_koeln.spinfo.upcase.mongodb.Constans;
+import de.uni_koeln.spinfo.upcase.mongodb.data.Version;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Chapter;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Page;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Word;
+import de.uni_koeln.spinfo.upcase.mongodb.data.light.Letter;
+import de.uni_koeln.spinfo.upcase.mongodb.data.light.RectangleLight;
+import de.uni_koeln.spinfo.upcase.mongodb.util.DataBase;
 
 @Controller()
 @RequestMapping(value = "/drc")
@@ -81,6 +81,7 @@ public class ContentController {
 
 			}
 		}
+		
 		ModelAndView mv = new ModelAndView("correct");
 		mv.addObject("letters", letters);
 		mv.addObject("rectangles", rectangles);

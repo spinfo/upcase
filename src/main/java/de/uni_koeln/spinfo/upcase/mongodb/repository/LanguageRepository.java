@@ -1,10 +1,10 @@
-package de.uni_koeln.spinfo.drc.mongodb.repository;
+package de.uni_koeln.spinfo.upcase.mongodb.repository;
 
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.document.Language;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.Language;
 
 public interface LanguageRepository extends CrudRepository<Language, String> {
 	

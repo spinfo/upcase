@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.lucene;
+package de.uni_koeln.spinfo.upcase.lucene;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.uni_koeln.spinfo.drc.util.PropertyReader;
+import de.uni_koeln.spinfo.upcase.util.PropertyReader;
 
 @Service
 public class Searcher {
