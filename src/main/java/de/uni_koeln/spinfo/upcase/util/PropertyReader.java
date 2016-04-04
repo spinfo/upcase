@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.drc.util;
+package de.uni_koeln.spinfo.upcase.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +37,7 @@ public class PropertyReader {
 	}
 
 	public void init() throws IOException {
-		loadProperties(resourceLoader.getResource("application.properties").getFile());
+		loadProperties(resourceLoader.getResource("file:src/main/resources/application.properties").getFile());
 	}
 
 	private void loadProperties(File file) throws IOException {
