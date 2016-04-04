@@ -1,30 +1,29 @@
-package de.uni_koeln.spinfo.drc.mongodb.repository;
+package de.uni_koeln.spinfo.upcase.mongodb.repository;
 
 import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import de.uni_koeln.spinfo.drc.mongodb.data.document.UpcaseUser;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.UpcaseUser;
 
 @Repository
 public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	private MongoOperations operations;
 
 	@Inject
 	public UpcaseUserRepositoryImpl(MongoOperations operations) {
 		this.operations = operations;
-	}
-
-	@Override
-	public UpcaseUser findByUserName(String userName) {
-		return operations.findOne(new Query(Criteria.where("userName").is(userName)), UpcaseUser.class);
 	}
 
 	@Override
@@ -45,6 +44,7 @@ public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
 	@Override
 	public UpcaseUser save(UpcaseUser upcaseUser) {
 		operations.save(upcaseUser, "users");
+		logger.info("SAVE: " + upcaseUser);
 		return upcaseUser;
 	}
 
@@ -52,13 +52,6 @@ public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
 	public UpcaseUser delete(UpcaseUser upcaseUser) {
 		operations.remove(upcaseUser);
 		return upcaseUser;
-	}
-
-	@Override
-	public UpcaseUser deleteByUserName(String userName) {
-		UpcaseUser user = findByUserName(userName);
-		delete(user);
-		return user;
 	}
 
 	@Override
@@ -70,6 +63,7 @@ public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
 
 	@Override
 	public void deleteAll() {
+		logger.info("DELETE_ALL: " + count());
 		operations.remove(new Query(), UpcaseUser.class);
 	}
 
@@ -89,5 +83,5 @@ public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
 	private UpcaseUser findById(UpcaseUser upcaseUser) {
 		return operations.findOne(new Query(Criteria.where("_id").is(upcaseUser.getId())), UpcaseUser.class);
 	}
-
+	
 }
