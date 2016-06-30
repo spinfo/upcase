@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.upcase.controller;
+package de.uni_koeln.spinfo.upcase.controller.search;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,12 +39,12 @@ import de.uni_koeln.spinfo.upcase.util.PropertyReader;
 import de.uni_koeln.spinfo.upcase.util.VolumeComparator;
 
 @Controller()
-@RequestMapping(value = "/drc")
+//@RequestMapping(value = "/drc")
 public class SearchController {
 
 	// THYMELEAF-SYNTAX - "TEMPLATE-HTML-FILE :: TH:FRAGMENT";
 	private static final String DOCUMENT_DETAILS_TEMPLATE = "document-details :: document-details";
-	
+
 	private static final String IMGS_URL = "http://hydra.spinfo.uni-koeln.de/img/";
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -85,46 +85,41 @@ public class SearchController {
 	}
 
 	@RequestMapping(value = "chapters/by/volume/title/{volumeTitle}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-	public @ResponseBody List<String> getChapterNamesByVolTitle(
-			@PathVariable String volumeTitle) {
+	public @ResponseBody List<String> getChapterNamesByVolTitle(@PathVariable String volumeTitle) {
 		Volume volume = db.getVolumeRepository().findByTitle(volumeTitle);
 		if (volume == null) {
 			return new ArrayList<>();
 		}
-		List<Chapter> chapters = db.getChapterRepository().findByVolumeId(
-				volume.getId());
+		List<Chapter> chapters = db.getChapterRepository().findByVolumeId(volume.getId());
 		List<String> chapterNames = new ArrayList<>();
 		chapters.forEach(c -> chapterNames.add(c.getTitle()));
 		return chapterNames;
 	}
 
 	@RequestMapping(value = "/showDocument", method = RequestMethod.GET)
-	public Model showDocument(Model model,
-			@RequestParam("pageId") final String pageId,
+	public Model showDocument(Model model, @RequestParam("pageId") final String pageId,
 			@RequestParam("resultQuotations") String... resultQuotations) {
 
 		Page page = db.getPageRepository().findByPageId(pageId);
-		List<Word> words = db.getWordRepository().findByRange(page.getStart(),
-				page.getEnd());
+		List<Word> words = db.getWordRepository().findByRange(page.getStart(), page.getEnd());
 		Collections.sort(words);
 		List<RectangleLight> rectangles = new ArrayList<>();
 
-		Pattern quotationFinder = Pattern.compile("<span[^>]*>(.*?)</span>",
-				Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-		
-		List<String> matchedTokens = new ArrayList<>(); 
-		
+		Pattern quotationFinder = Pattern.compile("<span[^>]*>(.*?)</span>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+
+		List<String> matchedTokens = new ArrayList<>();
+
 		for (String quotation : resultQuotations) {
 			Matcher regexMatcher = quotationFinder.matcher(quotation);
 			while (regexMatcher.find()) {
 				matchedTokens.add(regexMatcher.group(1));
 			}
 		}
-		
+
 		for (Word word : words) {
 			Version currentVersion = word.getCurrentVersion();
 			for (String token : matchedTokens) {
-				String normalized = currentVersion.getValue().replaceAll("\\W","");
+				String normalized = currentVersion.getValue().replaceAll("\\W", "");
 				if (normalized.equalsIgnoreCase(token)) {
 					String id = word.getId();
 					RectangleLight rectangleLight = new RectangleLight(id, word.getRectangle());
@@ -133,7 +128,7 @@ public class SearchController {
 				}
 			}
 		}
-		
+
 		model.addAttribute("page", page);
 		model.addAttribute("imgUrl", IMGS_URL + page.getUrl().replace(".xml", ""));
 		model.addAttribute("words", words);
@@ -146,8 +141,7 @@ public class SearchController {
 	 * The result view
 	 */
 	@RequestMapping(value = "/searchResult")
-	public ModelAndView simpleResult(
-			@RequestParam("searchPhrase") String searchPhrase,
+	public ModelAndView simpleResult(@RequestParam("searchPhrase") String searchPhrase,
 			@RequestParam(value = "regex", required = false) boolean regex,
 			@RequestParam(value = "volumeSelection", required = false) String volumeSelection,
 			@RequestParam(value = "chapterSelection", required = false) String chapterSelection,
@@ -160,25 +154,21 @@ public class SearchController {
 		try {
 
 			page = page == null ? 1 : page;
-			volumeSelection = volumeSelection == null ? "alle"
-					: volumeSelection;
-			chapterSelection = chapterSelection == null ? "alle"
-					: chapterSelection;
+			volumeSelection = volumeSelection == null ? "alle" : volumeSelection;
+			chapterSelection = chapterSelection == null ? "alle" : chapterSelection;
 			langSelection = langSelection == null ? "alle" : langSelection;
 
-			resultList = searcher.withQuotations(searchPhrase, regex,
-					volumeSelection, chapterSelection, langSelection, 1, page);
+			resultList = searcher.withQuotations(searchPhrase, regex, volumeSelection, chapterSelection, langSelection,
+					1, page);
 
 			if (volumeSort != null) {
 				if (!volumeSort.equals("none")) {
-					Collections.sort(resultList, new VolumeComparator(
-							volumeSort));
+					Collections.sort(resultList, new VolumeComparator(volumeSort));
 				}
 			}
 			if (chapterSort != null) {
 				if (!chapterSort.equals("none")) {
-					Collections.sort(resultList, new ChapterComparator(
-							chapterSort));
+					Collections.sort(resultList, new ChapterComparator(chapterSort));
 				}
 			}
 		} catch (ParseException | IOException e) {
@@ -204,7 +194,7 @@ public class SearchController {
 		mv.addObject("chapterSort", chapterSort);
 		mv.addObject("prev", (page - 1) == 0);
 		mv.addObject("next", (page - 1) == chunks);
-		
+
 		return mv;
 	}
 
