@@ -3,13 +3,14 @@
 <head>
 </head>
 <body>
-	<div class="wrapper-list" th:fragment="volume-list">
+	<!-- http://localhost:8080/volumes -->
+	<div class="wrapper-list volumes" th:fragment="volume-list">
 		<ul class="list-group">
-			<li class="list-group-item" th:each="volume : ${volumes}">
-				<a th:href="@{chapters(volumeId=${volume.id})}"
-					th:text="${volume.title}"></a>
-				<span class="badge" th:text="${volume.chapterNumber} +' chapters'">Chapters 99</span>
-			</li>
+			<li class="list-group-item" th:each="volume : ${volumes}"><a
+				th:href="@{chapters(volumeId=${volume.id})}"
+				th:text="${volume.title}"></a>
+<!-- 				<span class="badge" th:text="${volume.chapterNumber} +' chapters'">Chapters 99</span> -->
+				</li>
 		</ul>
 	</div>
 </body>

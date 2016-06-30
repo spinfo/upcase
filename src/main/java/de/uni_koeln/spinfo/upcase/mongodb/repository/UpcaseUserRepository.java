@@ -11,6 +11,8 @@ public interface UpcaseUserRepository extends Repository<UpcaseUser, String> {
 	
 	public UpcaseUser findByEmail(String email);
 	
+	public UpcaseUser findById(String id);
+	
 	public List<UpcaseUser> findAll();
 	
 	public List<UpcaseUser> findByCreationDate(Date creationDate);

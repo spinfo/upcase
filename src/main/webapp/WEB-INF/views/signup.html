@@ -49,8 +49,9 @@ body {
 						<input name="firstName" type="text" class="form-control"
 							id="firstName" placeholder="Erika"
 							th:value="${registrationForm.firstName}" /><span
-							th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"
-							th:class="formError">Please enter your first name</span>
+							th:if="${#fields.hasErrors('firstName')}"
+							th:errors="*{firstName}" th:class="formError">Please enter
+							your first name</span>
 					</div>
 					<div class="form-group">
 						<label for="lastName">Last Name<span class="greyish">*</span></label>
@@ -71,10 +72,10 @@ body {
 					<div class="form-group">
 						<label for="passwd">Password<span class="greyish">*</span></label>
 						<input name="passwd" type="password" class="form-control"
-							th:value="${registrationForm.password}" 
-							th:field="*{password}"/> <span
-							th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-							th:class="formError">Choose a password.</span>
+							th:value="${registrationForm.password}" th:field="*{password}" />
+						<span th:if="${#fields.hasErrors('password')}"
+							th:errors="*{password}" th:class="formError">Choose a
+							password.</span>
 					</div>
 					<div class="form-group">
 						<label for="confirmPasswd">Re-type password<span

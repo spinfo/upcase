@@ -11,7 +11,6 @@ public abstract class AbstractDocument {
 
 	private Date date;
 	private String userId;
-	private int score;
 
 	public Date getDate() {
 		return date;
@@ -29,14 +28,6 @@ public abstract class AbstractDocument {
 		this.userId = userId;
 	}
 
-	public int getScore() {
-		return score;
-	}
-
-	public void setScore(int score) {
-		this.score = score;
-	}
-	
 	public String getId() {
 		return id;
 	}

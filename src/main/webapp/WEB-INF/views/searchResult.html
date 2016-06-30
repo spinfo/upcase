@@ -215,7 +215,7 @@ body {
 			
 			$("#volumeSelection").change(function() {
 				var volume = $("#volumeSelection option:selected").text();
-				var url = "http://localhost:8080/drc/chapters/by/volume/title/" + volume;
+				var url = "http://localhost:8080/chapters/by/volume/title/" + volume;
 				$.get(url, function(data) {
 					var options = "<option value='alle'>- alle -</option>";
 					for (var i = 0; i < data.length; i++) {
@@ -268,7 +268,7 @@ body {
 			var chapterSelection = getURLParameter("chapterSelection");
 			var langSelection = getURLParameter("langSelection");
 			
-			var baseURL = "http://localhost:8080/drc/searchResult?";
+			var baseURL = "http://localhost:8080/searchResult?";
 			
 			if (typeof page == 'undefined') {
 				page = 1;

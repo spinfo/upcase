@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<!-- http://localhost:8080/pages?chapterId=...&chapterTitle=...&volumeId=...&volumeTitle=... -->
+	<div class="wrapper-list pages" th:fragment="page-list">
+		<ul class="list-group">
+			<li class="list-group-item" th:each="page : ${pages}"><a
+				th:href="@{correct(pageId=${page.id}, chapterId=${chapterId}, chapterTitle=${chapterTitle}, volumeId=${volumeId}, volumeTitle=${volumeTitle})}"
+				th:text="${page.url}"></a></li>
+		</ul>
+	</div>
+</body>
+</html>

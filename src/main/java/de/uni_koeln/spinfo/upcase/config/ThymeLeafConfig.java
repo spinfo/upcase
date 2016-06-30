@@ -1,12 +1,21 @@
 package de.uni_koeln.spinfo.upcase.config;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.dialect.SpringStandardDialect;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
@@ -39,9 +48,13 @@ public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
-	public SpringTemplateEngine templateEngine() {
+	public SpringTemplateEngine templateEngine() {	
 		SpringTemplateEngine engine = new SpringTemplateEngine();
 		engine.setTemplateResolver(templateResolver());
+		Set<IDialect> dialetcs = new HashSet<>();
+		dialetcs.add(new SpringSecurityDialect());
+		dialetcs.add(new SpringStandardDialect());
+		engine.setDialects(dialetcs);
 		return engine;
 	}
 
@@ -51,4 +64,21 @@ public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 		resolver.setTemplateEngine(templateEngine());
 		return resolver;
 	}
+
+	@Bean
+	public MessageSource messageSource() {
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		messageSource.setDefaultEncoding("UTF-8");
+		messageSource.setBasename("locale/messages");
+		return messageSource;
+	}
+	
+	@Bean
+	public CommonsMultipartResolver multipartResolver() {
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		resolver.setMaxUploadSize(104857600);
+		resolver.setDefaultEncoding("UTF-8");
+		return resolver;
+	}
+	
 }

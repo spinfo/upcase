@@ -2,7 +2,7 @@ package de.uni_koeln.spinfo.upcase.mongodb.data.core;
 
 
 
-public class RangeDocument extends AbstractDocument {
+public abstract class RangeDocument extends AbstractDocument {
 	
 	private int start;
 	private int end;

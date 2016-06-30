@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
 @Configuration
 @EnableMongoRepositories
@@ -35,16 +37,16 @@ public class MongoDbConfig extends AbstractMongoConfiguration {
 
 	@Value("${mongodb.port}")
 	private int port;
-	
+
 	@Value("${mongodb.host}")
 	private String host;
-	
+
 	@Value("${mongodb.dbname}")
 	private String dbName;
-	
+
 	@Value("${mongodb.user}")
 	private String userName;
-	
+
 	@Value("${mongodb.password}")
 	private String password;
 
@@ -56,12 +58,15 @@ public class MongoDbConfig extends AbstractMongoConfiguration {
 	@Bean
 	@Override
 	public MongoClient mongo() throws Exception {
-//		ServerAddress address = new ServerAddress(host, port);
-//		MongoCredential credential = MongoCredential.createMongoCRCredential(userName, getDatabaseName(), password.toCharArray());
-//		List<MongoCredential> creds = new ArrayList<>();
-//		creds.add(credential);
-//		return new MongoClient(address, creds);
-		return new MongoClient(host);
+		if(userName.isEmpty() || password.isEmpty())
+			return new MongoClient(host);
+		else {
+			ServerAddress address = new ServerAddress(host, port);
+			MongoCredential credential = MongoCredential.createMongoCRCredential(userName, getDatabaseName(), password.toCharArray());
+			List<MongoCredential> creds = new ArrayList<>();
+			creds.add(credential);
+			return new MongoClient(address, creds);
+		}
 	}
 
 	@Bean

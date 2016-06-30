@@ -28,29 +28,29 @@ import de.uni_koeln.spinfo.upcase.mongodb.data.light.RectangleLight;
 import de.uni_koeln.spinfo.upcase.mongodb.util.DataBase;
 
 @Controller()
-@RequestMapping(value = "/drc")
+//@RequestMapping(value = "/drc")
 public class ContentController {
 
 	@Autowired
 	private DataBase db;
 
-	@RequestMapping(value = "/pages")
-	public ModelAndView getPages(@RequestParam("chapterId") String chapterId,
-			@RequestParam("chapterTitle") String chapterTitle,
-			@RequestParam("volumeId") String volumeId,
-			@RequestParam("volumeTitle") String volumeTitle) {
-
-		List<Page> pages = db.getPageRepository().findByChapterIds(
-				Arrays.asList(new String[] { chapterId }));
-
-		ModelAndView mv = new ModelAndView(Constans.PAGES);
-		mv.addObject("pages", pages);
-		mv.addObject("chapterTitle", chapterTitle);
-		mv.addObject("chapterId", chapterId);
-		mv.addObject("volumeId", volumeId);
-		mv.addObject("volumeTitle", volumeTitle);
-		return mv;
-	}
+//	@RequestMapping(value = "/pages")
+//	public ModelAndView getPages(@RequestParam("chapterId") String chapterId,
+//			@RequestParam("chapterTitle") String chapterTitle,
+//			@RequestParam("volumeId") String volumeId,
+//			@RequestParam("volumeTitle") String volumeTitle) {
+//
+//		List<Page> pages = db.getPageRepository().findByChapterIds(
+//				Arrays.asList(new String[] { chapterId }));
+//
+//		ModelAndView mv = new ModelAndView(Constans.PAGES);
+//		mv.addObject("pages", pages);
+//		mv.addObject("chapterTitle", chapterTitle);
+//		mv.addObject("chapterId", chapterId);
+//		mv.addObject("volumeId", volumeId);
+//		mv.addObject("volumeTitle", volumeTitle);
+//		return mv;
+//	}
 
 	@RequestMapping(value = "/correct")
 	public ModelAndView correctPage(@RequestParam("pageId") String pageId,

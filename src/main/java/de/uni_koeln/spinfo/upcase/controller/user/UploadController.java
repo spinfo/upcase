@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.upcase.controller;
+package de.uni_koeln.spinfo.upcase.controller.user;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
