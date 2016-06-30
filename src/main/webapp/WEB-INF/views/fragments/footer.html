@@ -3,19 +3,18 @@
 <head>
 </head>
 <body>
-	<div th:fragment="footer">
-		<footer class="bs-docs-footer" role="contentinfo">
-			<div class="container">
-				<ul class="bs-docs-footer-links">
-					<li><a
-						href="http://www.spinfo.phil-fak.uni-koeln.de/spinfo-startseite0.html">Sprachliche
-							Informationsverarbeitung</a></li>
-					<li><a href="http://www.uni-koeln.de/">Universität zu Köln</a></li>
-					<li> |  <span
-						th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span></li>
-				</ul>
-			</div>
-		</footer>
-	</div>
+
+	<footer th:fragment="footer" class="footer">
+		<div class="container">
+			<p class="text-muted">
+				<a
+					href="http://www.spinfo.phil-fak.uni-koeln.de/spinfo-startseite0.html">Sprachliche
+					Informationsverarbeitung</a> <span> | </span><a
+					href="http://www.uni-koeln.de/">Universität zu Köln</a> <span>
+					| </span> <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">1984</span>
+			</p>
+		</div>
+	</footer>
+
 </body>
 </html>
