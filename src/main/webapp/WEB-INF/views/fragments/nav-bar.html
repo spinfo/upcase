@@ -1,46 +1,41 @@
-Unstaged changes after reset:
-M	pom.xml
-M	src/main/java/de/uni_koeln/spinfo/upcase/config/MongoDbConfig.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/config/SecurityConfig.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/config/ThymeLeafConfig.java
-D	src/main/java/de/uni_koeln/spinfo/upcase/controller/ChapterController.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/controller/CollectionsNavController.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/controller/ContentController.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/controller/IndexController.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/controller/VolumeController.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/controller/administration/AdminController.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/controller/search/SearchController.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/controller/user/RegistrationController.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/controller/user/UploadController.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/model/Encoding.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/model/validator/RegistrationFormValidator.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/mongodb/data/PoS.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/mongodb/data/core/AbstractDocument.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/mongodb/data/core/RangeDocument.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/mongodb/data/document/UpcaseUser.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/mongodb/repository/UpcaseUserRepository.java
-M	src/main/java/de/uni_koeln/spinfo/upcase/mongodb/repository/UpcaseUserRepositoryImpl.java
-M	src/main/resources/database.properties
-M	src/main/resources/locale/messages.properties
-M	src/main/webapp/WEB-INF/dispatcher-servlet.xml
-D	src/main/webapp/WEB-INF/upcase-servlet.xml
-M	src/main/webapp/WEB-INF/views/correct.html
-M	src/main/webapp/WEB-INF/views/extendedSearch.html
-M	src/main/webapp/WEB-INF/views/fragments/chapter-list.html
-D	src/main/webapp/WEB-INF/views/fragments/drc-nav.html
-M	src/main/webapp/WEB-INF/views/fragments/footer.html
-M	src/main/webapp/WEB-INF/views/fragments/nav-bar.html
-M	src/main/webapp/WEB-INF/views/fragments/search.html
-M	src/main/webapp/WEB-INF/views/fragments/volume-list.html
-M	src/main/webapp/WEB-INF/views/index.html
-M	src/main/webapp/WEB-INF/views/searchResult.html
-M	src/main/webapp/WEB-INF/views/signup.html
-M	src/main/webapp/WEB-INF/views/volumes.html
-M	src/main/webapp/WEB-INF/web.xml
-M	src/main/webapp/assets/css/upcase.css
-M	src/test/java/de/uni_koeln/spinfo/upcase/test/JUnitTestSuite.java
-M	src/test/java/de/uni_koeln/spinfo/upcase/test/context/PersistenceContext.java
-M	src/test/java/de/uni_koeln/spinfo/upcase/test/context/SecurityContext.java
-M	src/test/java/de/uni_koeln/spinfo/upcase/test/context/WebAppContext.java
-M	src/test/java/de/uni_koeln/spinfo/upcase/test/user/UpcaseUserTests.java
-M	upcase_local_db.launch
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<nav th:fragment="nav-bar"
+		class="navbar navbar-default" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+           	    <span class="icon-bar"></span>
+           	    <span class="icon-bar"></span>
+           	    <span class="icon-bar"></span>
+         	  </button>
+			  <a class="navbar-brand" th:href="@{volumes}">UpCASE</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<!-- <li><a th:href="@{/login}">Login</a></li> -->
+			    	<li><a href="#" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</a></li>
+			    </ul>
+	        </div><!--/.navbar-collapse -->
+		</div>
+			<!-- Modal -->
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title" id="myModalLabel">Login</h4>
+			      </div>
+			      <div class="modal-body">
+			      		<div th:replace="fragments/login-form :: login-form"></div>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+	</nav>
+</body>
+</html>
