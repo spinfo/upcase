@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.upcase.context;
+package de.uni_koeln.spinfo.upcase.test.context;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,40 +28,40 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
-@Configuration
-@EnableTransactionManagement
-@EnableMongoRepositories(basePackages = { "de.uni_koeln.spinfo.upcase.mongodb.repository" })
+//@Configuration
+//@EnableTransactionManagement
+//@EnableMongoRepositories(basePackages = { "de.uni_koeln.spinfo.upcase.mongodb.repository" })
 public class PersistenceContext extends AbstractMongoConfiguration {
 
-	@Bean
+//	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
 
-	@Bean
+//	@Bean
 	@Override
 	public MongoClient mongo() throws Exception {
 		return new Fongo("test-db").getMongo();
 	}
 
-	@Bean
+//	@Bean
 	public MongoRepositoryFactory repositoryFactory() throws Exception {
 		return new MongoRepositoryFactory(mongoTemplate());
 	}
 
-	@Bean
+//	@Bean
 	@Override
 	public MongoDbFactory mongoDbFactory() throws Exception {
 		return new SimpleMongoDbFactory(mongo(), getDatabaseName());
 	}
 
-	@Bean
+//	@Bean
 	@Override
 	public MongoTemplate mongoTemplate() throws Exception {
 		return new MongoTemplate(mongoDbFactory());
 	}
 
-	@Bean
+//	@Bean
 	public MappingMongoConverter mongoConverter() throws Exception {
 		MongoMappingContext mappingContext = new MongoMappingContext();
 		DbRefResolver dbRefResolver = new DefaultDbRefResolver(mongoDbFactory());
@@ -70,7 +70,7 @@ public class PersistenceContext extends AbstractMongoConfiguration {
 		return mongoConverter;
 	}
 
-	@Bean
+//	@Bean
 	@Override
 	public CustomConversions customConversions() {
 		List<Converter<?, ?>> converters = new ArrayList<Converter<?, ?>>();
