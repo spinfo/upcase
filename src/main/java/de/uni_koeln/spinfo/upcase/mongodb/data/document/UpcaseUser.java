@@ -1,19 +1,21 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import de.uni_koeln.spinfo.upcase.model.RegistrationForm;
+import de.uni_koeln.spinfo.upcase.model.Role;
 
 @Document(collection = "users")
 public class UpcaseUser {
 
-	@Id
-	private String id;
+	@Id private String id;
+	
 	private Date creationDate;
 	private Date lastLogin;
 	private String email;
@@ -21,11 +23,14 @@ public class UpcaseUser {
 	private String firstName;
 	private String lastName;
 	private String hash;
-
-	public UpcaseUser() {
-	}
+	private List<String> roles;
+	private boolean enabled;
 	
-	public UpcaseUser(RegistrationForm registrationForm) {
+
+	public UpcaseUser() {	
+	}
+
+	public UpcaseUser(final RegistrationForm registrationForm) {
 		super();
 		this.email = registrationForm.getEmail();
 		this.creationDate = new Date();
@@ -33,9 +38,11 @@ public class UpcaseUser {
 		this.firstName = registrationForm.getFirstName();
 		this.lastName = registrationForm.getLastName();
 		this.institution = registrationForm.getInstitution();
+		this.roles = new ArrayList<>();
+		setRole(Role.TRUSTED.getRoleId());
 		this.hash = BCrypt.hashpw(registrationForm.getPassword(), BCrypt.gensalt());
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -104,19 +111,14 @@ public class UpcaseUser {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((creationDate == null) ? 0 : creationDate.hashCode());
+		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result
-				+ ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
 		result = prime * result + ((hash == null) ? 0 : hash.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result
-				+ ((institution == null) ? 0 : institution.hashCode());
-		result = prime * result
-				+ ((lastLogin == null) ? 0 : lastLogin.hashCode());
-		result = prime * result
-				+ ((lastName == null) ? 0 : lastName.hashCode());
+		result = prime * result + ((institution == null) ? 0 : institution.hashCode());
+		result = prime * result + ((lastLogin == null) ? 0 : lastLogin.hashCode());
+		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		return result;
 	}
 
@@ -174,9 +176,28 @@ public class UpcaseUser {
 
 	@Override
 	public String toString() {
-		return "UpcaseUser [id=" + id + ", creationDate=" + creationDate
-				+ ", email=" + email + ", institution=" + institution
-				+ ", firstName=" + firstName + ", lastName=" + lastName + "]";
+		return "UpcaseUser [role=" + getRoles().toString() + ", email=" + email + ", firstName=" + firstName
+				+ ", lastName=" + lastName + "]";
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public boolean setRole(final String role) {
+		return this.roles.add(role);
+	}
+
+	public boolean removeRole(final String role) {
+		return this.roles.remove(role);
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 }

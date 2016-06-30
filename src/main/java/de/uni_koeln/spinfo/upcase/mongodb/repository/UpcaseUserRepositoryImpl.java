@@ -27,7 +27,7 @@ public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
 	}
 
 	@Override
-	public UpcaseUser findByEmail(String email) {
+	public UpcaseUser findByEmail(final String email) {
 		return operations.findOne(new Query(Criteria.where("email").is(email)), UpcaseUser.class);
 	}
 
@@ -55,7 +55,7 @@ public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
 	}
 
 	@Override
-	public UpcaseUser deleteByEmail(String email) {
+	public UpcaseUser deleteByEmail(final String email) {
 		UpcaseUser user = findByEmail(email);
 		delete(user);
 		return user;
@@ -82,6 +82,11 @@ public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
 	
 	private UpcaseUser findById(UpcaseUser upcaseUser) {
 		return operations.findOne(new Query(Criteria.where("_id").is(upcaseUser.getId())), UpcaseUser.class);
+	}
+
+	@Override
+	public UpcaseUser findById(final String id) {
+		return operations.findOne(new Query(Criteria.where("_id").is(id)), UpcaseUser.class);
 	}
 	
 }
