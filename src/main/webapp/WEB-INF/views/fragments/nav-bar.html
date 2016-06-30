@@ -17,8 +17,7 @@
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav navbar-right">
-					<!-- <li><a th:href="@{/login}">Login</a></li> -->
-			    	<li><a href="#" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login</a></li>
+			    	<li><a href="#" data-toggle="modal" data-target="#myModal">Login</a></li>
 			    </ul>
 	        </div><!--/.navbar-collapse -->
 		</div>
@@ -30,7 +29,7 @@
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			        <h4 class="modal-title" id="myModalLabel">Login</h4>
 			      </div>
-			      <div class="modal-body">
+			      <div class="modal-body" style="background-color: #efefef;">
 			      		<div th:replace="fragments/login-form :: login-form"></div>
 			      </div>
 			    </div>

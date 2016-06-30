@@ -30,3 +30,12 @@ body {
 	height: 600px;
 	overflow: scroll;
 }
+
+.nav-a-items {
+	color: #333;
+	font-size: 13px;
+}
+
+li a.nav-a-items:hover {
+	background-color: #C5E3BF;
+}

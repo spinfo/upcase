@@ -26,15 +26,17 @@
 			       	 <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
 			          <ul class="dropdown-menu dropdown-menu-right">
-			            <li><a th:href="@{/user(userName=${userName})}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Profile</a></li>
-			            <li><a th:href="@{/collections}"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> Collections</a></li>
-			            <li><a th:href="@{/list/user}"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> User</a></li>
+			          	<li class="dropdown-header">Signed in as <span class="navbar-link" style="color:#aa2c0b;" th:text="${userName + ' (ADMIN) '}">Hercules</span></li>
+			          	<li role="separator" class="divider"></li>
+			            <li><a class="nav-a-items" th:href="@{/admin/profile}">Your Profile</a></li>
+			            <li><a class="nav-a-items" th:href="@{/admin/collections}">Collections</a></li>
+			            <li><a class="nav-a-items" th:href="@{/admin/users}">Edit Users</a></li>
 			       		<li role="separator" class="divider"></li>
-			            <li><a th:href="@{/logout}"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Logout</a></li>
+			       		<li><a class="nav-a-items" th:href="@{/admin/settings}">Settings</a></li>
+			            <li><a class="nav-a-items" th:href="@{/logout}">Logout</a></li>
 			          </ul>
 			        </li>
 			    </ul>
-			    <p class="navbar-text navbar-right" style="margin-right:2px;">Signed in as <span class="navbar-link" style="color:#aa2c0b;" th:text="${userName + ' (ADMIN) '}">Hercules</span></p>
 	        </div><!--/.navbar-collapse -->
 		</div>
 	</nav>
