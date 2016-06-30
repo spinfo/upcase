@@ -10,17 +10,17 @@ public class IndexController {
 	
 	@RequestMapping(value = "/")
 	public ModelAndView init() {
-		return new ModelAndView("index");
+		return new ModelAndView("home");
 	}
 
 	@RequestMapping(value = "/about")
 	public ModelAndView getInfo() {
-		return new ModelAndView("about");
+		return new ModelAndView("index");
 	}
 
 	@RequestMapping(value = "/contact.html")
 	public @ResponseBody ModelAndView getContacts() {
 		return new ModelAndView("contact");
 	}
-
+ 
 }

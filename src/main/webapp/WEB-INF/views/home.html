@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<title>Home</title>
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"
+	type="text/css" />
+<link href="../assets/css/upcase.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div sec:authorize="hasRole('ROLE_USER')">
+		<div th:replace="fragments/nav-bar-user :: nav-bar-user"></div>
+	</div>
+	<div sec:authorize="hasRole('ROLE_ADMIN')">
+		<div th:replace="fragments/nav-bar-admin :: nav-bar-admin"></div>
+	</div>
+	<div sec:authorize="isAnonymous()">
+		<div th:replace="fragments/nav-bar :: nav-bar"></div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a th:href="@{/}">Start</a></li>
+				<li class="active">Recent Collections</li>
+			</ol>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<h4>Recently Added</h4>
+				<div class="list-group">
+					<a href="#" class="list-group-item-heading">DRC</a> 
+					<a href="#" class="list-group-item">NDB</a> 
+					<a href="#" class="list-group-item">IDNs</a> 
+				</div>
+			</div>
+			<div class="col-md-8 text-left">
+				<div th:fragment="searchForm">
+					<div class="col-sm-12">
+						<form action="/drc/searchResult">
+							<h3>Collection Search</h3>
+							<input type="text" class="form-control" placeholder="Search..."
+								name="searchPhrase" th:value="*{searchPhrase}"
+								autofocus="autofocus" autocomplete="on" style="width: 250px;" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-8 text-left">
+				<br />
+				<table class="table">
+					<tr>
+						<td>
+							<div class="embed-responsive embed-responsive-16by9">
+								<iframe class="embed-responsive-item"
+									src="http://localhost:8080/about"></iframe>
+							</div>
+						</td>
+					</tr>
+
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="stack"></div>
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
