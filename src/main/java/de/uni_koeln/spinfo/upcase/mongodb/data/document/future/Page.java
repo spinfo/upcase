@@ -1,5 +1,6 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,11 +17,19 @@ public class Page {
 	private String imageUrl;
 	private int pageNumber;
 	private int physicalPageNumber;
+	private List<Word> words;
 	
-	@DBRef private List<Word> words;
 	@DBRef private Chapter chapter;
 	@DBRef private Volume volume;
 	
+	public Page(String imageUrl, int pageNumber, int physicalPageNumber) {
+		super();
+		this.lastModified = new Date();
+		this.imageUrl = imageUrl;
+		this.pageNumber = pageNumber;
+		this.physicalPageNumber = physicalPageNumber;
+		this.words = new ArrayList<>();
+	}
 	
 	public Page(String imageUrl, int pageNumber, int physicalPageNumber, List<Word> words) {
 		super();

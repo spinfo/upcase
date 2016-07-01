@@ -8,8 +8,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.UpcaseUser;
-
 @Document(collection = "re_collections")
 public class Collection {
 
@@ -21,7 +19,8 @@ public class Collection {
 	private String title;
 
 	@DBRef private UpcaseUser owner;
-	@DBRef private List<UpcaseUser> contributer;
+	@DBRef private List<UpcaseUser> contributers;
+	
 	@DBRef private List<Page> pages;
 	@DBRef private List<Chapter> chapters;
 	@DBRef private List<Volume> volumes;
@@ -34,7 +33,7 @@ public class Collection {
 		this.contributable = false;
 		this.owner = owner;
 		this.pages = new ArrayList<>();
-		this.contributer = new ArrayList<>();
+		this.contributers = new ArrayList<>();
 		this.chapters = new ArrayList<>();
 		this.volumes = new ArrayList<>();
 	}
@@ -47,7 +46,7 @@ public class Collection {
 		this.contributable = false;
 		this.owner = owner;
 		this.pages = pages;
-		this.contributer = new ArrayList<>();
+		this.contributers = new ArrayList<>();
 		this.chapters = new ArrayList<>();
 		this.volumes = new ArrayList<>();
 	}
@@ -100,14 +99,18 @@ public class Collection {
 		this.owner = owner;
 	}
 
-	public List<UpcaseUser> getContributer() {
-		return contributer;
+	public List<UpcaseUser> getContributers() {
+		return contributers;
 	}
 
-	public void setContributer(List<UpcaseUser> contributer) {
-		this.contributer = contributer;
+	public void setContributers(List<UpcaseUser> contributers) {
+		this.contributers = contributers;
 	}
-
+	
+	public void setContributer(UpcaseUser contributor) {
+		this.contributers.add(contributor);
+	}
+	
 	public List<Page> getPages() {
 		return pages;
 	}
@@ -181,7 +184,7 @@ public class Collection {
 	@Override
 	public String toString() {
 		return "Collection [id=" + id + ", creationDate=" + creationDate + ", contributable=" + contributable
-				+ ", title=" + title + ", owner=" + owner + "]";
+				+ ", title=" + title + ", pages=" + pages.size() + ", owner=" + owner + "]";
 	}
 
 	
