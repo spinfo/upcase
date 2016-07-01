@@ -3,7 +3,7 @@
 <head>
 </head>
 <body>
-	<div class="" style="background-color: #efefef;" th:fragment="login-form">
+	<div class="minty" th:fragment="login-form">
 		<div th:if="${param.error}" class="alert alert-error"><p>Invalid username and password.</p></div>
 		<form th:action="@{/login}" method="post" name="signinForm" class="form-horizontal">
 			<div class="form-group">

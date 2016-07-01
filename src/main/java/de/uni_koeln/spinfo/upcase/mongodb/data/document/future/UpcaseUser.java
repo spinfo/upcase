@@ -44,7 +44,7 @@ public class UpcaseUser {
 		this.lastName = registrationForm.getLastName();
 		this.institution = registrationForm.getInstitution();
 		this.roles = new ArrayList<>();
-		setRole(Role.TRUSTED.getRoleId());
+		setRole("ROLE_USER");
 		this.hash = BCrypt.hashpw(registrationForm.getPassword(), BCrypt.gensalt());
 	}
 

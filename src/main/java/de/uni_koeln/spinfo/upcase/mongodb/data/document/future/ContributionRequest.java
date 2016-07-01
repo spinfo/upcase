@@ -15,12 +15,13 @@ public class ContributionRequest {
 	
 	@DBRef private Collection collection;
 	@DBRef private UpcaseUser requestor;
-	
+	@DBRef private UpcaseUser owner;
 	
 	public ContributionRequest(Collection collection, UpcaseUser requestor) {
 		super();
 		this.creationDate = new Date();
 		this.collection = collection;
+		this.owner = collection.getOwner();
 		this.requestor = requestor;
 	}
 
@@ -62,6 +63,14 @@ public class ContributionRequest {
 
 	public void setRequestor(UpcaseUser requestor) {
 		this.requestor = requestor;
+	}
+
+	public UpcaseUser getOwner() {
+		return owner;
+	}
+	
+	public void setOwner(UpcaseUser owner) {
+		this.owner = owner;
 	}
 
 
