@@ -4,7 +4,7 @@
 </head>
 <body>
 	<nav th:fragment="nav-bar"
-		class="navbar navbar-default" role="navigation">
+		class="navbar navbar-default minty" role="navigation">
 		<div class="container">
 			<div class="navbar-header">
 			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -16,6 +16,12 @@
 			  <a class="navbar-brand" th:href="@{volumes}">UpCASE</a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
+				<form class="navbar-form navbar-left" role="search">
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Search in Collections" />
+			        </div>
+			        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+				</form>
 				<ul class="nav navbar-nav navbar-right">
 			    	<li><a href="#" data-toggle="modal" data-target="#myModal">Login</a></li>
 			    </ul>
@@ -29,7 +35,7 @@
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			        <h4 class="modal-title" id="myModalLabel">Login</h4>
 			      </div>
-			      <div class="modal-body" style="background-color: #efefef;">
+			      <div class="modal-body minty">
 			      		<div th:replace="fragments/login-form :: login-form"></div>
 			      </div>
 			    </div>
