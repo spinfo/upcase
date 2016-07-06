@@ -1,13 +1,8 @@
 package de.uni_koeln.spinfo.upcase.controller.search;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
@@ -15,25 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.uni_koeln.spinfo.upcase.lucene.SearchResult;
 import de.uni_koeln.spinfo.upcase.lucene.Searcher;
-import de.uni_koeln.spinfo.upcase.mongodb.data.Version;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.Chapter;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.Language;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.Page;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.Volume;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.Word;
-import de.uni_koeln.spinfo.upcase.mongodb.data.light.RectangleLight;
-import de.uni_koeln.spinfo.upcase.mongodb.util.DataBase;
 import de.uni_koeln.spinfo.upcase.util.ChapterComparator;
 import de.uni_koeln.spinfo.upcase.util.PropertyReader;
 import de.uni_koeln.spinfo.upcase.util.VolumeComparator;
@@ -52,8 +34,8 @@ public class SearchController {
 	@Autowired
 	private Searcher searcher;
 
-	@Autowired
-	private DataBase db;
+//	@Autowired
+//	private DataBase db;
 
 	@Autowired
 	PropertyReader propertyReader;
@@ -66,76 +48,76 @@ public class SearchController {
 		return new ModelAndView("search");
 	}
 
-	@ModelAttribute("languageList")
-	public List<String> getLanguageList() {
-		Iterable<Language> findAll = db.getLanguageRepository().findAll();
-		List<String> languages = new ArrayList<>();
-		Set<String> set = new TreeSet<>();
-		findAll.forEach(l -> set.add(l.getTitle()));
-		languages.addAll(set);
-		return languages;
-	}
+//	@ModelAttribute("languageList")
+//	public List<String> getLanguageList() {
+//		Iterable<Language> findAll = db.getLanguageRepository().findAll();
+//		List<String> languages = new ArrayList<>();
+//		Set<String> set = new TreeSet<>();
+//		findAll.forEach(l -> set.add(l.getTitle()));
+//		languages.addAll(set);
+//		return languages;
+//	}
 
-	@ModelAttribute("volumeList")
-	public List<String> getVolumeList() {
-		Iterable<Volume> findAll = db.getVolumeRepository().findAll();
-		List<String> volumes = new ArrayList<>();
-		findAll.forEach(l -> volumes.add(l.getTitle()));
-		return volumes;
-	}
+//	@ModelAttribute("volumeList")
+//	public List<String> getVolumeList() {
+//		Iterable<Volume> findAll = db.getVolumeRepository().findAll();
+//		List<String> volumes = new ArrayList<>();
+//		findAll.forEach(l -> volumes.add(l.getTitle()));
+//		return volumes;
+//	}
 
-	@RequestMapping(value = "chapters/by/volume/title/{volumeTitle}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-	public @ResponseBody List<String> getChapterNamesByVolTitle(@PathVariable String volumeTitle) {
-		Volume volume = db.getVolumeRepository().findByTitle(volumeTitle);
-		if (volume == null) {
-			return new ArrayList<>();
-		}
-		List<Chapter> chapters = db.getChapterRepository().findByVolumeId(volume.getId());
-		List<String> chapterNames = new ArrayList<>();
-		chapters.forEach(c -> chapterNames.add(c.getTitle()));
-		return chapterNames;
-	}
+//	@RequestMapping(value = "chapters/by/volume/title/{volumeTitle}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+//	public @ResponseBody List<String> getChapterNamesByVolTitle(@PathVariable String volumeTitle) {
+//		Volume volume = db.getVolumeRepository().findByTitle(volumeTitle);
+//		if (volume == null) {
+//			return new ArrayList<>();
+//		}
+//		List<Chapter> chapters = db.getChapterRepository().findByVolumeId(volume.getId());
+//		List<String> chapterNames = new ArrayList<>();
+//		chapters.forEach(c -> chapterNames.add(c.getTitle()));
+//		return chapterNames;
+//	}
 
-	@RequestMapping(value = "/showDocument", method = RequestMethod.GET)
-	public Model showDocument(Model model, @RequestParam("pageId") final String pageId,
-			@RequestParam("resultQuotations") String... resultQuotations) {
-
-		Page page = db.getPageRepository().findByPageId(pageId);
-		List<Word> words = db.getWordRepository().findByRange(page.getStart(), page.getEnd());
-		Collections.sort(words);
-		List<RectangleLight> rectangles = new ArrayList<>();
-
-		Pattern quotationFinder = Pattern.compile("<span[^>]*>(.*?)</span>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-
-		List<String> matchedTokens = new ArrayList<>();
-
-		for (String quotation : resultQuotations) {
-			Matcher regexMatcher = quotationFinder.matcher(quotation);
-			while (regexMatcher.find()) {
-				matchedTokens.add(regexMatcher.group(1));
-			}
-		}
-
-		for (Word word : words) {
-			Version currentVersion = word.getCurrentVersion();
-			for (String token : matchedTokens) {
-				String normalized = currentVersion.getValue().replaceAll("\\W", "");
-				if (normalized.equalsIgnoreCase(token)) {
-					String id = word.getId();
-					RectangleLight rectangleLight = new RectangleLight(id, word.getRectangle());
-					logger.debug("version :: '" + currentVersion.getValue() + "' rectangle :: " + rectangleLight);
-					rectangles.add(rectangleLight);
-				}
-			}
-		}
-
-		model.addAttribute("page", page);
-		model.addAttribute("imgUrl", IMGS_URL + page.getUrl().replace(".xml", ""));
-		model.addAttribute("words", words);
-		model.addAttribute("rectangles", rectangles);
-
-		return model;
-	}
+//	@RequestMapping(value = "/showDocument", method = RequestMethod.GET)
+//	public Model showDocument(Model model, @RequestParam("pageId") final String pageId,
+//			@RequestParam("resultQuotations") String... resultQuotations) {
+//
+//		Page page = db.getPageRepository().findByPageId(pageId);
+//		List<Word> words = db.getWordRepository().findByRange(page.getStart(), page.getEnd());
+//		Collections.sort(words);
+//		List<RectangleLight> rectangles = new ArrayList<>();
+//
+//		Pattern quotationFinder = Pattern.compile("<span[^>]*>(.*?)</span>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+//
+//		List<String> matchedTokens = new ArrayList<>();
+//
+//		for (String quotation : resultQuotations) {
+//			Matcher regexMatcher = quotationFinder.matcher(quotation);
+//			while (regexMatcher.find()) {
+//				matchedTokens.add(regexMatcher.group(1));
+//			}
+//		}
+//
+//		for (Word word : words) {
+//			Version currentVersion = word.getCurrentVersion();
+//			for (String token : matchedTokens) {
+//				String normalized = currentVersion.getValue().replaceAll("\\W", "");
+//				if (normalized.equalsIgnoreCase(token)) {
+//					String id = word.getId();
+//					RectangleLight rectangleLight = new RectangleLight(id, word.getRectangle());
+//					logger.debug("version :: '" + currentVersion.getValue() + "' rectangle :: " + rectangleLight);
+//					rectangles.add(rectangleLight);
+//				}
+//			}
+//		}
+//
+//		model.addAttribute("page", page);
+//		model.addAttribute("imgUrl", IMGS_URL + page.getUrl().replace(".xml", ""));
+//		model.addAttribute("words", words);
+//		model.addAttribute("rectangles", rectangles);
+//
+//		return model;
+//	}
 
 	/**
 	 * The result view

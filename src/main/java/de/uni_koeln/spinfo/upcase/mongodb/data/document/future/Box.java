@@ -1,13 +1,7 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "re_boxes")
 public class Box {
-
-	@Id private String id;
-
+	
 	private int x1;
 	private int x2;
 	private int y1;
@@ -19,14 +13,6 @@ public class Box {
 		this.x2 = x2;
 		this.y1 = y1;
 		this.y2 = y2;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public int getX1() {
@@ -65,7 +51,6 @@ public class Box {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + x1;
 		result = prime * result + x2;
 		result = prime * result + y1;
@@ -82,11 +67,6 @@ public class Box {
 		if (getClass() != obj.getClass())
 			return false;
 		Box other = (Box) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
 		if (x1 != other.x1)
 			return false;
 		if (x2 != other.x2)
@@ -100,7 +80,7 @@ public class Box {
 
 	@Override
 	public String toString() {
-		return "Box [id=" + id + ", x1=" + x1 + ", x2=" + x2 + ", y1=" + y1 + ", y2=" + y2 + "]";
+		return "Box [x1=" + x1 + ", x2=" + x2 + ", y1=" + y1 + ", y2=" + y2 + "]";
 	}
 	
 }

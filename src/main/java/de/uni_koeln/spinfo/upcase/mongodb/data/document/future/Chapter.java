@@ -1,35 +1,39 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "re_chapters")
+@Document(collection = "ref_chapters")
 public class Chapter {
+	
+	@Transient
+	public static final String COLLECTION = "ref_chapters";
 	
 	@Id private String id;
 	
 	private String title;
 	private Date lastModified;
 	
-	@DBRef private List<Page> pages;
+//	@DBRef private List<Page> pages;
+	private Set<String> pages;
 	
 	public Chapter(String title) {
 		super();
 		this.title = title;
 		this.lastModified = new Date();
-		this.pages = new ArrayList<>();
+		this.pages = new HashSet<>();
 	}
 
-	public Chapter(String title, List<Page> pages) {
+	public Chapter(String title, Set<String> pageIds) {
 		super();
 		this.title = title;
 		this.lastModified = new Date();
-		this.pages = pages;
+		this.pages = pageIds;
 	}
 	
 	public String getTitle() {
@@ -56,12 +60,12 @@ public class Chapter {
 		this.lastModified = lastModified;
 	}
 
-	public List<Page> getPages() {
+	public Set<String> getPages() {
 		return pages;
 	}
 
-	public void setPages(List<Page> pages) {
-		this.pages = pages;
+	public void setPages(Set<String> pageIds) {
+		this.pages = pageIds;
 	}
 
 	@Override

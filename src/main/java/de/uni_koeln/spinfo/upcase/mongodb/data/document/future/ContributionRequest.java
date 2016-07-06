@@ -3,26 +3,34 @@ package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "contribution_requests")
 public class ContributionRequest {
 	
+	@Transient
+	public static final String COLLECTION = "contribution_requests";
+	
 	@Id private String id;
 	
 	private Date creationDate;
 	
-	@DBRef private Collection collection;
-	@DBRef private UpcaseUser requestor;
-	@DBRef private UpcaseUser owner;
+//	@DBRef private Collection collection;
+	private String collection;
 	
-	public ContributionRequest(Collection collection, UpcaseUser requestor) {
+//	@DBRef private UpcaseUser requestor;
+	private String requestor;
+	
+//	@DBRef private UpcaseUser owner;
+	private String owner;
+	
+	public ContributionRequest(Collection collection, String requestorId) {
 		super();
 		this.creationDate = new Date();
-		this.collection = collection;
-		this.owner = collection.getOwner();
-		this.requestor = requestor;
+		this.collection = collection.getId();
+		this.owner = collection.getOwnerId();
+		this.requestor = requestorId;
 	}
 
 
@@ -46,31 +54,36 @@ public class ContributionRequest {
 	}
 
 
-	public Collection getCollection() {
+	public String getCollection() {
 		return collection;
 	}
 
 
-	public void setCollection(Collection collection) {
-		this.collection = collection;
+	public void setCollection(final String collectionId) {
+		this.collection = collectionId;
 	}
 
 
-	public UpcaseUser getRequestor() {
+	public String getRequestor() {
 		return requestor;
 	}
 
 
-	public void setRequestor(UpcaseUser requestor) {
-		this.requestor = requestor;
+	public void setRequestor(final String requestorId) {
+		this.requestor = requestorId;
 	}
 
-	public UpcaseUser getOwner() {
+	public String getOwner() {
 		return owner;
 	}
 	
 	public void setOwner(UpcaseUser owner) {
-		this.owner = owner;
+		this.owner = owner.getId();
+	}
+
+	
+	public void setOwner(String ownerId) {
+		this.owner = ownerId;
 	}
 
 

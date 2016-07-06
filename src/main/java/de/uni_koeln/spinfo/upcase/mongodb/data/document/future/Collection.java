@@ -1,16 +1,19 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "re_collections")
+@Document(collection = "ref_collections")
 public class Collection {
 
+	@Transient
+	public static final String COLLECTION = "ref_collections";
+	
 	@Id private String id;
 
 	private Date creationDate;
@@ -18,37 +21,50 @@ public class Collection {
 	private boolean contributable;
 	private String title;
 
-	@DBRef private UpcaseUser owner;
-	@DBRef private List<UpcaseUser> contributers;
+//	@DBRef private UpcaseUser owner;
+	private String owner;
 	
-	@DBRef private List<Page> pages;
-	@DBRef private List<Chapter> chapters;
-	@DBRef private List<Volume> volumes;
+//	@DBRef private List<UpcaseUser> contributers;
+	private Set<String> contributers;
+	
+//	@DBRef private List<Page> pages;
+	private Set<String> pages;
+	
+//	@DBRef private List<Chapter> chapters;
+//	@DBRef private List<Volume> volumes;
 
+	public Collection(final String title) {
+		this.title = title;
+		this.creationDate = new Date();
+		this.lastModified = new Date();
+		this.contributable = false;
+		this.pages = new HashSet<>();
+		this.contributers = new HashSet<>();
+	}
 	
 	public Collection(String title, UpcaseUser owner) {
 		this.title = title;
 		this.creationDate = new Date();
 		this.lastModified = new Date();
 		this.contributable = false;
-		this.owner = owner;
-		this.pages = new ArrayList<>();
-		this.contributers = new ArrayList<>();
-		this.chapters = new ArrayList<>();
-		this.volumes = new ArrayList<>();
+		this.owner = owner.getId();
+		this.pages = new HashSet<>();
+		this.contributers = new HashSet<>();
+//		this.chapters = new ArrayList<>();
+//		this.volumes = new ArrayList<>();
 	}
 	
-	public Collection(String title, UpcaseUser owner, List<Page> pages) {
+	public Collection(String title, UpcaseUser owner, Set<String> pageIds) {
 		super();
 		this.title = title;
 		this.creationDate = new Date();
 		this.lastModified = new Date();
 		this.contributable = false;
-		this.owner = owner;
-		this.pages = pages;
-		this.contributers = new ArrayList<>();
-		this.chapters = new ArrayList<>();
-		this.volumes = new ArrayList<>();
+		this.owner = owner.getId();
+		this.pages = pageIds;
+		this.contributers = new HashSet<>();
+//		this.chapters = new ArrayList<>();
+//		this.volumes = new ArrayList<>();
 	}
 	
 	public String getTitle() {
@@ -91,49 +107,53 @@ public class Collection {
 		this.contributable = contributable;
 	}
 
-	public UpcaseUser getOwner() {
+	public String getOwnerId() {
 		return owner;
 	}
 
 	public void setOwner(UpcaseUser owner) {
-		this.owner = owner;
+		this.owner = owner.getId();
+	}
+	
+	public void setOwner(final String ownerId) {
+		this.owner = ownerId;
 	}
 
-	public List<UpcaseUser> getContributers() {
+	public Set<String> getContributers() {
 		return contributers;
 	}
 
-	public void setContributers(List<UpcaseUser> contributers) {
+	public void setContributers(Set<String> contributers) {
 		this.contributers = contributers;
 	}
 	
-	public void setContributer(UpcaseUser contributor) {
-		this.contributers.add(contributor);
+	public void setContributer(final String contributorId) {
+		this.contributers.add(contributorId);
 	}
 	
-	public List<Page> getPages() {
+	public Set<String> getPages() {
 		return pages;
 	}
 
-	public void setPages(List<Page> pages) {
+	public void setPages(Set<String> pages) {
 		this.pages = pages;
 	}
 
-	public List<Chapter> getChapters() {
-		return chapters;
-	}
-
-	public void setChapters(List<Chapter> chapters) {
-		this.chapters = chapters;
-	}
-
-	public List<Volume> getVolumes() {
-		return volumes;
-	}
-
-	public void setVolumes(List<Volume> volumes) {
-		this.volumes = volumes;
-	}
+//	public List<Chapter> getChapters() {
+//		return chapters;
+//	}
+//
+//	public void setChapters(List<Chapter> chapters) {
+//		this.chapters = chapters;
+//	}
+//
+//	public List<Volume> getVolumes() {
+//		return volumes;
+//	}
+//
+//	public void setVolumes(List<Volume> volumes) {
+//		this.volumes = volumes;
+//	}
 
 	@Override
 	public int hashCode() {

@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.upcase.model;
+package de.uni_koeln.spinfo.upcase.model.form;
 
 public class RegistrationForm {
 

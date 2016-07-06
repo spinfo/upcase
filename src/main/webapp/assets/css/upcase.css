@@ -57,3 +57,7 @@ li a.nav-a-items:hover {
 .pinkishComplimentary {
 	color: #c5e3bf;
 }
+
+.jumbotron {
+	background-color: #C5E3BF; important!
+}

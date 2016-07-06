@@ -5,11 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "re_pages")
+@Document(collection = "ref_pages")
 public class Page {
+	
+	@Transient
+	public static final String COLLECTION = "ref_pages";
 	
 	@Id private String id;
 	
@@ -18,9 +21,12 @@ public class Page {
 	private int pageNumber;
 	private int physicalPageNumber;
 	private List<Word> words;
+	private String collection;
+	private String user;
 	
-	@DBRef private Chapter chapter;
-	@DBRef private Volume volume;
+//	@DBRef private Chapter chapter;
+//	@DBRef private Volume volume;
+	
 	
 	public Page(String imageUrl, int pageNumber, int physicalPageNumber) {
 		super();
@@ -31,12 +37,25 @@ public class Page {
 		this.words = new ArrayList<>();
 	}
 	
-	public Page(String imageUrl, int pageNumber, int physicalPageNumber, List<Word> words) {
+	public Page(String imageUrl, int pageNumber, int physicalPageNumber, String collection, String user) {
 		super();
 		this.lastModified = new Date();
 		this.imageUrl = imageUrl;
 		this.pageNumber = pageNumber;
 		this.physicalPageNumber = physicalPageNumber;
+		this.collection = collection;
+		this.user = user;
+		this.words = new ArrayList<>();
+	}
+	
+	public Page(String imageUrl, int pageNumber, int physicalPageNumber, String collection, String user, List<Word> words) {
+		super();
+		this.lastModified = new Date();
+		this.imageUrl = imageUrl;
+		this.pageNumber = pageNumber;
+		this.physicalPageNumber = physicalPageNumber;
+		this.collection = collection;
+		this.user = user;
 		this.words = words;
 	}
 
@@ -48,6 +67,30 @@ public class Page {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	/**
+	 * 
+	 * @return userId
+	 */
+	public String getUser() {
+		return user;
+	}
+	
+	public void setUser(String user) {
+		this.user = user;
+	}
+	
+	/**
+	 * 
+	 * @return collectionID
+	 */
+	public String getCollection() {
+		return collection;
+	}
+	
+	public void setCollection(String collection) {
+		this.collection = collection;
 	}
 
 
@@ -101,24 +144,24 @@ public class Page {
 	}
 
 
-	public Chapter getChapter() {
-		return chapter;
-	}
-
-
-	public void setChapter(Chapter chapter) {
-		this.chapter = chapter;
-	}
-
-
-	public Volume getVolume() {
-		return volume;
-	}
-
-
-	public void setVolume(Volume volume) {
-		this.volume = volume;
-	}
+//	public Chapter getChapter() {
+//		return chapter;
+//	}
+//
+//
+//	public void setChapter(Chapter chapter) {
+//		this.chapter = chapter;
+//	}
+//
+//
+//	public Volume getVolume() {
+//		return volume;
+//	}
+//
+//
+//	public void setVolume(Volume volume) {
+//		this.volume = volume;
+//	}
 
 
 	@Override
@@ -168,10 +211,8 @@ public class Page {
 
 	@Override
 	public String toString() {
-		return "Page [id=" + id + ", lastModified=" + lastModified + ", imageUrl=" + imageUrl + ", pageNumber="
-				+ pageNumber + ", physicalPageNumber=" + physicalPageNumber + ", words=" + words + "]";
+		return "Page [id=" + id + ", imageUrl=" + imageUrl + ", pageNumber=" + pageNumber + ", words=" + words + "]";
 	}
-	
 	
 
 }

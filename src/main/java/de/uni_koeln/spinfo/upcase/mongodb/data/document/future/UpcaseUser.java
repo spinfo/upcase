@@ -1,36 +1,62 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.SpringSecurityCoreVersion;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.Assert;
 
-import de.uni_koeln.spinfo.upcase.model.RegistrationForm;
-import de.uni_koeln.spinfo.upcase.model.Role;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Collection;
+import de.uni_koeln.spinfo.upcase.model.form.RegistrationForm;
 
-@Document(collection = "re_users")
-public class UpcaseUser {
+@Document(collection = "ref_users")
+public class UpcaseUser implements UserDetails {
 
-	@Id private String id;
-	
+	private static final long serialVersionUID = 7421580832939472903L;
+
+	@Transient
+	public static final String COLLECTION = "ref_users";
+
+	@Id
+	private String id;
 	private Date creationDate;
 	private Date lastLogin;
-	private String email;
+	private String email; // username
 	private String institution;
 	private String firstName;
 	private String lastName;
-	private String hash;
-	private List<String> roles;
+	private String hash; // password
 	private boolean enabled;
-	
-	@DBRef private List<Collection> owns;
-	@DBRef private List<Collection> contributes;
-	
+
+	// @DBRef private List<Collection> owns;
+	private Set<String> owns;
+
+	// @DBRef private List<Collection> contributes;
+	private Set<String> contributesTo;
+
+	@Transient
+	private Set<GrantedAuthority> authorities;
+	@Transient
+	private boolean accountNonExpired;
+	@Transient
+	private boolean credentialsNonExpired;
+	@Transient
+	private boolean accountNonLocked;
+
+	private Set<String> roles;
 
 	public UpcaseUser() {
 	}
@@ -43,9 +69,83 @@ public class UpcaseUser {
 		this.firstName = registrationForm.getFirstName();
 		this.lastName = registrationForm.getLastName();
 		this.institution = registrationForm.getInstitution();
-		this.roles = new ArrayList<>();
-		setRole("ROLE_USER");
-		this.hash = BCrypt.hashpw(registrationForm.getPassword(), BCrypt.gensalt());
+		// this.hash = BCrypt.hashpw(registrationForm.getPassword(),
+		// BCrypt.gensalt());
+		this.hash = registrationForm.getPassword();
+		this.owns = new HashSet<>();
+		this.contributesTo = new HashSet<>();
+		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		this.enabled = true;
+		this.accountNonExpired = true;
+		this.credentialsNonExpired = true;
+		this.accountNonLocked = true;
+		authorities.add(new GrantedAuthority() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getAuthority() {
+				return "ROLE_USER";
+			}
+		});
+		
+		roles = new HashSet<>();
+		for (GrantedAuthority role : authorities) {
+			roles.add(role.getAuthority());
+		}
+		
+		this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
+	}
+
+	public UpcaseUser(final RegistrationForm registrationForm, boolean enabled, boolean accountNonExpired,
+			boolean credentialsNonExpired, boolean accountNonLocked,
+			Collection<? extends GrantedAuthority> authorities) {
+		super();
+		this.email = registrationForm.getEmail();
+		this.creationDate = new Date();
+		this.lastLogin = new Date();
+		this.firstName = registrationForm.getFirstName();
+		this.lastName = registrationForm.getLastName();
+		this.institution = registrationForm.getInstitution();
+		// this.hash = BCrypt.hashpw(registrationForm.getPassword(),
+		// BCrypt.gensalt());
+		this.hash = registrationForm.getPassword();
+		this.owns = new HashSet<>();
+		this.contributesTo = new HashSet<>();
+		this.enabled = enabled;
+		this.accountNonExpired = accountNonExpired;
+		this.credentialsNonExpired = credentialsNonExpired;
+		this.accountNonLocked = accountNonLocked;
+		
+		roles = new HashSet<>();
+		for (GrantedAuthority role : authorities) {
+			roles.add(role.getAuthority());
+		}
+		
+		this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
+	}
+
+	public void addCollection(final String collectionId) {
+		this.owns.add(collectionId);
+	}
+
+	public void removeCollection(final String collectionId) {
+		this.owns.remove(collectionId);
+	}
+
+	public Set<String> getCollections() {
+		return owns;
+	}
+
+	public Set<String> getContributions() {
+		return contributesTo;
+	}
+
+	public void addContribution(final String collectionId) {
+		this.contributesTo.add(collectionId);
+	}
+
+	public void removeContribution(final String collectionId) {
+		this.contributesTo.remove(collectionId);
 	}
 
 	public String getId() {
@@ -114,87 +214,21 @@ public class UpcaseUser {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-		result = prime * result + ((hash == null) ? 0 : hash.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((institution == null) ? 0 : institution.hashCode());
-		result = prime * result + ((lastLogin == null) ? 0 : lastLogin.hashCode());
-		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-		return result;
+		return email.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		UpcaseUser other = (UpcaseUser) obj;
-		if (creationDate == null) {
-			if (other.creationDate != null)
-				return false;
-		} else if (!creationDate.equals(other.creationDate))
-			return false;
-		if (email == null) {
-			if (other.email != null)
-				return false;
-		} else if (!email.equals(other.email))
-			return false;
-		if (firstName == null) {
-			if (other.firstName != null)
-				return false;
-		} else if (!firstName.equals(other.firstName))
-			return false;
-		if (hash == null) {
-			if (other.hash != null)
-				return false;
-		} else if (!hash.equals(other.hash))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (institution == null) {
-			if (other.institution != null)
-				return false;
-		} else if (!institution.equals(other.institution))
-			return false;
-		if (lastLogin == null) {
-			if (other.lastLogin != null)
-				return false;
-		} else if (!lastLogin.equals(other.lastLogin))
-			return false;
-		if (lastName == null) {
-			if (other.lastName != null)
-				return false;
-		} else if (!lastName.equals(other.lastName))
-			return false;
-		return true;
+		if (obj instanceof UpcaseUser) {
+			return email.equals(((UpcaseUser) obj).email);
+		}
+		return false;
 	}
 
 	@Override
 	public String toString() {
-		return "UpcaseUser [role=" + getRoles().toString() + ", email=" + email + ", firstName=" + firstName
+		return "UpcaseUser [role=" + roles + ", email=" + email + ", firstName=" + firstName
 				+ ", lastName=" + lastName + "]";
-	}
-
-	public List<String> getRoles() {
-		return roles;
-	}
-
-	public boolean setRole(final String role) {
-		return this.roles.add(role);
-	}
-
-	public boolean removeRole(final String role) {
-		return this.roles.remove(role);
 	}
 
 	public boolean isEnabled() {
@@ -203,6 +237,64 @@ public class UpcaseUser {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return authorities;
+	}
+
+	@Override
+	public String getPassword() {
+		return hash;
+	}
+
+	@Override
+	public String getUsername() {
+		return email;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return accountNonExpired;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return accountNonLocked;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return credentialsNonExpired;
+	}
+
+	private static SortedSet<GrantedAuthority> sortAuthorities(Collection<? extends GrantedAuthority> authorities) {
+		Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
+		SortedSet<GrantedAuthority> sortedAuthorities = new TreeSet<GrantedAuthority>(new AuthorityComparator());
+
+		for (GrantedAuthority grantedAuthority : authorities) {
+			Assert.notNull(grantedAuthority, "GrantedAuthority list cannot contain any null elements");
+			sortedAuthorities.add(grantedAuthority);
+		}
+
+		return sortedAuthorities;
+	}
+
+	private static class AuthorityComparator implements Comparator<GrantedAuthority>, Serializable {
+		private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
+
+		public int compare(GrantedAuthority g1, GrantedAuthority g2) {
+			if (g2.getAuthority() == null) {
+				return -1;
+			}
+
+			if (g1.getAuthority() == null) {
+				return 1;
+			}
+
+			return g1.getAuthority().compareTo(g2.getAuthority());
+		}
 	}
 
 }

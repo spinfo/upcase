@@ -48,7 +48,7 @@ public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
-	public SpringTemplateEngine templateEngine() {	
+	public SpringTemplateEngine templateEngine() {
 		SpringTemplateEngine engine = new SpringTemplateEngine();
 		engine.setTemplateResolver(templateResolver());
 		Set<IDialect> dialetcs = new HashSet<>();
@@ -72,13 +72,13 @@ public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 		messageSource.setBasename("locale/messages");
 		return messageSource;
 	}
-	
-	@Bean
-	public CommonsMultipartResolver multipartResolver() {
+
+	@Bean(name = "filterMultipartResolver")
+	public CommonsMultipartResolver filterMultipartResolver() {
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(104857600);
+		resolver.setMaxUploadSize(-1);
 		resolver.setDefaultEncoding("UTF-8");
 		return resolver;
 	}
-	
+
 }

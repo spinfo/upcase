@@ -5,19 +5,22 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "re_words")
+@Document(collection = "ref_words")
 public class Word {
+	
+	@Transient
+	public static final String COLLECTION = "ref_words";
 	
 	@Id private String id;
 	
 	private String token;
 	private Date lastModified;
 	
-	@DBRef private List<Annotation> annotations;
-	@DBRef private Box box;
+	private List<Annotation> annotations;
+	private Box box;
 	
 	public Word(String token, Box box) {
 		super();
@@ -106,8 +109,7 @@ public class Word {
 
 	@Override
 	public String toString() {
-		return "Word [id=" + id + ", token=" + token + ", lastModified=" + lastModified + ", annotations=" + annotations
-				+ ", box=" + box + "]";
+		return "Word [id=" + id + ", token=" + token + ", annotations=" + annotations + ", box=" + box + "]";
 	}
 	
 	

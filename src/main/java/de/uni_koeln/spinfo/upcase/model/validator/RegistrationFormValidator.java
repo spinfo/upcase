@@ -8,7 +8,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import de.uni_koeln.spinfo.upcase.model.RegistrationForm;
+import de.uni_koeln.spinfo.upcase.model.form.RegistrationForm;
 
 @Service
 public class RegistrationFormValidator implements Validator {

@@ -6,7 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import de.uni_koeln.spinfo.upcase.mongodb.repository.UpcaseUserRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
+
 
 @Controller()
 public class AdminController {

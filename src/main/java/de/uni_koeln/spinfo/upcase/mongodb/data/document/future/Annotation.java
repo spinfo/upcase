@@ -3,10 +3,14 @@ package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "re_annotations")
+@Document(collection = "ref_annotations")
 public class Annotation {
+	
+	@Transient
+	public static final String COLLECTION = "ref_annotations";
 
 	@Id private String id;
 	

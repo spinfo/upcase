@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import de.uni_koeln.spinfo.upcase.model.RegistrationForm;
+import de.uni_koeln.spinfo.upcase.model.form.RegistrationForm;
 import de.uni_koeln.spinfo.upcase.model.validator.RegistrationFormValidator;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.UpcaseUser;
-import de.uni_koeln.spinfo.upcase.mongodb.repository.UpcaseUserRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.UpcaseUser;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
 
 @Controller
 public class RegistrationController {
@@ -26,7 +26,7 @@ public class RegistrationController {
 
 	@Autowired
 	private UpcaseUserRepository upcaseUserRepository;
-	
+
 	@InitBinder("registrationForm")
 	protected void initBinder(WebDataBinder binder) {
 		binder.addValidators(new RegistrationFormValidator());

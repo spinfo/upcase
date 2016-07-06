@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="de" xmlns:th="http://www.thymeleaf.org">
 <head>
+
 <title>Upload</title>
-<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	type="text/css" />
-<link href="assets/css/upcase.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
-<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
+<link href="../assets/css/upcase.css" rel="stylesheet" type="text/css" />
+
+
+<meta name="_csrf" th:content="${_csrf.token}" />
+<!-- default header name is X-CSRF-TOKEN -->
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<!-- ... -->
+
 <style type="text/css">
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -36,67 +44,45 @@ body {
 </style>
 </head>
 <body>
+	<div th:replace="fragments/nav-bar-user :: nav-bar-user"></div>
+
 	<div class="container-fluid">
 		<div class="row">
 			<div class="wrapper">
-				<h1>Upload a new collection</h1>
-				<h2>Basic settings</h2>
-				<form action="upload" th:action="@{/upload}" method="post"
+				<h1>Create a new collection</h1>
+				<!-- 				<h2>Basic settings</h2> -->
+				<form th:action="@{/create/collection}" method="post"
 					enctype="multipart/form-data" name="uploadForm"
 					th:object="${uploadForm}">
 					<div class="form-group">
-						<label for="workTitle">Title<span class="greyish">*</span></label>
-						<input name="workTitle" type="text" class="form-control"
-							id="workTitle" placeholder="Bon-Bon"
-							th:value="${uploadForm.workTitle}" /> <span
-							th:if="${#fields.hasErrors('workTitle')}"
-							th:errors="*{workTitle}" th:class="formError">Please enter
-							a title.</span>
+						<label for="collectionName">Collection name<span
+							class="greyish">*</span></label> <input name="collectionName" type="text"
+							class="form-control" id="collectionName"
+							placeholder="MyCollection"
+							th:value="${uploadForm.collectionName}" /> <span
+							th:if="${#fields.hasErrors('collectionName')}"
+							th:errors="*{collectionName}" th:class="formError">Please
+							enter a collection name.</span>
 					</div>
 					<div class="form-group">
-						<label for="workAuthor">Author<span class="greyish">*</span></label>
-						<input name="workAuthor" type="text" class="form-control"
-							id="workAuthor" placeholder="Edgar Allan Poe"
-							th:value="${uploadForm.workAuthor}" /> <span
-							th:if="${#fields.hasErrors('workAuthor')}"
-							th:errors="*{workAuthor}" th:class="formError">Please
-							enter the author's name.</span>
-					</div>
-					<div class="form-group">
-						<label for="source">Source<span class="greyish">*</span></label> <input
-							name="source" type="text" class="form-control" id="source"
-							placeholder="http://gutenberg.spiegel.de/autor/edgar-allan-poe-465"
-							th:value="${uploadForm.source}" /> <span
-							th:if="${#fields.hasErrors('source')}" th:errors="*{source}"
-							th:class="formError">Please enter the work's source.</span>
-					</div>
-					<div class="form-group">
-						<label for="language">Language</label> <input name="language"
-							type="text" class="form-control" id="language"
-							placeholder="German" th:value="${uploadForm.language}" /> <span
-							th:if="${#fields.hasErrors('language')}" th:errors="*{language}"
-							th:class="formError">Please enter the work's language.</span>
-					</div>
-					<div class="form-group">
-						<label for="encoding">Encoding</label> <select id="encodingSelect"
-							class="form-control" th:field="*{encoding}">
-							<option value=""></option>
-							<option th:each="encoding : ${encodings}" th:text="${encoding}"
-								th:value="${encoding}" th:selected="${uploadForm.encoding}">"UTF-8"</option>
-						</select> <span th:if="${#fields.hasErrors('encoding')}"
-							th:errors="*{encoding}" th:class="formError">Please select
-							an encoding.</span>
+						<label for="description">Description</label> <input
+							name="description" type="text" class="form-control"
+							id="description" placeholder="My first collecion"
+							th:value="${uploadForm.description}" />
 					</div>
 					<div class="form-group">
 						<label for="exampleInputFile">File<span class="greyish">*</span></label>
-						<input type="file" name="multiPart" accept=".png, .jpg, .pdf"
+						<input type="file" name="multiPart" multiple="multiple" accept=".png, .jpg, .pdf"
 							th:field="*{multiPart}" /> <span
 							th:if="${#fields.hasErrors('multiPart')}"
-							th:errors="*{multiPart}" th:class="formError">Please
+							th:errors="*{multiPart}" 
+							th:class="formError">Please
 							choose a file to upload.</span>
-						<p class="help-block">Selectable file types are: PDF, PNG,
-							JPEG or DOCX</p>
+						<p class="help-block">Selectable file types are: PDF, PNG or
+							JPEG</p>
 					</div>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
 					<button type="submit" class="btn btn-default">Submit</button>
 				</form>
 			</div>
