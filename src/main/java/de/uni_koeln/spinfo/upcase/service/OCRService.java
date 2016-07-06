@@ -2,13 +2,14 @@ package de.uni_koeln.spinfo.upcase.service;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-
-import com.jcraft.jsch.JSchException;
 
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -16,7 +17,10 @@ import net.sourceforge.tess4j.TesseractException;
 @Service
 public class OCRService {
 
+	Logger logger = LoggerFactory.getLogger(getClass());
+	
 	private Tesseract tesseract;
+	
 	private FileFilter filer;
 
 	@PreAuthorize("hasRole('USER')")
@@ -30,15 +34,19 @@ public class OCRService {
 	}
 
 	@PreAuthorize("hasRole('USER')")
-	public List<String> exctractHOCR(List<File> files) throws TesseractException, JSchException {
+	public Map<String, String> exctractHOCR(List<File> files) throws TesseractException {
 		init();
-		List<String> hOCRs = new ArrayList<>();
+		Map<String, String> fileToHtml = new HashMap<>();
+//		List<String> hOCRs = new ArrayList<>();
 		for (File file : files) {
 			if (filer.accept(file)) {
-				hOCRs.add(tesseract.doOCR(file));
+				String ocr = tesseract.doOCR(file);
+				fileToHtml.put(file.getName(), ocr);
+				logger.info("Extract text from " + file.getName());
+//				hOCRs.add(tesseract.doOCR(file));
 			}
 		}
-		return hOCRs;
+		return fileToHtml;
 	}
 
 	private void init() {

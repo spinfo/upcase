@@ -1,10 +1,12 @@
 package de.uni_koeln.spinfo.upcase.model.form;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public class UploadForm {
 
-	private MultipartFile multiPart;
+	private List<MultipartFile> files;
 	private String collectionName;
 	private String description;
 
@@ -12,25 +14,25 @@ public class UploadForm {
 		super();
 	}
 
-	public UploadForm(MultipartFile multiPart, String collectionName) {
+	public UploadForm(List<MultipartFile> files, String collectionName) {
 		super();
-		this.multiPart = multiPart;
+		this.files = files;
 		this.collectionName = collectionName;
 	}
 
-	public UploadForm(MultipartFile multiPart, String collectionName, String description) {
+	public UploadForm(List<MultipartFile> files, String collectionName, String description) {
 		super();
-		this.multiPart = multiPart;
+		this.files = files;
 		this.collectionName = collectionName;
 		this.description = description;
 	}
 
-	public MultipartFile getMultiPart() {
-		return multiPart;
+	public List<MultipartFile> getFiles() {
+		return files;
 	}
 
-	public void setMultiPart(MultipartFile multiPart) {
-		this.multiPart = multiPart;
+	public void setFiles(List<MultipartFile> files) {
+		this.files = files;
 	}
 	
 	public String getDescription() {

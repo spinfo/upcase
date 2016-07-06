@@ -39,4 +39,16 @@ public class CollectionRepositoryImpl implements CollectionRepository {
 		return operations.findOne(new Query(Criteria.where("title").is(title)), Collection.class);
 	}
 
+	@Override
+	public Collection update(Collection c) {
+		Collection update = findbyId(c.getId());
+		update.setContributable(c.isContributable());
+		update.setContributers(c.getContributers());
+		update.setLastModified(c.getLastModified());
+		update.setPages(c.getPages());
+		update.setTitle(c.getTitle());
+		operations.save(update);
+		return update;
+	}
+
 }

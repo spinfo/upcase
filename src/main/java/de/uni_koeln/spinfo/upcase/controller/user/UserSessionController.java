@@ -17,11 +17,7 @@ public class UserSessionController {
 
 	@ModelAttribute("userName")
 	public Model userName(Model model) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String userName = "unknown";
-		if (auth != null)
-			userName = auth.getName();
-		model.addAttribute("userName", userName);
+		model.addAttribute("userName", getUserName());
 		return model;
 	}
 
@@ -33,6 +29,14 @@ public class UserSessionController {
 	@RequestMapping(value = { "/something_went_wrong" })
 	public @ResponseBody String accessDenied() {
 		return "<h1>Ups, something went wrong</h1><p>Please contact your local administrator for help!</p> ";
+	}
+	
+	private String getUserName() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userName = "unknown";
+		if (auth != null)
+			userName = auth.getName();
+		return userName;
 	}
 
 }

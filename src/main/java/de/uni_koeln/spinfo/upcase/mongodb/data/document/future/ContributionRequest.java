@@ -33,7 +33,6 @@ public class ContributionRequest {
 		this.requestor = requestorId;
 	}
 
-
 	public String getId() {
 		return id;
 	}

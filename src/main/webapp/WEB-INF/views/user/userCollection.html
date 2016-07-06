@@ -10,7 +10,8 @@
 </head>
 <body>
 
-	<h1>YOR COLLECTIONS</h1>
+	<h1 th:text="${collection.title}">YOR COLLECTIONS</h1>
+	<p th:text="${owner.lastName +', '+ owner.firstName}">COLLECTION OWNER</p>
 
 </body>
 </html>

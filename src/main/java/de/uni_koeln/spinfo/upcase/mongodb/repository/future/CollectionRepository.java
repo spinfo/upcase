@@ -14,4 +14,6 @@ public interface CollectionRepository extends Repository<Collection, String> {
 
 	public Collection findbyTitle(String title);
 
+	public Collection update(Collection c);
+
 }

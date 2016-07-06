@@ -33,6 +33,11 @@ public class Collection {
 //	@DBRef private List<Chapter> chapters;
 //	@DBRef private List<Volume> volumes;
 
+	
+	public Collection() {
+		// default constructor
+	}
+	
 	public Collection(final String title) {
 		this.title = title;
 		this.creationDate = new Date();

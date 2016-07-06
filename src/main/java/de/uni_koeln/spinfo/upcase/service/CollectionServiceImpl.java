@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -21,9 +23,11 @@ import de.uni_koeln.spinfo.upcase.model.form.UploadForm;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Collection;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Page;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.UpcaseUser;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Word;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.CollectionRepository;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.PageRepository;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.future.WordRepository;
 import de.uni_koeln.spinfo.upcase.util.HOCRParser;
 import net.sourceforge.tess4j.TesseractException;
 
@@ -42,6 +46,9 @@ public class CollectionServiceImpl implements CollectionService {
 	private CollectionRepository collectionRepository;
 
 	@Autowired
+	private WordRepository wordRepository;
+
+	@Autowired
 	private OCRService ocrService;
 
 	@Autowired
@@ -49,55 +56,88 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	public String createCollection(UploadForm uploadForm) throws CollectionAlreadyExistsException {
+
 		final String name = SecurityContextHolder.getContext().getAuthentication().getName();
-		final MultipartFile multiPart = uploadForm.getMultiPart();
-
 		UpcaseUser user = upcaseUserRepository.findByEmail(name);
+		String collectionName = uploadForm.getCollectionName();
 
-		if (collectionExists(uploadForm)) {
-			throw new CollectionAlreadyExistsException();
-		} else {
-			File userColectionDir = new File("user_" + user.getId(), uploadForm.getCollectionName());
-			userColectionDir.mkdirs();
+		if (collectionExists(uploadForm))
+			throw new CollectionAlreadyExistsException(collectionName);
 
-			try {
-				saveToUserDir(userColectionDir, multiPart.getOriginalFilename(), multiPart.getBytes());
-			} catch (IOException e) {
-				e.printStackTrace();
+		List<MultipartFile> files = uploadForm.getFiles();
+		Collection c = new Collection(collectionName, user);
+		collectionRepository.save(c);
+
+		File userColectionDir = createCollectionDir(uploadForm, user, files);
+
+		try {
+			List<File> convFiles = multipartsToFiles(files);
+			logger.info("OCR on progress...");
+			Map<String, String> exctractHOCR = ocrService.exctractHOCR(convFiles);
+
+			logger.info("Saving hOCR files...");
+			for (String imageUrl : exctractHOCR.keySet()) {
+				String hOCR = exctractHOCR.get(imageUrl);
+				saveToUserDir(userColectionDir, imageUrl.replaceAll("\\..{1,4}", ".html"), hOCR.getBytes());
 			}
 
-			try {
-				File file = multipartToFile(multiPart);
-				String hOCR = ocrService.exctractHOCR(file);
-				List<Page> pages = hOCRParser.parse(hOCR, userColectionDir, file.getName());
-				saveToUserDir(userColectionDir, multiPart.getOriginalFilename().replaceAll("\\..{1,4}", ".html"), hOCR.getBytes());
-				pageRepository.save(pages);
-				List<String> pageIds = pages.stream().map(p -> p.getId()).collect(Collectors.toList());
-				Collection collection = new Collection(uploadForm.getCollectionName(), user,
-						new HashSet<String>(pageIds));
-				collectionRepository.save(collection);
-				file.delete();
-				// return collection.getId();
+			logger.info("Parsing hOCR files...");
+			List<Page> pages = hOCRParser.parse(exctractHOCR, userColectionDir);
 
-			} catch (IllegalStateException | IOException e) {
-				e.printStackTrace();
-			} catch (TesseractException e) {
-				e.printStackTrace();
+			logger.info("Save word object within pages...");
+			for (Page page : pages) {
+				List<Word> words = page.getWords();
+				wordRepository.save(words);
 			}
+
+			pageRepository.save(pages);
+
+			List<String> pageIds = pages.stream().map(p -> p.getId()).collect(Collectors.toList());
+			c.setPages(new HashSet<>(pageIds));
+
+			logger.info("Update collection..." + c.getId());
+			collectionRepository.update(c);
+			logger.info("Collection updated :: " + c);
+			convFiles.forEach(f -> f.delete());
+			return c.getId();
+
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+		} catch (TesseractException e) {
+			e.printStackTrace();
 		}
 
-		return "1";
+		return null;
 	}
 
-	private File multipartToFile(MultipartFile multiPart) throws IllegalStateException, IOException {
-		File convFile = new File(multiPart.getOriginalFilename());
-		multiPart.transferTo(convFile);
-		return convFile;
+	private File createCollectionDir(UploadForm uploadForm, UpcaseUser user, List<MultipartFile> multiParts) {
+		File userColectionDir = new File("user_" + user.getId(), uploadForm.getCollectionName());
+		userColectionDir.mkdirs();
+		try {
+			logger.info("Create userColDir and saving files...");
+			for (MultipartFile multipartFile : multiParts) {
+				saveToUserDir(userColectionDir, multipartFile.getOriginalFilename(), multipartFile.getBytes());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return userColectionDir;
+	}
+
+	private List<File> multipartsToFiles(List<MultipartFile> multiParts) throws IllegalStateException, IOException {
+		List<File> toReturn = new ArrayList<>();
+		for (MultipartFile multipartFile : multiParts) {
+			File convFile = new File(multipartFile.getOriginalFilename());
+			multipartFile.transferTo(convFile);
+			toReturn.add(convFile);
+		}
+		return toReturn;
 	}
 
 	private void saveToUserDir(File userColectionDir, String fileName, byte[] bytes) throws IOException {
 		Path file = Paths.get(userColectionDir.getAbsolutePath(), fileName);
 		Files.write(file, bytes);
+		logger.info("Wrote file " + file.getFileName());
 	}
 
 	private boolean collectionExists(UploadForm uploadForm) {
