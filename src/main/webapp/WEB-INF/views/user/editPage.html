@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Edit Page</title>
+<link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet"
+	type="text/css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js"></script>
+<link href="../../assets/css/upcase.css" rel="stylesheet"
+	type="text/css" />
+<script type="text/javascript" src="../../bootstrap/js/jquery.knob.js"></script>
+
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+<style type="text/css">
+@font-face {
+	font-family: 'oldNewspaperTypes';
+	src: url('../../bootstrap/fonts/OldNewspaperTypes.ttf')
+}
+
+#selectable .ui-selectee {
+	font-size: 23px;
+	float: left;
+	cursor: default;
+}
+
+#selectable .ui-selecting {
+	color: #07C78E;
+	background: #CCCCCC;
+}
+
+#selectable .ui-selected {
+	color: #f63a0b;
+	background-color: #0bc7f6;
+}
+
+.splitter {
+	float: left;
+	padding: 5px;
+	margin: 5px;
+	border: 1px solid black;
+}
+
+.updated {
+	background-color: #0bf6b0;
+	color: white;
+}
+
+.updatedSelected {
+	background: -webkit-repeating-linear-gradient(0deg, #07A0C7, #07A0C7 3px, #0bf6b0
+		3px, #0bf6b0 6px);
+	background: repeating-linear-gradient(0deg, #07A0C7, #07A0C7 3px, #0bf6b0 3px,
+		#0bf6b0 6px);
+	color: #C72E07;
+}
+
+.typewritten {
+	font-family: oldNewspaperTypes;
+	border: 1px solid #000000;
+}
+
+.selectingItem {
+	color: #07C78E;
+}
+
+.breadCrumb {
+	padding-bottom: 19px;
+	border-bottom: 1px solid #EEEEEE;
+}
+
+.box {
+	position: absolute;
+}
+
+.input-xl {
+	width: 300px;
+}
+
+form {
+	display: table;
+	margin: 0 auto;
+}
+
+.vertical-adjust {
+	min-height: 50%;
+	min-height: 50vh;
+	display: flex;
+	align-items: center;
+}
+
+.word {
+	padding: 5px;
+	margin: 5px;
+	border: 1px solid black;
+}
+
+.thumbnail {
+	display: block;
+	padding: 0px;
+	margin-bottom: 0px;
+	line-height: 1.42857143;
+	background-color: #fff;
+	border: 0px solid #fff; important ! border-radius : 0px; important !
+	-webkit-transition : border .2s ease-in-out;
+	-o-transition: border .2s ease-in-out;
+	transition: border .2s ease-in-out;
+}
+
+.ui-autocomplete {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  float: left;
+  display: none;
+  min-width: 160px;
+  _width: 160px;
+  padding: 4px 0;
+  margin: 2px 0 0 0;
+  list-style: none;
+  background-color: #ffffff;
+  border-color: #ccc;
+  border-color: rgba(0, 0, 0, 0.2);
+  border-style: solid;
+  border-width: 1px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+  *border-right-width: 2px;
+  *border-bottom-width: 2px;
+}
+.ui-menu-item {
+	 padding:5px;
+}
+.ui-menu-item > a.ui-corner-all {
+	display: block;
+	padding: 3px 15px;
+	clear: both;
+	font-weight: normal;
+	line-height: 18px;
+	color: #555555;
+	white-space: nowrap;
+}
+.ui-state-hover, .ui-state-focus {
+	color: #efefef;
+	text-decoration: none;
+	background-color: #0088cc;
+	border-radius: 0px;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	background-image: none;
+}
+.ui-helper-hidden-accessible {
+	display: none;
+}
+</style>
+
+</head>
+<body th:attr="data-page-id=${page.id}">
+
+	
+	
+	<div th:replace="fragments/nav-bar-user :: nav-bar-user"></div>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2 col-md-offset-1">
+				<!-- .font dial -->
+				<input type="text" class="dial" data-thickness=".1"
+					data-cursor="true" data-min="10" data-max="100" value="23"
+					data-fgcolor="#617C58" data-linecap="round" data-width="100" />
+				<!-- / .font dial -->
+				<h6 style="margin-left: 23px;">
+					<span>Font-Size</span>
+				</h6>
+			</div>
+			<div class="col-md-8">
+				<div>
+					<div class="checkbox">
+						<label><input id="typeWriter" type="checkbox" />Typewriter</label>
+					</div>
+				</div>
+				<div>
+					<form class="form-inline" style="margin: 0;">
+						<span style="padding-right: 10px;">Selection</span> <input
+							style="font-size: 23px;" type="text" class="form-control"
+							size="18" id="textBox" disabled="disabled" /> <span
+							style="padding: 0 10px 0 10px;">x1</span> <input type="text"
+							class="form-control" size="4" id="x1" disabled="disabled" /> <span
+							style="padding: 0 10px 0 10px;">y2</span> <input type="text"
+							class="form-control" size="4" id="x2" disabled="disabled" /> <span
+							style="padding: 0 10px 0 10px;">x2</span> <input type="text"
+							class="form-control" size="4" id="y1" disabled="disabled" /> <span
+							style="padding: 0 10px 0 10px;">y2</span> <input type="text"
+							class="form-control" size="4" id="y2" disabled="disabled" /> <input
+							type="hidden" name="${_csrf.parameterName}"
+							value="${_csrf.token}" />
+					</form>
+				</div>
+				
+				<div class="ui-widget" style="padding-top: 15px;">
+					<form class="form-inline" style="margin: 0;">
+						<div class="form-group">
+							<div class="dropdown" style="padding-right: 10px;">
+							  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							    Tag Sets
+							    <span class="caret"></span>
+							  </button>
+							  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="tagSelection">
+							  </ul>
+							</div>
+						</div>
+						<div class="form-group">
+							<input id="tags"  class="form-control"/>
+							<span class="label label-info" id="tagSetLabel" style="display: none;">TAG SET</span>
+						</div>
+					</form>
+				</div>
+			</div>
+
+		</div>
+		<div class="row">
+<!-- 			<div class="col-md-6 col-md-offset-1 lead"> -->
+			<div class="col-md-5  lead">
+				<div
+					style="height: 400px; width: auto; overflow: scroll; border: 1px solid #CCCCCC; border-radius: 5px;">
+
+					<!-- WORD WIDGETS GO HERE -->
+					<div id="selectable"
+						style="float: left; width: 100%; padding: 15px;"></div>
+					<!-- WORD WIDGETS GO HERE -->
+
+				</div>
+			</div>
+			<!-- Nav tabs -->
+<!-- 			<ul class="nav nav-tabs" role="tablist"> -->
+<!--    				<li role="presentation" class="active"><a href="#imgView" aria-controls="imgView" role="tab" data-toggle="tab">IMAGE</a></li> -->
+<!--     			<li role="presentation"><a href="#annoView" aria-controls="annoView" role="tab" data-toggle="tab">ANNOTATION</a></li> -->
+<!--     		</ul> -->
+			<!-- Tab panes -->
+<!-- 			<div class="tab-content col-md-5"> -->
+<!-- 				<div class="tab-pane active" id="imgView"> -->
+					<div class="col-md-7" id="imgContainer"
+						style="height: 400px; width: 57.33333333%; overflow: scroll; border: 1px solid #CCCCCC; border-radius: 5px;">
+					</div>
+<!-- 				</div> -->
+<!-- 				<div role="tabpanel" class="tab-pane col-md-5" id="annoView"></div> -->
+<!-- 			</div> -->
+		</div>
+	</div>
+
+	<div th:replace="fragments/footer :: footer"></div>
+
+
+	<script th:inline="javascript">
+		//<![CDATA[
+		
+	
+		var tagsets = /*[[${tagSets}]]*/;
+// 		console.log(tagsets);
+		var imgPath = /*[[${page.imageUrl}]]*/;
+// 		console.log(imgPath);
+		var typeWriterSelected = false;
+		var fontSize = 23; // DEFAULT FONT SIZE
+		var words = /*[[${page.words}]]*/;
+		var currentItems;
+		var pageId = $("#pageId").text();
+		var originalImageWidth;
+		var originalImageHeight;
+		var _IMG_CONTAINER = $('#imgContainer');
+		var _SPLITTER = "&nbsp;";
+		var _SPLITTER_CLASS = "splitter";
+		var _WORD = $('#selectable'); // CONTAINER FOR WORD WIDGETS
+		var _WORD_CLASS = "word";
+		var _currentSelection = "undefined";
+		var _hashCodeSelection;
+		var map = new Map();
+		var tagSetTypes = new Array();
+		
+		
+		// ANNOTATION LOGIC
+		for(var key in tagsets) {
+		    var tagset = tagsets[key];
+		    tagSetTypes.push(key);
+		    var tags = new Array();
+	 		$.each(tagset, function(i) {
+				var tag = tagset[i];
+				tags.push(tag["$name"]);
+			})
+			map.set(key, tags);
+		}
+		console.log(map);
+		
+		$(document).ready(function() {
+			for (i = 0; i < tagSetTypes.length; i++) { 
+				var _a = $("<a href='#' class='tagSetClass'>" + tagSetTypes[i] + "</a>").attr("data-tag-set", tagSetTypes[i]);
+				var _li = $("<li></li>").append(_a);
+				$('#tagSelection').append(_li);
+			}
+			$('#tags').prop('disabled', true);
+			$('.tagSetClass').on("click", function(e) {
+				e.preventDefault();
+				var tagSetType = $(this).attr("data-tag-set");
+				console.log(tagSetType);
+				var src = map.get(tagSetType);
+				
+		 		$( "#tags" ).autocomplete({
+		 			source: function(request, response) {
+		 		        var results = $.ui.autocomplete.filter(src, request.term);
+		 		        response(results.slice(0, 10));
+		 		    }
+	 			});
+		 		$('#tagSetLabel').text(tagSetType).show();
+		 		$('#tags').prop('disabled', false);
+			});
+		});
+		
+		// UPDATE ANNOTATION
+		$('#tags').keypress(function(e) {
+			// ENTER_KEY = 9
+			if(e.which == 13) {
+				e.preventDefault();
+				if(_currentSelection == "undefined") {
+					return;
+				}
+				console.log("UPDATE ANNOTATION");
+				
+				$(function () {
+				    var token = $("meta[name='_csrf']").attr("content");
+				    var header = $("meta[name='_csrf_header']").attr("content");
+				    $(document).ajaxSend(function(e, xhr, options) {
+				        xhr.setRequestHeader(header, token);
+				    });
+				});
+				
+				
+				var updates = new Array();
+				$('.ui-selected').each(function() {
+					// CREATE UPDATE OBJECT
+					var _word = $(this);
+					var _id = _word.attr("data-word-id");
+					var _page = $('body').attr("data-page-id");	
+					var _val = $('#tags').val();
+					var _type = $('#tagSetLabel').text();
+					
+					// VALIDATE TAG INPUT
+					var tagArray = map.get(_type);
+					var contains = $.inArray(_val, tagArray);
+					if(contains < 0) {
+						console.log(_val + " not in tagset... no update!");
+						return;
+					}
+					
+					// CREATE UPDATE OBJECT
+					var update = {
+						id:_id,
+						tag: {
+					    	 type:_type,
+					    	 value:_val
+					    },
+						page:_page 
+					};
+					updates.push(update);
+				});
+				
+				console.log(JSON.stringify(updates));
+				
+				$.ajax({
+				    type: "POST",
+				    url: "update/word/tag/",
+				    data: JSON.stringify(updates),
+				    contentType: "application/json",
+				    dataType: "json",
+				    success : function(data) {
+						console.log("SUCCESS: ", data);
+					},
+					error : function(e) {
+						console.log("ERROR: ", e);
+					},
+					done : function(e) {
+						console.log("DONE");
+					}
+				});
+			}
+		});
+
+		// ANNOTATION LOGIC
+		
+		
+		$.each(words, function(i) {
+			var token = words[i].token;
+			var id = words[i].id;
+			var box = words[i].box;
+// 			console.log(id);
+// 			console.log(token);
+// 			console.log(box);
+// 			console.log('---------------');
+			
+			$('<div/>')
+				.css("float", "left")
+				.addClass(_WORD_CLASS)
+				.attr("data-word-id", id)
+				.attr("data-box-x1", box.x1)
+				.attr("data-box-x2", box.x2)
+				.attr("data-box-y1", box.y1)
+				.attr("data-box-y2", box.y2)
+				.text(token)
+				.appendTo(_WORD);
+			
+			$('<div/>').css("float", "left").addClass(_SPLITTER_CLASS).html(_SPLITTER).appendTo(_WORD);
+			
+		});
+		           
+		// INIT FONT SIZE WIDGET
+		 $(".dial").knob({
+			 'stopper' : 100, 
+			 'release' : function(currentValue) {
+				fontSize = currentValue; // UPDATE FONT SIZE VALUE
+				$('.ui-selectee').css({"font-size": "" + fontSize + "px"});
+			},
+			'width': 100,
+			'height': 100,
+			'inputColor': '#337AB7',
+			'fgColor': '#337AB7'
+		});
+		// INIT FONT SIZE WIDGET
+		
+		// CHARACTER SELCTION FUNCTION
+		$(function() {
+			$( "#selectable" ).selectable({
+				start: function(event, ui) {
+				},
+				selected: function(event, ui) {
+				}, 
+				stop: function(event, ui) {
+					
+					if($(".ui-selected", this ).length > 1) {
+						$(".ui-selected", this ).removeClass("ui-selected");
+						_currentSelection = "undefined"
+						return;
+					}
+						
+// 					if($(".ui-selected").first().position().top != 
+// 						$(".ui-selected").last().position().top) {
+// 						$(".ui-selectee").removeClass("ui-selected updatedSelected");
+// 						return false;
+// 					}
+					
+					var result = $("#select-result").empty();
+					var resultPosText = $("#select-result-pos-text").empty();
+					var resultPosWord = $("#select-result-pos-word").empty();
+					var resultWord = $("#select-result-word").empty();
+					
+// 					$(".ui-selected", this ).each(function() {
+						
+						var _word = $(".ui-selected", this );
+						var token = _word.text();
+						_currentSelection = _word;
+						
+						console.log("hashCode for " + token + " > " + token.hashCode());
+						_hashCodeSelection = token.hashCode();
+						
+						var _textBox = $('#textBox');
+						var _x1Box = $('#x1');
+						var _x2Box = $('#x2');
+						var _y1Box = $('#y1');
+						var _y2Box = $('#y2');
+						
+						_textBox.prop('disabled', false);
+// 						_x1Box.prop('disabled', false);
+// 						_x2Box.prop('disabled', false);
+// 						_y1Box.prop('disabled', false);
+// 						_y2Box.prop('disabled', false);
+						
+						var id = _word.attr("data-word-id");
+						var x1 = _word.attr("data-box-x1");
+						var x2 = _word.attr("data-box-x2");
+						var y1 = _word.attr("data-box-y1");
+						var y2 = _word.attr("data-box-y2");
+						
+						_textBox.val(token).attr("data-word-id", id).focus();
+						_x1Box.val(x1).attr("data-box-x1", x1);
+						_x2Box.val(x2).attr("data-box-x2", x2);
+						_y1Box.val(y1).attr("data-box-y1", y1);
+						_y2Box.val(y2).attr("data-box-y2", y2);
+						
+						result.append(_word.text());
+						drawRectangle(_word);
+// 					});
+				}
+			});
+		});
+		
+		
+		// LOAD PAGE_IMAGE 
+		$(document).ready(function() {
+			$('<img src="'+ imgPath +'" class="thumbnail" id="pageImg">').load(function() {
+				originalImageWidth = this.width;
+				originalImageHeight = this.height;
+				$(this).appendTo(_IMG_CONTAINER);
+			});
+		});
+		
+		// TYPEWRITER WIDGET
+		$('#typeWriter:checkbox').on("click", function() {
+			typeWriterSelected = $(this).is(':checked');
+			if(typeWriterSelected) {
+				$('#select-result').css({"font-family":"oldNewspaperTypes"});
+				$('.ui-selectee').addClass("typewritten");
+			} else {
+				$('.ui-selectee').removeClass("typewritten");
+				$('#select-result').css({"font-family":""});
+			}
+		});
+		
+		// MULTI SELECTION
+		$('#multiSelect:checkbox').on("click", function() {
+			multiSelectSelected = $(this).is(':checked');
+		});
+		// MULTI SELECTION
+		
+		
+		
+		// UPDATE WORD ASYNCH
+		$('#textBox').keypress(function(e) {
+			// ENTER_KEY = 9
+			if(e.which == 13) {
+				
+				if(_currentSelection == "undefined") {
+					return;
+				}
+				
+				// RETRIEVE UPDATE DATA
+				var _word = $(this);
+				var _token = _word.val();
+				var _id = _word.attr("data-word-id");
+				var _x1 = $('#x1').val();
+				var _x2 = $('#x2').val();
+				var _y1 = $('#y1').val();
+				var _y2 = $('#y2').val();
+				var _page = $('body').attr("data-page-id");
+				// RETRIEVE UPDATE DATA
+				
+				if(_hashCodeSelection == _token.hashCode()) {
+					
+					$('#textBox').animate({
+							backgroundColor: "#e3bfc5"
+			     		}, { 
+			     			duration: 350,
+					       	complete: function () {
+					       		$('#textBox').animate({
+					       			backgroundColor: "white"
+					       		}, 250);			        	
+					       }
+				     });
+		
+					return;
+				}
+				_hashCodeSelection = _token.hashCode();
+				
+				console.log("hashCode for changed " + _token + " > " + _token.hashCode())
+				
+				// CREATE UPDATE OBJECT
+				var update = {
+					id:_id,
+					token:_token,
+					box: {
+				    	 x1:_x1,
+				    	 x2:_x2,
+				    	 y1:_y1,
+				    	 y2:_y2
+				    },
+					page:_page 
+				};
+				// CREATE UPDATE OBJECT
+				
+				$(function () {
+				    var token = $("meta[name='_csrf']").attr("content");
+				    var header = $("meta[name='_csrf_header']").attr("content");
+				    $(document).ajaxSend(function(e, xhr, options) {
+				        xhr.setRequestHeader(header, token);
+				    });
+				});
+				
+				$.ajax({
+				    type: "POST",
+				    url: "update/word/",
+				    data: JSON.stringify(update),
+				    contentType: "application/json",
+				    dataType: "json",
+				    success : function(data) {
+						console.log("SUCCESS: ", data);
+					},
+					error : function(e) {
+						console.log("ERROR: ", e);
+					},
+					done : function(e) {
+						console.log("DONE");
+					}
+				});
+				
+				
+				console.log(update);
+				
+				$('#textBox').animate({
+					backgroundColor: "#C5E3BF"
+	     		}, { 
+	     			duration: 350,
+			       	complete: function () {
+			       		$('#textBox').animate({
+			       			backgroundColor: "white"
+			       		}, 250);			        	
+			       }
+		     });	
+				
+				// UPDATE UI
+				$('.ui-selected')
+					.attr("data-box-x1", _x1)
+					.attr("data-box-x2", _x2)
+					.attr("data-box-y1", _y1)
+					.attr("data-box-y2", _y2)
+					.text(_token);
+				// UPDATE UI
+		    }
+		});
+		
+		
+		// NAVIGATION WORD OBJECTS
+		var tab_Lock = false;
+		$('body').keydown(function (e) {
+		    if (e.which === 9 && e.shiftKey) {
+		    	console.log("Shift + Tab pressed");
+		    	e.preventDefault();
+		        tab_Lock = true;
+		        
+		        // NAVIGATE TO PREV WORD OBJECT
+		        if(_currentSelection == "undefined") {
+					return;
+				}
+		        var result = $("#select-result").empty();
+				var resultPosText = $("#select-result-pos-text").empty();
+				var resultPosWord = $("#select-result-pos-word").empty();
+				var resultWord = $("#select-result-word").empty();
+				 
+				var _word = _currentSelection.prevAll('.word:first');
+				
+				// REACHED FIRST ELEMENT
+				if(_word.length == 0) {
+					return;
+				}
+				
+				_currentSelection.removeClass('ui-selected');
+				_word.addClass('ui-selected');
+				_currentSelection = _word;
+				
+				var token = _word.text();
+				console.log("hashCode for " + token + " > " + token.hashCode());
+				_hashCodeSelection = token.hashCode();
+				
+				var _textBox = $('#textBox');
+				var _x1Box = $('#x1');
+				var _x2Box = $('#x2');
+				var _y1Box = $('#y1');
+				var _y2Box = $('#y2');
+				
+				_textBox.prop('disabled', false);
+				
+				var id = _word.attr("data-word-id");
+				var x1 = _word.attr("data-box-x1");
+				var x2 = _word.attr("data-box-x2");
+				var y1 = _word.attr("data-box-y1");
+				var y2 = _word.attr("data-box-y2");
+				
+				_textBox.val(token).attr("data-word-id", id).focus();
+				_x1Box.val(x1).attr("data-box-x1", x1);
+				_x2Box.val(x2).attr("data-box-x2", x2);
+				_y1Box.val(y1).attr("data-box-y1", y1);
+				_y2Box.val(y2).attr("data-box-y2", y2);
+				
+				result.append(_word.text());
+				drawRectangle(_word);
+				console.log(_word);
+		    }
+		});
+		
+		$('body').keydown(function(e) {
+			if(e.which == 9) {
+				e.preventDefault();
+				if(tab_Lock) {
+					tab_Lock = false;
+					return;
+				}
+				console.log("Tab pressed");
+				
+				 // NAVIGATE TO NEXT WORD OBJECT
+				if(_currentSelection == "undefined") {
+					return;
+				}
+				 
+				var result = $("#select-result").empty();
+				var resultPosText = $("#select-result-pos-text").empty();
+				var resultPosWord = $("#select-result-pos-word").empty();
+				var resultWord = $("#select-result-word").empty();
+				 
+				var _word = _currentSelection.nextAll('.word:first');
+				
+				// REACHED LAST ELEMENT
+				if(_word.length == 0) {
+					return;
+				}
+				
+				_currentSelection.removeClass('ui-selected');
+				_word.addClass('ui-selected');
+				_currentSelection = _word;
+				
+				var token = _word.text();
+				console.log("hashCode for " + token + " > " + token.hashCode());
+				_hashCodeSelection = token.hashCode();
+				
+				var _textBox = $('#textBox');
+				var _x1Box = $('#x1');
+				var _x2Box = $('#x2');
+				var _y1Box = $('#y1');
+				var _y2Box = $('#y2');
+				
+				_textBox.prop('disabled', false);
+				
+				var id = _word.attr("data-word-id");
+				var x1 = _word.attr("data-box-x1");
+				var x2 = _word.attr("data-box-x2");
+				var y1 = _word.attr("data-box-y1");
+				var y2 = _word.attr("data-box-y2");
+				
+				_textBox.val(token).attr("data-word-id", id).focus();
+				_x1Box.val(x1).attr("data-box-x1", x1);
+				_x2Box.val(x2).attr("data-box-x2", x2);
+				_y1Box.val(y1).attr("data-box-y1", y1);
+				_y2Box.val(y2).attr("data-box-y2", y2);
+				
+				result.append(_word.text());
+				drawRectangle(_word);
+				console.log(_word);
+		    }
+		});
+		
+		String.prototype.hashCode = function() {
+			var hash = 0, i, chr, len;
+			if (this.length === 0) return hash;
+			for (i = 0, len = this.length; i < len; i++) {
+			  chr   = this.charCodeAt(i);
+			  hash  = ((hash << 5) - hash) + chr;
+			  hash |= 0; 
+			}
+			return hash;
+		};
+		
+		
+		var highLighting;
+		function drawRectangle(element) {
+			
+			var token = element.text();
+			var id = element.attr("data-word-id");
+			console.log(id + " > " + token);
+			
+			$.each(words, function(i) {
+				if(id == words[i].id) {
+					
+					var token = words[i].token;
+					var box = words[i].box;
+
+					var x = box.x1;
+					var y = box.y1;
+					var width = box.x2 - box.x1;
+					var height = box.y2 - box.y1;
+					
+					if(highLighting != null)
+						highLighting.remove();
+					
+					// DRAW BOX
+					var recId = 'rec_' + id;
+					highLighting = $('<div class="box" id="' + recId + '"/>')
+						.appendTo($("#imgContainer"))
+						.css("top", (y - 15) + "px")
+						.css("left", (x) + "px")
+						.css("width", (width + 30) +"px")
+						.css("height", (height + 30) +"px")
+						.css("backgroundColor", "green")
+						.css("opacity", "0.3")
+						.css("border", "2px solid green");
+					
+					$('#imgContainer').animate({
+						 scrollTop: ($("#" + recId).position().top + $('#imgContainer').scrollTop()) - (($('#imgContainer').height() - height) / 2),
+					     scrollLeft: ($("#" + recId).position().left + $('#imgContainer').scrollLeft()) - (($('#imgContainer').width() - width) / 2)
+				    }, 1000);
+				}
+			});
+		}
+		
+		//]]>
+	</script>
+
+
+
+</body>
+</html>

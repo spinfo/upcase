@@ -22,6 +22,10 @@ public class Word {
 	private List<Annotation> annotations;
 	private Box box;
 	
+	public Word() {
+		super();
+	}
+	
 	public Word(String token, Box box) {
 		super();
 		this.token = token;

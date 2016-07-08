@@ -11,7 +11,11 @@
 <body>
 
 	<h1 th:text="${collection.title}">YOR COLLECTIONS</h1>
-	<p th:text="${owner.lastName +', '+ owner.firstName}">COLLECTION OWNER</p>
+	<ul>
+		<li th:each="page, status : ${collection.pages}">
+			<a th:href="@{/edit/page/{path}(path=${page})}" th:text="${'Page ' + status.index}">Some Page Link</a>
+		</li>
+	</ul>
 
 </body>
 </html>

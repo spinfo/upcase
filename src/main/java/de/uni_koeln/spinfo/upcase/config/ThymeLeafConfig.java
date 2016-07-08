@@ -21,11 +21,16 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 @Configuration
+@EnableAsync
 @EnableWebMvc
 public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		
+		// FOR TESTING
+		registry.addResourceHandler("/Users/**").addResourceLocations("/Users/");
+		
 		registry.addResourceHandler("/assets/**").addResourceLocations("/assets/");
 		registry.addResourceHandler("/bootstrap/**").addResourceLocations("/bootstrap/");
 		registry.addResourceHandler("/favicon.ico").addResourceLocations("/");
@@ -77,7 +82,7 @@ public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 	@Bean(name = "filterMultipartResolver")
 	public CommonsMultipartResolver filterMultipartResolver() {
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(-1);
+		resolver.setMaxUploadSize(10485760);
 		resolver.setDefaultEncoding("UTF-8");
 		return resolver;
 	}

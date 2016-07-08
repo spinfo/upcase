@@ -4,7 +4,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.data.mongodb.core.MongoOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,6 +15,8 @@ import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Page;
 
 @Repository
 public class PageRepositoryImpl implements PageRepository {
+	
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	private MongoTemplate mongoTemplate;
 

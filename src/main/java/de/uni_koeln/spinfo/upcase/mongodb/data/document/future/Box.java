@@ -7,6 +7,10 @@ public class Box {
 	private int y1;
 	private int y2;
 	
+	public Box() {
+		super();
+	}
+	
 	public Box(int x1, int x2, int y1, int y2) {
 		super();
 		this.x1 = x1;

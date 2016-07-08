@@ -2,7 +2,10 @@ package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -20,14 +23,18 @@ public class Page {
 	private String imageUrl;
 	private int pageNumber;
 	private int physicalPageNumber;
-	private List<Word> words;
+	private List<Word> words = new ArrayList<>();
 	private String collection;
 	private String user;
 	
 //	@DBRef private Chapter chapter;
 //	@DBRef private Volume volume;
 	
-	
+	public Page() {
+		// default constructor
+	}
+			
+	// ONLY CONSTRUCTOR USED FOR NOW
 	public Page(String imageUrl, int pageNumber, int physicalPageNumber) {
 		super();
 		this.lastModified = new Date();
@@ -60,6 +67,15 @@ public class Page {
 	}
 
 
+	public Map<String, Integer> getWordIdToIndex() {
+		Map<String, Integer> wordIdToIndex = new HashMap<>();
+		for (int i = 0; i < words.size(); i++) {
+			Word word = words.get(i);
+			wordIdToIndex.put(word.getId(), i);
+		}
+		return wordIdToIndex;
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -68,6 +84,7 @@ public class Page {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
 	
 	/**
 	 * 
@@ -137,32 +154,10 @@ public class Page {
 	public List<Word> getWords() {
 		return words;
 	}
-
-
+	
 	public void setWords(List<Word> words) {
 		this.words = words;
 	}
-
-
-//	public Chapter getChapter() {
-//		return chapter;
-//	}
-//
-//
-//	public void setChapter(Chapter chapter) {
-//		this.chapter = chapter;
-//	}
-//
-//
-//	public Volume getVolume() {
-//		return volume;
-//	}
-//
-//
-//	public void setVolume(Volume volume) {
-//		this.volume = volume;
-//	}
-
 
 	@Override
 	public int hashCode() {
@@ -213,6 +208,6 @@ public class Page {
 	public String toString() {
 		return "Page [id=" + id + ", imageUrl=" + imageUrl + ", pageNumber=" + pageNumber + ", words=" + words + "]";
 	}
-	
+
 
 }

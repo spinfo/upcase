@@ -6,37 +6,26 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "ref_annotations")
-public class Annotation {
+@Document(collection = "ref_word_versions")
+public class WordVersion {
 	
 	@Transient
-	public static final String COLLECTION = "ref_annotations";
-
+	public static final String COLLECTION = "ref_word_versions";
+	
 	@Id private String id;
-	
-	private String type;
-	private String tag;
-	
 	private Date creationDate;
-
+	private Word word;
+	private String userId;
 	
-	public Annotation() {
-		super();
-	}
-	
-	public Annotation(String tag, String type) {
-		super();
-		this.tag = tag;
-		this.type = type;
+	public WordVersion() {
+		// default constructor
 		this.creationDate = new Date();
 	}
 	
-	public String getType() {
-		return type;
-	}
-	
-	public void setType(String type) {
-		this.type = type;
+	public WordVersion(Word word, final String userId) {
+		this.creationDate = new Date();
+		this.word = word;
+		this.userId = userId;
 	}
 
 	public String getId() {
@@ -47,14 +36,6 @@ public class Annotation {
 		this.id = id;
 	}
 
-	public String getTag() {
-		return tag;
-	}
-
-	public void setTag(String tag) {
-		this.tag = tag;
-	}
-
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -63,13 +44,28 @@ public class Annotation {
 		this.creationDate = creationDate;
 	}
 
+	public Word getWord() {
+		return word;
+	}
+
+	public void setWord(Word word) {
+		this.word = word;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((tag == null) ? 0 : tag.hashCode());
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
 		return result;
 	}
 
@@ -81,29 +77,24 @@ public class Annotation {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Annotation other = (Annotation) obj;
-		if (creationDate == null) {
-			if (other.creationDate != null)
-				return false;
-		} else if (!creationDate.equals(other.creationDate))
-			return false;
+		WordVersion other = (WordVersion) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (tag == null) {
-			if (other.tag != null)
+		if (userId == null) {
+			if (other.userId != null)
 				return false;
-		} else if (!tag.equals(other.tag))
+		} else if (!userId.equals(other.userId))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Annotation [id=" + id + ", type=" + type + ", tag=" + tag + ", creationDate=" + creationDate + "]";
+		return "WordVersion [id=" + id + ", creationDate=" + creationDate + ", word=" + word + ", userId=" + userId
+				+ "]";
 	}
-
 
 }

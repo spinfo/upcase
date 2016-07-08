@@ -75,12 +75,14 @@ public class CollectionServiceImpl implements CollectionService {
 			logger.info("OCR on progress...");
 			Map<String, String> exctractHOCR = ocrService.exctractHOCR(convFiles);
 
+			convFiles.forEach(f -> f.delete());
+			
 			logger.info("Saving hOCR files...");
 			for (String imageUrl : exctractHOCR.keySet()) {
 				String hOCR = exctractHOCR.get(imageUrl);
 				saveToUserDir(userColectionDir, imageUrl.replaceAll("\\..{1,4}", ".html"), hOCR.getBytes());
 			}
-
+			
 			logger.info("Parsing hOCR files...");
 			List<Page> pages = hOCRParser.parse(exctractHOCR, userColectionDir);
 
@@ -89,16 +91,15 @@ public class CollectionServiceImpl implements CollectionService {
 				List<Word> words = page.getWords();
 				wordRepository.save(words);
 			}
-
 			pageRepository.save(pages);
-
 			List<String> pageIds = pages.stream().map(p -> p.getId()).collect(Collectors.toList());
 			c.setPages(new HashSet<>(pageIds));
 
 			logger.info("Update collection..." + c.getId());
 			collectionRepository.update(c);
+			
 			logger.info("Collection updated :: " + c);
-			convFiles.forEach(f -> f.delete());
+			
 			return c.getId();
 
 		} catch (IllegalStateException | IOException e) {
