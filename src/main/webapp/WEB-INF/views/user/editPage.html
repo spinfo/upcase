@@ -32,8 +32,10 @@
 }
 
 #selectable .ui-selected {
-	color: #f63a0b;
-	background-color: #0bc7f6;
+/* 	color: #f63a0b; */
+color: #e9565c;
+/* 	background-color: #0bc7f6; */
+background-color: #9ad8f2;
 }
 
 .splitter {
@@ -222,6 +224,8 @@ form {
 							<input id="tags"  class="form-control"/>
 							<span class="label label-info" id="tagSetLabel" style="display: none;">TAG SET</span>
 						</div>
+						<div class="form-group" id="tagWrapper" style="display: none; padding-left: 15px;">
+						</div>
 					</form>
 				</div>
 			</div>
@@ -286,6 +290,24 @@ form {
 		var tagSetTypes = new Array();
 		
 		
+		// DISBALE INPUT FIELDS IF NO SELECTION IS MADE
+		$('#selectable').on("click", function(e) {
+			e.preventDefault();
+			if($('.ui-selected').length <= 0) {
+				var _textInput = $('#textBox');
+				_textInput.val("");
+				_textInput.prop('disabled', true);
+				_textInput.attr("data-word-id", "");
+				$('#x1').attr("data-box-x1", "");
+				$('#x2').attr("data-box-x2", "");
+				$('#y1').attr("data-box-y1", "");
+				$('#y2').attr("data-box-y2", "");
+				$('#tags').val("").prop('disabled', true);
+				$('#tagSetLabel').empty();
+			}
+		});
+		
+		
 		// ANNOTATION LOGIC
 		for(var key in tagsets) {
 		    var tagset = tagsets[key];
@@ -309,7 +331,6 @@ form {
 			$('.tagSetClass').on("click", function(e) {
 				e.preventDefault();
 				var tagSetType = $(this).attr("data-tag-set");
-				console.log(tagSetType);
 				var src = map.get(tagSetType);
 				
 		 		$( "#tags" ).autocomplete({
@@ -379,9 +400,17 @@ form {
 				    data: JSON.stringify(updates),
 				    contentType: "application/json",
 				    dataType: "json",
-				    success : function(data) {
-						console.log("SUCCESS: ", data);
-						console.log("SUCCESS: ", JSON.stringify(data));
+				    success : function(words) {
+				    	console.log("SUCCESS: ", words);
+				    	$.each(words, function(i) {
+				    		var _word = $('#' + words[i].id);
+				    		console.log(_word.attr("data-word-annotations"));
+				    		_word.attr("data-word-annotations", JSON.stringify(words[i].annotations));
+				    		console.log(_word.attr("data-word-annotations"));
+							// UPDATE ANNOTATION LABELS
+							updateAnnotationLabels(_word);
+				    	});
+						
 					},
 					error : function(e) {
 						console.log("ERROR: ", e);
@@ -392,7 +421,6 @@ form {
 				});
 			}
 		});
-
 		// ANNOTATION LOGIC
 		
 		
@@ -400,15 +428,20 @@ form {
 			var token = words[i].token;
 			var id = words[i].id;
 			var box = words[i].box;
+			var annotations = words[i].annotations;
+			
 // 			console.log(id);
 // 			console.log(token);
 // 			console.log(box);
+// 			console.log(annotations);
 // 			console.log('---------------');
 			
 			$('<div/>')
 				.css("float", "left")
 				.addClass(_WORD_CLASS)
+				.attr("data-word-annotations", JSON.stringify(annotations))
 				.attr("data-word-id", id)
+				.attr("id", id)
 				.attr("data-box-x1", box.x1)
 				.attr("data-box-x2", box.x2)
 				.attr("data-box-y1", box.y1)
@@ -466,7 +499,12 @@ form {
 						var token = _word.text();
 						_currentSelection = _word;
 						
-						console.log("hashCode for " + token + " > " + token.hashCode());
+// 						console.log("hashCode for " + token + " > " + token.hashCode());
+
+						// UPDATE ANNOTATION LABELS
+						updateAnnotationLabels(_word);
+						// UPDATE ANNOTATION LABELS
+						
 						_hashCodeSelection = token.hashCode();
 						
 						var _textBox = $('#textBox');
@@ -500,6 +538,18 @@ form {
 			});
 		});
 		
+		function updateAnnotationLabels(_word) {
+			// UPDATE ANNOTATION LABELS
+			$('#tagWrapper > span.label').remove();
+			var annotations = JSON.parse(_word.attr('data-word-annotations'));
+			if(annotations.length > 0) {
+				for(var i = 0; i < annotations.length; i++) {
+					console.log(annotations[i]);
+					$('#tagWrapper').append('<span class="label label-success" style="margin-right:5px; background-color:#ecd26d;">'+ annotations[i].tag +'</span>').show();
+				}
+			}
+			// UPDATE ANNOTATION LABELS
+		}
 		
 		// LOAD PAGE_IMAGE 
 		$(document).ready(function() {
@@ -658,6 +708,10 @@ form {
 					return;
 				}
 				
+				// UPDATE ANNOTATION LABELS
+				updateAnnotationLabels(_word);
+				// UPDATE ANNOTATION LABELS
+				
 				_currentSelection.removeClass('ui-selected');
 				_word.addClass('ui-selected');
 				_currentSelection = _word;
@@ -717,6 +771,10 @@ form {
 				if(_word.length == 0) {
 					return;
 				}
+				
+				// UPDATE ANNOTATION LABELS
+				updateAnnotationLabels(_word);
+				// UPDATE ANNOTATION LABELS
 				
 				_currentSelection.removeClass('ui-selected');
 				_word.addClass('ui-selected');
