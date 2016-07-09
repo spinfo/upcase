@@ -163,6 +163,17 @@ form {
 .ui-helper-hidden-accessible {
 	display: none;
 }
+
+span.annotationLabel:hover {
+	cursor:default;
+}
+.drop-hover {
+	font-size: 20px;
+	color: red; 
+}
+.to-delete {
+	opacity: 0.5;
+}
 </style>
 
 </head>
@@ -224,8 +235,9 @@ form {
 							<input id="tags"  class="form-control"/>
 							<span class="label label-info" id="tagSetLabel" style="display: none;">TAG SET</span>
 						</div>
-						<div class="form-group" id="tagWrapper" style="display: none; padding-left: 15px;">
+						<div class="form-group sortable" id="tagWrapper" style="display: none; padding-left: 15px;">
 						</div>
+						<span class="glyphicon glyphicon-trash" id="trash" aria-hidden="true" style="top: 4px; left:10px;"></span>
 					</form>
 				</div>
 			</div>
@@ -252,7 +264,7 @@ form {
 			<!-- Tab panes -->
 <!-- 			<div class="tab-content col-md-5"> -->
 <!-- 				<div class="tab-pane active" id="imgView"> -->
-					<div class="col-md-7" id="imgContainer"
+					<div class="col-md-7 trash" id="imgContainer" 
 						style="height: 400px; width: 57.33333333%; overflow: scroll; border: 1px solid #CCCCCC; border-radius: 5px;">
 					</div>
 <!-- 				</div> -->
@@ -307,6 +319,67 @@ form {
 			}
 		});
 		
+		$(function() {
+		    $(".sortable").sortable();
+		    $(".sortable").disableSelection();
+		    $(".sortable").draggable({
+		    	  drag: function( event, ui ) {
+		    	  }
+	    	});
+		    
+		    // DELETE ANNOTATION
+		    $( "#trash" ).droppable({
+		    	hoverClass: "drop-hover",
+		    	over: function( event, ui ) {
+		    		$(ui.draggable).addClass("to-delete");
+		    	},
+		    	out: function( event, ui ) {
+		    		$(ui.draggable).removeClass("to-delete");
+		    	},
+		        drop: function( event, ui ) {
+		        	
+		        	var droppedElement = $(ui.draggable);
+		        	var toDelete = droppedElement.attr("data-word-ref");
+		        	
+		        	console.log("Annotation in trash (see below)");
+		        	console.log(droppedElement.attr("data-word-ref"));
+		        	
+		        	$(function () {
+					    var token = $("meta[name='_csrf']").attr("content");
+					    var header = $("meta[name='_csrf_header']").attr("content");
+					    $(document).ajaxSend(function(e, xhr, options) {
+					        xhr.setRequestHeader(header, token);
+					    });
+					});
+		        	
+		        	$.ajax({
+					    type: "POST",
+					    url: "update/word/tag/delete",
+					    data: JSON.stringify(toDelete),
+					    contentType: "application/json",
+					    dataType: "json",
+					    success : function(words) {
+					    	console.log("SUCCESS: ", words);
+					    	$.each(words, function(i) {
+					    		var _word = $('#' + words[i].id);
+					    		console.log(_word.attr("data-word-annotations"));
+					    		_word.attr("data-word-annotations", JSON.stringify(words[i].annotations));
+					    		console.log(_word.attr("data-word-annotations"));
+								// UPDATE ANNOTATION LABELS
+								updateAnnotationLabels(_word);
+					    	});
+							
+						},
+						error : function(e) {
+							console.log("ERROR: ", e);
+						},
+						done : function(e) {
+							console.log("DONE");
+						}
+					});
+		        }
+		      });
+		});
 		
 		// ANNOTATION LOGIC
 		for(var key in tagsets) {
@@ -545,7 +618,27 @@ form {
 			if(annotations.length > 0) {
 				for(var i = 0; i < annotations.length; i++) {
 					console.log(annotations[i]);
-					$('#tagWrapper').append('<span class="label label-success" style="margin-right:5px; background-color:#ecd26d;">'+ annotations[i].tag +'</span>').show();
+					var _id = _word.attr('id');
+					var _page = $('body').attr("data-page-id");
+					
+					// CREATE REFERENCE OBJECT
+					var reference = {
+						id:_id,
+						tag: {
+					    	 type:annotations[i].type,
+					    	 value:annotations[i].tag
+					    },
+						page:_page 
+					};
+					
+					
+					var label = $('<span/>')
+						.addClass("label label-success annotationLabel")
+						.attr("data-word-ref", JSON.stringify(reference))
+						.text(annotations[i].tag)
+						.css({"background-color": "#ecd26d", "margin-right": "5px"});
+					
+					$('#tagWrapper').append(label).show();
 				}
 			}
 			// UPDATE ANNOTATION LABELS
