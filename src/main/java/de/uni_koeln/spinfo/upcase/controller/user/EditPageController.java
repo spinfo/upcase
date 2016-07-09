@@ -30,10 +30,7 @@ import de.uni_koeln.spinfo.upcase.model.tagset.STTS;
 import de.uni_koeln.spinfo.upcase.model.tagset.STTSSmall;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Page;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Word;
-import de.uni_koeln.spinfo.upcase.mongodb.repository.future.CollectionRepository;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.PageRepository;
-import de.uni_koeln.spinfo.upcase.mongodb.repository.future.WordRepository;
-import de.uni_koeln.spinfo.upcase.service.CollectionService;
 import de.uni_koeln.spinfo.upcase.service.WordUpdateService;
 
 @Controller
@@ -42,20 +39,11 @@ public class EditPageController {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	private CollectionRepository collectionRepository;
-
-	@Autowired
 	private PageRepository pageRepository;
 
 	@Autowired
-	private WordRepository wordRepository;
-
-	@Autowired
-	private CollectionService collectionService;
-
-	@Autowired
 	private WordUpdateService wordUpdateService;
-
+	
 	@ModelAttribute("userName")
 	public Model userName(Model model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -100,11 +88,8 @@ public class EditPageController {
 	
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/edit/page/update/word/tag/")
-	public @ResponseBody String updateWordTag(@RequestBody List<AnnotationUpdate> update) {
-		for (AnnotationUpdate annotationUpdate : update) {
-			logger.info("Implement updateService for " + annotationUpdate);
-		}
-		return HttpStatus.BAD_REQUEST.toString() + " NOT YET IMPLEMENTED!";
+	public @ResponseBody List<Word> updateWordTag(@RequestBody List<AnnotationUpdate> updates) {
+		return wordUpdateService.update(updates);
 	}
 
 }
