@@ -1,9 +1,9 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +26,7 @@ public class Page {
 	private List<Word> words = new ArrayList<>();
 	private String collection;
 	private String user;
-	
+	private String title;
 //	@DBRef private Chapter chapter;
 //	@DBRef private Volume volume;
 	
@@ -35,9 +35,10 @@ public class Page {
 	}
 			
 	// ONLY CONSTRUCTOR USED FOR NOW
-	public Page(String imageUrl, int pageNumber, int physicalPageNumber) {
+	public Page(final String collection, final String imageUrl, int pageNumber, int physicalPageNumber) {
 		super();
 		this.lastModified = new Date();
+		this.collection = collection;
 		this.imageUrl = imageUrl;
 		this.pageNumber = pageNumber;
 		this.physicalPageNumber = physicalPageNumber;
@@ -85,6 +86,17 @@ public class Page {
 		this.id = id;
 	}
 	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	public String getTitle() {
+		if(title == null || title.isEmpty()) {
+			List<String> parts = Arrays.asList(imageUrl.split("/"));
+			return parts.get(parts.size() - 1);
+		}
+		return title;
+	}
 	
 	/**
 	 * 

@@ -3,6 +3,7 @@ package de.uni_koeln.spinfo.upcase.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,16 +29,20 @@ public class HOCRParser {
 	
 	private Pattern bboxPattern = Pattern.compile("\\d{1,4}\\s\\d{1,4}\\s\\d{1,4}\\s\\d{1,4}");
 
-	public List<Page> parse(Map<String, String> exctractHOCR, File userColectionDir) throws IOException {
+	public List<Page> parse(final String collectionId, List<List<String>> exctractHOCR, File userColectionDir) throws IOException {
 
 		List<Page> pages = new ArrayList<>();
 		int pageCount = 0;
-		Set<String> fileNames = exctractHOCR.keySet();
-		
-		for (String imageUrl : fileNames) {
+//		Set<String> fileNames = exctractHOCR.keySet();
+//		for (String imageUrl : fileNames) {
+		for (List<String> wrapper : exctractHOCR) {
 			
-			String html = exctractHOCR.get(imageUrl);
-			Page page = new Page(new File(userColectionDir, imageUrl).getAbsolutePath(), pageCount, 0);
+			String imageUrl = wrapper.get(0);
+			String html = wrapper.get(1);
+
+			logger.info("parsing ... " + imageUrl);
+			
+			Page page = new Page(collectionId, new File(userColectionDir, imageUrl).getAbsolutePath(), pageCount, 0);
 			List<Word> words = new ArrayList<>();
 
 			// hOCR document
@@ -77,6 +82,10 @@ public class HOCRParser {
 			}
 			pages.add(page);
 			pageCount++;
+		}
+		
+		for (Page page : pages) {
+			logger.info(page.toString());
 		}
 		return pages;
 	}

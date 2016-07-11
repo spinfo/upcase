@@ -60,7 +60,7 @@ public class PageRepositoryImpl implements PageRepository {
 	public String findOne(String pageId) {
 		return mongoTemplate.findOne(new Query(Criteria.where("_id").is(pageId)), String.class, Page.COLLECTION);
 	}
-
+	
 	@Override
 	public List<Page> findByCollection(String collection) {
 		return mongoTemplate.find(new Query(Criteria.where("collection").is(collection)), Page.class);
@@ -70,6 +70,11 @@ public class PageRepositoryImpl implements PageRepository {
 	public List<Page> save(List<Page> pages) {
 		mongoTemplate.insert(pages, Page.class);
 		return pages;
+	}
+
+	@Override
+	public List<Page> findByCollectionId(String collectionId) {
+		return mongoTemplate.find(new Query(Criteria.where("collection").is(collectionId)), Page.class);
 	}
 
 }

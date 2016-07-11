@@ -15,4 +15,6 @@ public interface WordUpdateService {
 	
 	public List<Word> update(List<AnnotationUpdate> updates);
 
+	public Word delete(AnnotationUpdate toDelete);
+
 }

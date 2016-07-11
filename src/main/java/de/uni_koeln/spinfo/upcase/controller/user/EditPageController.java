@@ -36,6 +36,7 @@ import de.uni_koeln.spinfo.upcase.service.WordUpdateService;
 @Controller
 public class EditPageController {
 	
+	
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
@@ -91,5 +92,13 @@ public class EditPageController {
 	public @ResponseBody List<Word> updateWordTag(@RequestBody List<AnnotationUpdate> updates) {
 		return wordUpdateService.update(updates);
 	}
+	
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value = "/edit/page/delete/word/tag/")
+	public @ResponseBody Word deleteWordTag(@RequestBody AnnotationUpdate toDelete) {
+		return wordUpdateService.delete(toDelete);
+	}
+	
+	
 
 }

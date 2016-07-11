@@ -26,7 +26,7 @@ public class ExportData {
 	public void prepare() throws IOException {
 		Pattern bboxPattern = Pattern.compile("\\d{1,4}\\s\\d{1,4}\\s\\d{1,4}\\s\\d{1,4}");
 		File file = new File("PPN345572629_0009-0010.html");
-		page = new Page(file.getAbsolutePath(), 0, 0);
+		page = new Page("12345", file.getAbsolutePath(), 0, 0);
 		List<Word> words = new ArrayList<>();
 
 		// hOCR document

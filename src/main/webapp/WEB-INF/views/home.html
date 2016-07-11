@@ -27,7 +27,7 @@
 					<h4>
 						<small>Recent Collections</small>
 					</h4>
-					<div class="list-group-item">
+					<div class="list-group-item" th:if="${not #lists.isEmpty(collections)}">
 						<div
 							th:replace="fragments/recent-collections :: recent-collections"></div>
 					</div>

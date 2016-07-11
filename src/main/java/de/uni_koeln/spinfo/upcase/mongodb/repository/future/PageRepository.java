@@ -25,5 +25,7 @@ public interface PageRepository extends Repository<Page, String> {
 	public String findOne(String pageId);
 
 	public List<Page> save(List<Page> pages);
+
+	public List<Page> findByCollectionId(String collectionId);
 	
 }

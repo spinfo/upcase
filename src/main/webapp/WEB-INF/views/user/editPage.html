@@ -237,7 +237,7 @@ span.annotationLabel:hover {
 						</div>
 						<div class="form-group sortable" id="tagWrapper" style="display: none; padding-left: 15px;">
 						</div>
-						<span class="glyphicon glyphicon-trash" id="trash" aria-hidden="true" style="top: 4px; left:10px;"></span>
+						<span class="glyphicon glyphicon-trash" id="trash" aria-hidden="true" style="top: 4px; left:10px; width: 30px;"></span>
 					</form>
 				</div>
 			</div>
@@ -281,9 +281,7 @@ span.annotationLabel:hover {
 		
 	
 		var tagsets = /*[[${tagSets}]]*/;
-// 		console.log(tagsets);
 		var imgPath = /*[[${page.imageUrl}]]*/;
-// 		console.log(imgPath);
 		var typeWriterSelected = false;
 		var fontSize = 23; // DEFAULT FONT SIZE
 		var words = /*[[${page.words}]]*/;
@@ -341,9 +339,6 @@ span.annotationLabel:hover {
 		        	var droppedElement = $(ui.draggable);
 		        	var toDelete = droppedElement.attr("data-word-ref");
 		        	
-		        	console.log("Annotation in trash (see below)");
-		        	console.log(droppedElement.attr("data-word-ref"));
-		        	
 		        	$(function () {
 					    var token = $("meta[name='_csrf']").attr("content");
 					    var header = $("meta[name='_csrf_header']").attr("content");
@@ -354,21 +349,16 @@ span.annotationLabel:hover {
 		        	
 		        	$.ajax({
 					    type: "POST",
-					    url: "update/word/tag/delete",
+					    url: "delete/word/tag/",
 					    data: JSON.stringify(toDelete),
 					    contentType: "application/json",
 					    dataType: "json",
-					    success : function(words) {
-					    	console.log("SUCCESS: ", words);
-					    	$.each(words, function(i) {
-					    		var _word = $('#' + words[i].id);
-					    		console.log(_word.attr("data-word-annotations"));
-					    		_word.attr("data-word-annotations", JSON.stringify(words[i].annotations));
-					    		console.log(_word.attr("data-word-annotations"));
-								// UPDATE ANNOTATION LABELS
-								updateAnnotationLabels(_word);
-					    	});
-							
+					    success : function(word) {
+					    	console.log("SUCCESS: ", word);
+				    		var _word = $("#" + word.id);
+				    		_word.attr("data-word-annotations", JSON.stringify(word.annotations));
+							// UPDATE ANNOTATION LABELS
+							updateAnnotationLabels(_word);
 						},
 						error : function(e) {
 							console.log("ERROR: ", e);
@@ -403,17 +393,20 @@ span.annotationLabel:hover {
 			$('#tags').prop('disabled', true);
 			$('.tagSetClass').on("click", function(e) {
 				e.preventDefault();
-				var tagSetType = $(this).attr("data-tag-set");
-				var src = map.get(tagSetType);
 				
-		 		$( "#tags" ).autocomplete({
-		 			source: function(request, response) {
-		 		        var results = $.ui.autocomplete.filter(src, request.term);
-		 		        response(results.slice(0, 10));
-		 		    }
-	 			});
-		 		$('#tagSetLabel').text(tagSetType).show();
-		 		$('#tags').prop('disabled', false);
+				if($('div.ui-selected').length > 0) {
+					var tagSetType = $(this).attr("data-tag-set");
+					var src = map.get(tagSetType);
+					
+			 		$("#tags").autocomplete({
+			 			source: function(request, response) {
+			 		        var results = $.ui.autocomplete.filter(src, request.term);
+			 		        response(results.slice(0, 10));
+			 		    }
+		 			});
+			 		$('#tagSetLabel').text(tagSetType).show();
+			 		$('#tags').prop('disabled', false).focus();
+				}
 			});
 		});
 		
@@ -956,10 +949,16 @@ span.annotationLabel:hover {
 			});
 		}
 		
+
+		// TODO::
+		// TRIGGER FIRST SELECTION ON DOM READY
+// 		$(document).ready(function() {
+// 			$('div.ui-selectee:first').addClass("ui-selected");
+// 		});
+		
+		
 		//]]>
 	</script>
-
-
 
 </body>
 </html>

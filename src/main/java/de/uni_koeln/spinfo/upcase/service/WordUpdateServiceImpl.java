@@ -3,6 +3,7 @@ package de.uni_koeln.spinfo.upcase.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +122,7 @@ public class WordUpdateServiceImpl implements WordUpdateService {
 		Page page = pageRepository.findByPageId(pageId);
 		Integer index = page.getWordIdToIndex().get(word.getId());
 		page.getWords().set(index, word);
+		page.setLastModified(new Date());
 		pageRepository.save(page);
 	}
 
@@ -142,6 +144,30 @@ public class WordUpdateServiceImpl implements WordUpdateService {
 		WordVersion wordVersion = new WordVersion(word, user.getEmail());
 		wordVersionRepository.save(wordVersion);
 		logger.info(wordVersion.toString());
+	}
+
+	@Override
+	public Word delete(AnnotationUpdate toDelete) {
+		
+		String wordId = toDelete.getWordId();
+		String pageId = toDelete.getPageId();
+		String type = toDelete.getTag().getType();
+		String value = toDelete.getTag().getValue();
+		
+		Word word = wordRepository.findOne(wordId);
+		Set<Annotation> annotations = word.getAnnotations();
+		
+		Annotation match = new Annotation(value, type);
+		annotations.remove(match);
+		
+		// SAVE WORD
+		wordRepository.save(word);
+		// CREATE WORD VERSION
+		createVersion(getCurrentUser(), word);
+		// UPDATE PAGE
+		updateInPage(pageId, word);
+
+		return word;
 	}
 
 }

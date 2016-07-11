@@ -16,19 +16,23 @@ public class Collection {
 	
 	@Id private String id;
 
-	private Date creationDate;
-	private Date lastModified;
-	private boolean contributable;
 	private String title;
-
+	private String description;
+	private String pathToCollection;
 //	@DBRef private UpcaseUser owner;
 	private String owner;
 	
+	private Date creationDate;
+	private Date lastModified;
+	private boolean contributable;
+
 //	@DBRef private List<UpcaseUser> contributers;
 	private Set<String> contributers;
 	
 //	@DBRef private List<Page> pages;
 	private Set<String> pages;
+
+	
 	
 //	@DBRef private List<Chapter> chapters;
 //	@DBRef private List<Volume> volumes;
@@ -42,41 +46,67 @@ public class Collection {
 		this.title = title;
 		this.creationDate = new Date();
 		this.lastModified = new Date();
-		this.contributable = false;
+		this.contributable = true;
 		this.pages = new HashSet<>();
 		this.contributers = new HashSet<>();
 	}
 	
-	public Collection(String title, UpcaseUser owner) {
+	public Collection(final String title, UpcaseUser owner) {
 		this.title = title;
 		this.creationDate = new Date();
 		this.lastModified = new Date();
-		this.contributable = false;
+		this.contributable = true;
 		this.owner = owner.getId();
 		this.pages = new HashSet<>();
 		this.contributers = new HashSet<>();
-//		this.chapters = new ArrayList<>();
-//		this.volumes = new ArrayList<>();
 	}
 	
-	public Collection(String title, UpcaseUser owner, Set<String> pageIds) {
+	public Collection(final String title, UpcaseUser owner, Set<String> pageIds) {
 		super();
 		this.title = title;
 		this.creationDate = new Date();
 		this.lastModified = new Date();
-		this.contributable = false;
+		this.contributable = true;
 		this.owner = owner.getId();
 		this.pages = pageIds;
 		this.contributers = new HashSet<>();
-//		this.chapters = new ArrayList<>();
-//		this.volumes = new ArrayList<>();
+	}
+	
+	public Collection(final String title, UpcaseUser owner, final String description, final String pathToCollection) {
+		super();
+		this.title = title;
+		this.creationDate = new Date();
+		this.lastModified = new Date();
+		this.contributable = true;
+		this.owner = owner.getId();
+		this.contributers = new HashSet<>();
+		this.description = description;
+		this.pathToCollection = pathToCollection;
+	}
+	
+	public String getPathToCollection() {
+		return pathToCollection;
+	}
+	
+	public void setPathToCollection(final String pathToCollection) {
+		this.pathToCollection = pathToCollection;
+	}
+
+	public String getDescription() {
+		if(description == null || description.isEmpty())
+			return "";
+		return description;
+	}
+	
+	public void setDescription(final String description) {
+		this.description = description;
 	}
 	
 	public String getTitle() {
 		return title;
 	}
 	
-	public void setTitle(String title) {
+	public void setTitle(final String title) {
 		this.title = title;
 	}
 
@@ -84,7 +114,7 @@ public class Collection {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -112,7 +142,7 @@ public class Collection {
 		this.contributable = contributable;
 	}
 
-	public String getOwnerId() {
+	public String getOwner() {
 		return owner;
 	}
 
@@ -143,22 +173,6 @@ public class Collection {
 	public void setPages(Set<String> pages) {
 		this.pages = pages;
 	}
-
-//	public List<Chapter> getChapters() {
-//		return chapters;
-//	}
-//
-//	public void setChapters(List<Chapter> chapters) {
-//		this.chapters = chapters;
-//	}
-//
-//	public List<Volume> getVolumes() {
-//		return volumes;
-//	}
-//
-//	public void setVolumes(List<Volume> volumes) {
-//		this.volumes = volumes;
-//	}
 
 	@Override
 	public int hashCode() {

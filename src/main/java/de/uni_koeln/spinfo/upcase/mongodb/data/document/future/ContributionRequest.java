@@ -29,7 +29,7 @@ public class ContributionRequest {
 		super();
 		this.creationDate = new Date();
 		this.collection = collection.getId();
-		this.owner = collection.getOwnerId();
+		this.owner = collection.getOwner();
 		this.requestor = requestorId;
 	}
 

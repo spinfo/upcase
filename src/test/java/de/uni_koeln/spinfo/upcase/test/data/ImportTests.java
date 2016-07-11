@@ -211,7 +211,7 @@ public class ImportTests {
 		for (File file : data) {
 
 			String imgUrl = file.getName().replace(".html", ".png");
-			Page page = new Page(imgUrl, pageCount, 0);
+			Page page = new Page("13245", imgUrl, pageCount, 0);
 			List<Word> words = new ArrayList<>();
 			
 			// hOCR document

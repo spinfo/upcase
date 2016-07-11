@@ -35,22 +35,22 @@
 		<!-- <artifactId>javax.servlet-api</artifactId> -->
 		<!-- <version>3.1.0</version> -->
 		<!-- </dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.webflow</groupId> -->
-<!-- 			<artifactId>spring-webflow</artifactId> -->
-<!-- 			<version>2.4.2.RELEASE</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.webflow</groupId> -->
+		<!-- <artifactId>spring-webflow</artifactId> -->
+		<!-- <version>2.4.2.RELEASE</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>com.lordofthejars</groupId>
 			<artifactId>nosqlunit-mongodb</artifactId>
 			<version>${nosqlunit-version}</version>
 			<scope>test</scope>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.fasterxml.jackson.core</groupId> -->
-<!-- 			<artifactId>jackson-core</artifactId> -->
-<!-- 			<version>2.6.3</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.fasterxml.jackson.core</groupId> -->
+		<!-- <artifactId>jackson-core</artifactId> -->
+		<!-- <version>2.6.3</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -71,11 +71,11 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>commons-fileupload</groupId> -->
-<!-- 			<artifactId>commons-fileupload</artifactId> -->
-<!-- 			<version>1.2.2</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>commons-fileupload</groupId> -->
+		<!-- <artifactId>commons-fileupload</artifactId> -->
+		<!-- <version>1.2.2</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -117,11 +117,11 @@
 			<version>${spring.version}</version>
 			<optional>false</optional>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.data</groupId> -->
-<!-- 			<artifactId>spring-data-jpa</artifactId> -->
-<!-- 			<version>1.9.0.RELEASE</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.data</groupId> -->
+		<!-- <artifactId>spring-data-jpa</artifactId> -->
+		<!-- <version>1.9.0.RELEASE</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
@@ -259,6 +259,12 @@
 			<artifactId>tess4j</artifactId>
 			<version>3.2.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160212</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>

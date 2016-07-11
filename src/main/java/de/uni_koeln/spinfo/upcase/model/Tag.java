@@ -6,7 +6,6 @@ public class Tag {
 	private String value;
 
 	public Tag() {
-
 	}
 
 	public String getType() {

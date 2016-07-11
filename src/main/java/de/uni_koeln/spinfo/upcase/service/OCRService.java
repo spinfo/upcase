@@ -2,6 +2,7 @@ package de.uni_koeln.spinfo.upcase.service;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,19 +32,26 @@ public class OCRService {
 		return hOCRs;
 	}
 
-	public Map<String, String> exctractHOCR(List<File> files) throws TesseractException {
+	public List<List<String>> exctractHOCR(List<File> files) throws TesseractException {
 		init();
-		Map<String, String> fileToHtml = new HashMap<>();
-//		List<String> hOCRs = new ArrayList<>();
+//		Map<String, String> fileToHtml = new HashMap<>();
+		List<List<String>> hOCRs = new ArrayList<>();
+		
 		for (File file : files) {
 			if (filer.accept(file)) {
+				List<String> fileUrlHOCR = new ArrayList<>();
+				
 				String ocr = tesseract.doOCR(file);
-				fileToHtml.put(file.getName(), ocr);
+				fileUrlHOCR.add(file.getName());
+				fileUrlHOCR.add(ocr);
+				hOCRs.add(fileUrlHOCR);
+//				fileToHtml.put(file.getName(), ocr);
+				
 				logger.info("Extract text from " + file.getName());
 //				hOCRs.add(tesseract.doOCR(file));
 			}
 		}
-		return fileToHtml;
+		return hOCRs;
 	}
 
 	private void init() {
