@@ -29,8 +29,7 @@ public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		
 		// FOR TESTING
-		registry.addResourceHandler("/Users/**").addResourceLocations("/Users/");
-		
+		registry.addResourceHandler("/users/**").addResourceLocations("/users/");
 		registry.addResourceHandler("/assets/**").addResourceLocations("/assets/");
 		registry.addResourceHandler("/bootstrap/**").addResourceLocations("/bootstrap/");
 		registry.addResourceHandler("/favicon.ico").addResourceLocations("/");

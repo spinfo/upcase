@@ -14,6 +14,6 @@ public interface CollectionService {
 	 * @return collectionId
 	 * @throws CollectionAlreadyExistsException
 	 */
-	public String createCollection(UploadForm uploadForm) throws CollectionAlreadyExistsException;
+	public String createCollection(UploadForm uploadForm, String path) throws CollectionAlreadyExistsException;
 	
 }

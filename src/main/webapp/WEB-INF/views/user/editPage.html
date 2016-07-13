@@ -639,7 +639,9 @@ span.annotationLabel:hover {
 		
 		// LOAD PAGE_IMAGE 
 		$(document).ready(function() {
-			$('<img src="'+ imgPath +'" class="thumbnail" id="pageImg">').load(function() {
+			var serverUrl = "http://bob.spinfo.uni-koeln.de:9000/";
+			var clientUrl = "http://localhost:8080/";
+			$('<img src="'+ clientUrl + imgPath +'" class="thumbnail" id="pageImg">').load(function() {
 				originalImageWidth = this.width;
 				originalImageHeight = this.height;
 				$(this).appendTo(_IMG_CONTAINER);

@@ -61,7 +61,7 @@ public class CollectionServiceImpl implements CollectionService {
 	private Indexer indexer;
 
 	@Override
-	public String createCollection(UploadForm uploadForm) throws CollectionAlreadyExistsException {
+	public String createCollection(UploadForm uploadForm, String path) throws CollectionAlreadyExistsException {
 
 		final String name = SecurityContextHolder.getContext().getAuthentication().getName();
 		UpcaseUser user = upcaseUserRepository.findByEmail(name);
@@ -72,7 +72,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 		List<MultipartFile> files = uploadForm.getFiles();
 
-		File userColectionDir = createCollectionDir(uploadForm, user, files);
+		File userColectionDir = createCollectionDir(uploadForm, user, files, path);
 
 		Collection collection = new Collection(collectionName, user, uploadForm.getDescription(),
 				userColectionDir.getAbsolutePath());
@@ -123,8 +123,9 @@ public class CollectionServiceImpl implements CollectionService {
 		return null;
 	}
 
-	private File createCollectionDir(UploadForm uploadForm, UpcaseUser user, List<MultipartFile> multiParts) {
-		File userColectionDir = new File("user_" + user.getId(), uploadForm.getCollectionName());
+	private File createCollectionDir(UploadForm uploadForm, UpcaseUser user, List<MultipartFile> multiParts, String path) {
+		logger.info(path + "/user_" + user.getId(), uploadForm.getCollectionName());
+		File userColectionDir = new File(path + "/user_" + user.getId(), uploadForm.getCollectionName());
 		userColectionDir.mkdirs();
 		try {
 			logger.info("Create userColDir and saving files...");
@@ -148,7 +149,7 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	private void saveToUserDir(File userColectionDir, String fileName, byte[] bytes) throws IOException {
-		Path file = Paths.get(userColectionDir.getAbsolutePath(), fileName);
+		Path file = Paths.get(userColectionDir.getPath(), fileName);
 		Files.write(file, bytes);
 		logger.info("Wrote file " + file.getFileName());
 	}

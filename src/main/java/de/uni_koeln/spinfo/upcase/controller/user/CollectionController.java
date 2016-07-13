@@ -3,6 +3,7 @@ package de.uni_koeln.spinfo.upcase.controller.user;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -91,12 +92,12 @@ public class CollectionController {
 
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/create/collection", method = RequestMethod.POST)
-	public String uploadFiles(@Valid UploadForm uploadForm, BindingResult bindingResult) throws CollectionAlreadyExistsException, InterruptedException, ExecutionException {
+	public String uploadFiles(@Valid UploadForm uploadForm, BindingResult bindingResult, HttpServletRequest request) throws CollectionAlreadyExistsException, InterruptedException, ExecutionException {
 		if (bindingResult.hasErrors()) {
 			logger.error("Errors detected, error count: " + bindingResult.getGlobalErrorCount());
 			return "upload";
 		}
-		String collectionId = collectionService.createCollection(uploadForm);
+		String collectionId = collectionService.createCollection(uploadForm, request.getSession().getServletContext().getRealPath("/"));
 		return "redirect:/user/collection/" + collectionId;
 	}
 	

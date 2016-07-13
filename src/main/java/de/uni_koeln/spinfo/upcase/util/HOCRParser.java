@@ -42,7 +42,16 @@ public class HOCRParser {
 
 			logger.info("parsing ... " + imageUrl);
 			
-			Page page = new Page(collectionId, new File(userColectionDir, imageUrl).getAbsolutePath(), pageCount, 0);
+			File fullFile = new File(userColectionDir, imageUrl);
+			File firstParent = fullFile.getParentFile();
+			logger.info("firstParent :: " + firstParent.getName());
+			File secondParent = firstParent.getParentFile();
+			logger.info("secondParent :: " + secondParent.getName());
+			
+			String realPath = secondParent.getName() + "/" + firstParent.getName() + "/" + imageUrl;
+			logger.info("realPath :: " + realPath);
+			
+			Page page = new Page(collectionId, realPath, pageCount, 0);
 			List<Word> words = new ArrayList<>();
 
 			// hOCR document
