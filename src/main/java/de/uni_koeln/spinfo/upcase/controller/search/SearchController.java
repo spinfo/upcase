@@ -28,6 +28,7 @@ public class SearchController {
 
 	@Autowired
 	PropertyReader propertyReader;
+	
 
 	/**
 	 * The search page
@@ -49,7 +50,13 @@ public class SearchController {
 
 			page = page == null ? 1 : page;
 
+
+			if(searcher.openDirectory().numDocs() <= 0) {
+				return "home";
+			}
+			
 			resultList = searcher.withQuotations(searchPhrase, true, 1, page);
+			
 
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
@@ -68,6 +75,8 @@ public class SearchController {
 		model.addAttribute("prev", (page - 1) == 0);
 		model.addAttribute("next", (page - 1) == chunks);
 
+		
+		
 		return "searchResult";
 	}
 

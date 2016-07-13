@@ -2,8 +2,11 @@ package de.uni_koeln.spinfo.upcase.lucene;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -12,6 +15,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.slf4j.Logger;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Collection;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Page;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Word;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.future.CollectionRepository;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.PageRepository;
 
 @Service
@@ -32,6 +37,9 @@ public class Indexer {
 	@Autowired
 	private PageRepository pageRepository;
 
+	@Autowired
+	private CollectionRepository collectionRepository;
+
 	private IndexWriter writer;
 
 	/**
@@ -39,6 +47,13 @@ public class Indexer {
 	 * 
 	 * @throws IOException
 	 */
+	
+	@PostConstruct
+	public void postContruct() throws IOException {
+		init();
+		this.writer.deleteAll();
+		this.writer.close();
+	}
 	public void init() throws IOException {
 		File indexDir = new File("index");
 		indexDir.mkdirs();
@@ -49,6 +64,7 @@ public class Indexer {
 
 	public void index(Collection collection) throws IOException {
 		// TODO ROUTINE FOR LUCENE INDEX UPDATE
+
 		init();
 
 		long start = System.currentTimeMillis();
@@ -64,14 +80,29 @@ public class Indexer {
 
 	}
 
+	public void index(List<Collection> collections) throws IOException {
+		init();
+		long start = System.currentTimeMillis();
+		logger.info("Reindexing collections ...");
+		for (Collection collection : collections) {
+			Set<String> pages = collection.getPages();
+			for (String pageId : pages) {
+				Page page = pageRepository.findByPageId(pageId);
+				indexPage(page, collection);
+			}
+		}
+		this.writer.close();
+		logger.info("Indexing took " + (System.currentTimeMillis() - start) + " ms.");
+	}
+
 	private void indexPage(Page page, Collection collection) {
 		Document doc = pageToLuceneDoc(page, collection);
 		if (doc != null) {
 			logger.info("Adding doc: " + page.toString());
 			try {
-				if(writer == null)
+				if (writer == null)
 					logger.info("writer is null");
-				
+
 				this.writer.addDocument(doc);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -128,7 +159,22 @@ public class Indexer {
 	 */
 	public void deleteIndex() {
 		try {
+			init();
 			this.writer.deleteAll();
+			this.writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Delete existing index.
+	 */
+	public void reIndex() {
+		try {
+			init();
+			List<Collection> collections = collectionRepository.findAll();
+			index(collections);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -139,6 +185,16 @@ public class Indexer {
 	 */
 	public boolean isAvailable() {
 		return writer.isOpen();
+	}
+	
+	public void update(Page page, Collection collection) throws IOException {
+		if(!isAvailable()) {
+			init();
+		}
+		Document doc = pageToLuceneDoc(page, collection);
+		this.writer.updateDocument(new Term("pageId", page.getId()), doc);
+		this.writer.commit();
+		this.writer.close();
 	}
 
 }

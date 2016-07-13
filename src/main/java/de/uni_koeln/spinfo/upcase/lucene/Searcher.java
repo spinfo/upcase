@@ -8,9 +8,6 @@ import java.util.List;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -29,11 +26,9 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.uni_koeln.spinfo.upcase.model.SearchResult;
-import de.uni_koeln.spinfo.upcase.util.PropertyReader;
 
 @Service
 public class Searcher {
@@ -201,12 +196,17 @@ public class Searcher {
 		return query;
 	}
 
-	private DirectoryReader openDirectory() throws IOException {
+	public DirectoryReader openDirectory() throws IOException {
 		return DirectoryReader.open(getLuceneDir());
 	}
 
 	private SearchResult wrapFieldResults(Document doc, List<String> quotations) {
 		return new SearchResult(doc, quotations);
 	}
+
+	//	public SimpleFSDirectory getReader() throws IOException {
+//		File indexDir = new File("index");
+//		return new SimpleFSDirectory(indexDir.toPath());
+//	}
 
 }
