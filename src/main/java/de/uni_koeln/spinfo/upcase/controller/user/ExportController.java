@@ -33,7 +33,7 @@ public class ExportController {
 
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/export/page/{id}")
-	public void getCurrentMenu(@PathVariable("id") String id, HttpServletResponse response) throws FileNotFoundException, IOException {
+	public void getXmlFromPage(@PathVariable("id") String id, HttpServletResponse response) throws FileNotFoundException, IOException {
 		String page = pageRepository.findOne(id);
 		logger.info(page);
 		JSONObject json = new JSONObject(page);
