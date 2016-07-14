@@ -1,8 +1,8 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -19,14 +19,19 @@ public class Word {
 	private String token;
 	private Date lastModified;
 	
-	private List<Annotation> annotations;
+	// ANNOTATION IDS
+	private Set<Annotation> annotations;
 	private Box box;
+	
+	public Word() {
+		super();
+	}
 	
 	public Word(String token, Box box) {
 		super();
 		this.token = token;
 		this.lastModified = new Date();
-		this.annotations = new ArrayList<>();
+		this.annotations = new TreeSet<>();
 		this.box = box;
 	}
 
@@ -54,11 +59,15 @@ public class Word {
 		this.lastModified = lastModified;
 	}
 
-	public List<Annotation> getAnnotations() {
+	public Set<Annotation> getAnnotations() {
 		return annotations;
 	}
+	
+	public void setAnnotation(Annotation annotation) {
+		this.annotations.add(annotation);
+	}
 
-	public void setAnnotations(List<Annotation> annotations) {
+	public void setAnnotations(Set<Annotation> annotations) {
 		this.annotations = annotations;
 	}
 

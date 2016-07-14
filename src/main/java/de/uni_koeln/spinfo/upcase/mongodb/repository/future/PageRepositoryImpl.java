@@ -4,7 +4,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.data.mongodb.core.MongoOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,6 +15,8 @@ import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Page;
 
 @Repository
 public class PageRepositoryImpl implements PageRepository {
+	
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	private MongoTemplate mongoTemplate;
 
@@ -57,7 +60,7 @@ public class PageRepositoryImpl implements PageRepository {
 	public String findOne(String pageId) {
 		return mongoTemplate.findOne(new Query(Criteria.where("_id").is(pageId)), String.class, Page.COLLECTION);
 	}
-
+	
 	@Override
 	public List<Page> findByCollection(String collection) {
 		return mongoTemplate.find(new Query(Criteria.where("collection").is(collection)), Page.class);
@@ -67,6 +70,11 @@ public class PageRepositoryImpl implements PageRepository {
 	public List<Page> save(List<Page> pages) {
 		mongoTemplate.insert(pages, Page.class);
 		return pages;
+	}
+
+	@Override
+	public List<Page> findByCollectionId(String collectionId) {
+		return mongoTemplate.find(new Query(Criteria.where("collection").is(collectionId)), Page.class);
 	}
 
 }

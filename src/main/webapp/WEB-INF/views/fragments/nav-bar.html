@@ -3,44 +3,56 @@
 <head>
 </head>
 <body>
-	<nav th:fragment="nav-bar"
-		class="navbar navbar-default minty" role="navigation">
+	<nav th:fragment="nav-bar" class="navbar navbar-default minty"
+		role="navigation">
 		<div class="container">
 			<div class="navbar-header">
-			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-           	    <span class="icon-bar"></span>
-           	    <span class="icon-bar"></span>
-           	    <span class="icon-bar"></span>
-         	  </button>
-			  <a class="navbar-brand" th:href="@{volumes}">UpCASE</a>
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" th:href="@{/}">UpCASE</a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
-				<form class="navbar-form navbar-left" role="search">
-			        <div class="form-group">
-			          <input type="text" class="form-control" placeholder="Search in Collections" />
-			        </div>
-			        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+				<form class="navbar-form navbar-left" role="search"
+					th:action="@{/searchResult}">
+					<div class="form-group">
+						<input type="text" class="form-control"
+							placeholder="Search collections..." name="searchPhrase"
+							th:value="*{searchPhrase}" autofocus="autofocus"
+							autocomplete="on" style="width: 250px;" /> <label
+							style="padding-left: 10px; font-weight: 100;"> <span
+							style="padding-left: 10px;">rgx*</span>
+						</label>
+					</div>
 				</form>
 				<ul class="nav navbar-nav navbar-right">
-			    	<li><a href="#" data-toggle="modal" data-target="#myModal">Login</a></li>
-			    </ul>
-	        </div><!--/.navbar-collapse -->
-		</div>
-			<!-- Modal -->
-			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-			  <div class="modal-dialog" role="document">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			        <h4 class="modal-title" id="myModalLabel">Login</h4>
-			      </div>
-			      <div class="modal-body minty">
-			      		<div th:replace="fragments/login-form :: login-form"></div>
-			      </div>
-			    </div>
-			  </div>
+					<li><a href="#" data-toggle="modal" data-target="#myModal">Login</a></li>
+				</ul>
 			</div>
+			<!--/.navbar-collapse -->
+		</div>
+		<!-- Modal -->
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+			aria-labelledby="myModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel">Login</h4>
+					</div>
+					<div class="modal-body minty">
+						<div th:replace="fragments/login-form :: login-form"></div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</nav>
 </body>
 </html>

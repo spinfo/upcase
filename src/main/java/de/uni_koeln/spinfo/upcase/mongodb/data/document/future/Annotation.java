@@ -2,33 +2,31 @@ package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
 import java.util.Date;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "ref_annotations")
 public class Annotation {
 	
-	@Transient
-	public static final String COLLECTION = "ref_annotations";
-
-	@Id private String id;
-	
+	private String type;
 	private String tag;
-	private Date creationDate;
+	private Date addedOn;
 
-	public Annotation(String tag) {
+	
+	public Annotation() {
+		super();
+		this.addedOn = new Date();
+	}
+	
+	public Annotation(String tag, String type) {
 		super();
 		this.tag = tag;
-		this.creationDate = new Date();
+		this.type = type;
+		this.addedOn = new Date();
 	}
-
-	public String getId() {
-		return id;
+	
+	public String getType() {
+		return type;
 	}
-
-	public void setId(String id) {
-		this.id = id;
+	
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getTag() {
@@ -39,21 +37,21 @@ public class Annotation {
 		this.tag = tag;
 	}
 
-	public Date getCreationDate() {
-		return creationDate;
+	public Date getAddedOn() {
+		return addedOn;
 	}
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
+	public void setAddedOn(Date addedOn) {
+		this.addedOn = addedOn;
 	}
+
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((tag == null) ? 0 : tag.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -66,28 +64,23 @@ public class Annotation {
 		if (getClass() != obj.getClass())
 			return false;
 		Annotation other = (Annotation) obj;
-		if (creationDate == null) {
-			if (other.creationDate != null)
-				return false;
-		} else if (!creationDate.equals(other.creationDate))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
 		if (tag == null) {
 			if (other.tag != null)
 				return false;
 		} else if (!tag.equals(other.tag))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Annotation [id=" + id + ", tag=" + tag + ", creationDate=" + creationDate + "]";
+		return "Annotation [type=" + type + ", tag=" + tag + ", creationDate=" + addedOn + "]";
 	}
-	
+
 
 }

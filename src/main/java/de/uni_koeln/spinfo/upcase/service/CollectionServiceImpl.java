@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import de.uni_koeln.spinfo.upcase.CollectionAlreadyExistsException;
+import de.uni_koeln.spinfo.upcase.lucene.Indexer;
 import de.uni_koeln.spinfo.upcase.model.form.UploadForm;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Collection;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Page;
@@ -54,8 +57,11 @@ public class CollectionServiceImpl implements CollectionService {
 	@Autowired
 	private HOCRParser hOCRParser;
 
+	@Autowired
+	private Indexer indexer;
+
 	@Override
-	public String createCollection(UploadForm uploadForm) throws CollectionAlreadyExistsException {
+	public String createCollection(UploadForm uploadForm, String path) throws CollectionAlreadyExistsException {
 
 		final String name = SecurityContextHolder.getContext().getAuthentication().getName();
 		UpcaseUser user = upcaseUserRepository.findByEmail(name);
@@ -65,41 +71,48 @@ public class CollectionServiceImpl implements CollectionService {
 			throw new CollectionAlreadyExistsException(collectionName);
 
 		List<MultipartFile> files = uploadForm.getFiles();
-		Collection c = new Collection(collectionName, user);
-		collectionRepository.save(c);
 
-		File userColectionDir = createCollectionDir(uploadForm, user, files);
+		File userColectionDir = createCollectionDir(uploadForm, user, files, path);
+
+		Collection collection = new Collection(collectionName, user, uploadForm.getDescription(),
+				userColectionDir.getAbsolutePath());
+		collectionRepository.save(collection);
 
 		try {
 			List<File> convFiles = multipartsToFiles(files);
 			logger.info("OCR on progress...");
-			Map<String, String> exctractHOCR = ocrService.exctractHOCR(convFiles);
+
+			List<List<String>> exctractHOCR = ocrService.exctractHOCR(convFiles);
+
+			convFiles.forEach(f -> f.delete());
 
 			logger.info("Saving hOCR files...");
-			for (String imageUrl : exctractHOCR.keySet()) {
-				String hOCR = exctractHOCR.get(imageUrl);
+			for (List<String> wrapper : exctractHOCR) {
+				String imageUrl = wrapper.get(0);
+				String hOCR = wrapper.get(1);
 				saveToUserDir(userColectionDir, imageUrl.replaceAll("\\..{1,4}", ".html"), hOCR.getBytes());
 			}
 
 			logger.info("Parsing hOCR files...");
-			List<Page> pages = hOCRParser.parse(exctractHOCR, userColectionDir);
+			List<Page> pages = hOCRParser.parse(collection.getId(), exctractHOCR, userColectionDir);
 
 			logger.info("Save word object within pages...");
 			for (Page page : pages) {
 				List<Word> words = page.getWords();
 				wordRepository.save(words);
 			}
-
 			pageRepository.save(pages);
-
 			List<String> pageIds = pages.stream().map(p -> p.getId()).collect(Collectors.toList());
-			c.setPages(new HashSet<>(pageIds));
+			collection.setPages(new HashSet<>(pageIds));
 
-			logger.info("Update collection..." + c.getId());
-			collectionRepository.update(c);
-			logger.info("Collection updated :: " + c);
-			convFiles.forEach(f -> f.delete());
-			return c.getId();
+			logger.info("Update collection..." + collection.getId());
+			collectionRepository.update(collection);
+
+			logger.info("Collection updated :: " + collection);
+
+			indexer.index(collection);
+
+			return collection.getId();
 
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
@@ -110,8 +123,9 @@ public class CollectionServiceImpl implements CollectionService {
 		return null;
 	}
 
-	private File createCollectionDir(UploadForm uploadForm, UpcaseUser user, List<MultipartFile> multiParts) {
-		File userColectionDir = new File("user_" + user.getId(), uploadForm.getCollectionName());
+	private File createCollectionDir(UploadForm uploadForm, UpcaseUser user, List<MultipartFile> multiParts, String path) {
+		logger.info(path + "/user_" + user.getId(), uploadForm.getCollectionName());
+		File userColectionDir = new File(path + "/user_" + user.getId(), uploadForm.getCollectionName());
 		userColectionDir.mkdirs();
 		try {
 			logger.info("Create userColDir and saving files...");
@@ -135,7 +149,7 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	private void saveToUserDir(File userColectionDir, String fileName, byte[] bytes) throws IOException {
-		Path file = Paths.get(userColectionDir.getAbsolutePath(), fileName);
+		Path file = Paths.get(userColectionDir.getPath(), fileName);
 		Files.write(file, bytes);
 		logger.info("Wrote file " + file.getFileName());
 	}

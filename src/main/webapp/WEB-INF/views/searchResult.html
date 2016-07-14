@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 
 <title>Search results</title>
-
-<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="../assets/css/upcase.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
 
 <style type="text/css">
-body {
-	padding-top: 70px;
-}
 
 .quotation {
 	color: #990000;
@@ -21,70 +20,71 @@ body {
 
 </head>
 <body>
-	<nav class="navbar navbar-default navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-				<a class="navbar-brand" th:href="@{volumes}">UpCASE -
-					Crestomazia Retoromontscha</a>
-			</div>
-		</div>
-	</nav>
+	<div sec:authorize="hasRole('ROLE_USER')">
+		<div th:replace="fragments/nav-bar-user :: nav-bar-user"></div>
+	</div>
+	<div sec:authorize="hasRole('ROLE_ADMIN')">
+		<div th:replace="fragments/nav-bar-admin :: nav-bar-admin"></div>
+	</div>
+	<div sec:authorize="isAnonymous()">
+		<div th:replace="fragments/nav-bar :: nav-bar"></div>
+	</div>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-				<form class="form-horizontal">
-					<div class="row">
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="searchForm" class="col-sm-2 control-label"
-									style="text-align: left;">Suche</label>
-								<div class="col-sm-8">
-									<input type="text" class="form-control" placeholder="Suche..."
-										id="searchForm" name="searchPhrase" th:value="*{searchPhrase}"
-										autofocus="autofocus" autocomplete="off" />
-								</div>
-								<div class="checkbox col-sm-2">
-									<label style="text-align: right; font-weight: bold;"> <input id="regex"
-										type="checkbox" th:value="${regex}" th:checked="${regex} == true" name="regex" />Regex
-									</label>
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="volumeSelection" class="col-sm-2 control-label"
-									style="text-align: left;">Band</label>
-								<div class="col-sm-4">
-									<select class="form-control" id="volumeSelection" name="volumeSelection">
-										<option  value="">- alle -</option>
-										<option th:each="vol: ${volumeList}" th:value="${vol}"
-											th:text="${vol}" th:selected="${#strings.equals(vol, volumeSelection)}">Band I</option>
-									</select>
-								</div>
-								<label for="chapterSelection" class="col-sm-2 control-label"
-									style="text-align: left;">Kapitel</label>
-								<div class="col-sm-4">
-									<select class="form-control" id="chapterSelection" name="chapterSelection">
-										<option value="alle">- alle -</option>
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label class="col-sm-2 control-label" style="text-align: left;">Idiom</label>
-								<div class="col-sm-4">
-									<select class="form-control" name="langSelection">
-										<option  value="alle">- alle -</option>
-										<option th:each="lang : ${languageList}" th:value="${lang}"
-											th:text="${lang}" th:selected="${#strings.equals(lang, langSelection)}">Sursilvan</option>
-									</select>
-								</div>
-							</div>
-							<div class="form-group">
-								<button type="submit" class="btn btn-success">Suchen</button>
-							</div>
-						</div>
-					</div>
-				</form>
+<!-- 				<form class="form-horizontal"> -->
+<!-- 					<div class="row"> -->
+<!-- 						<div class="col-md-6"> -->
+<!-- 							<div class="form-group"> -->
+<!-- 								<label for="searchForm" class="col-sm-2 control-label" -->
+<!-- 									style="text-align: left;">Query</label> -->
+<!-- 								<div class="col-sm-8"> -->
+<!-- 									<input type="text" class="form-control" placeholder="Suche..." -->
+<!-- 										id="searchForm" name="searchPhrase" th:value="*{searchPhrase}" -->
+<!-- 										autofocus="autofocus" autocomplete="off" /> -->
+<!-- 								</div> -->
+<!-- 								<div class="checkbox col-sm-2"> -->
+<!-- 									<label style="padding-left: 10px; font-weight: 100;"> <input id="regex" -->
+<!-- 										type="checkbox" th:value="${regex}" th:checked="${regex} == true" name="regex" />Regex -->
+<!-- 									</label> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+<!-- 							<div class="form-group"> -->
+<!-- 								<label for="volumeSelection" class="col-sm-2 control-label" -->
+<!-- 									style="text-align: left;">Band</label> -->
+<!-- 								<div class="col-sm-4"> -->
+<!-- 									<select class="form-control" id="volumeSelection" name="volumeSelection"> -->
+<!-- 										<option  value="">- alle -</option> -->
+<!-- 										<option th:each="vol: ${volumeList}" th:value="${vol}" -->
+<!-- 											th:text="${vol}" th:selected="${#strings.equals(vol, volumeSelection)}">Band I</option> -->
+<!-- 									</select> -->
+<!-- 								</div> -->
+<!-- 								<label for="chapterSelection" class="col-sm-2 control-label" -->
+<!-- 									style="text-align: left;">Kapitel</label> -->
+<!-- 								<div class="col-sm-4"> -->
+<!-- 									<select class="form-control" id="chapterSelection" name="chapterSelection"> -->
+<!-- 										<option value="alle">- alle -</option> -->
+<!-- 									</select> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-6"> -->
+<!-- 							<div class="form-group"> -->
+<!-- 								<label class="col-sm-2 control-label" style="text-align: left;">Idiom</label> -->
+<!-- 								<div class="col-sm-4"> -->
+<!-- 									<select class="form-control" name="langSelection"> -->
+<!-- 										<option  value="alle">- alle -</option> -->
+<!-- 										<option th:each="lang : ${languageList}" th:value="${lang}" -->
+<!-- 											th:text="${lang}" th:selected="${#strings.equals(lang, langSelection)}">Sursilvan</option> -->
+<!-- 									</select> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+<!-- 							<div class="form-group"> -->
+<!-- 								<button type="submit" class="btn btn-success">Suchen</button> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</form> -->
 			</div>
 		</div>
 		<div class="row">
@@ -95,40 +95,46 @@ body {
 		<div class="row">
 			<div class="col-md-12">
 				<h4>
-					<strong>Suchergebnis für <span class="text-info" th:text="${searchPhrase}"> </span>
-					</strong> (Treffer <span class="text-info" th:text="${offset} + 1"></span> -
+					<strong>Results for <span class="text-info" th:text="${searchPhrase}"> </span>
+					</strong> (Hits <span class="text-info" th:text="${offset} + 1"></span> -
 					<span class="text-info" th:text="${offset + hits.size()}"></span>
-					von <span class="text-info" th:text="${totalHits}"></span>)
+					total <span class="text-info" th:text="${totalHits}"></span>)
 				</h4>
 				<table class="table table-hover table-condensed">
 					<thead>
 						<tr>
 							<th width="5%">#</th>
-							<th width="10%">Band <a id="sortVolume" href="#"><span class="glyphicon" aria-hidden="true"></span></a></th>
-							<th width="20%">Kapitel <a id="sortChapter" href="#"><span class="glyphicon" aria-hidden="true"></span></a></th>
-							<th width="5%">Idiom</th>
-							<th width="40%">Kontext</th>
-							<th width="20%">Referenz</th>
+<!-- 							<th width="10%">Band <a id="sortVolume" href="#"><span class="glyphicon" aria-hidden="true"></span></a></th> -->
+<!-- 							<th width="20%">Kapitel <a id="sortChapter" href="#"><span class="glyphicon" aria-hidden="true"></span></a></th> -->
+<!-- 							<th width="5%">Idiom</th> -->
+							<th width="40%">Context</th>
+							<th width="20%">Options</th>
 						</tr>
 					</thead>
 					<tr th:each="result, stats : ${hits}">
 						<td><span th:text="${offset + stats.count}">1</span></td>
-						<td><a
-							th:href="@{volume/title(volumeTitle=${result.volumeTitle})}"
-							th:text="${result.volumeTitle}">Band I</a></td>
-						<td><a
-							th:href="@{chapter/title(chapterTitle=${result.chapter})}"
-							th:text="${result.chapter}">Daniel Bonifaci</a></td>
-						<td><span th:text="${result.language}">Sursilvan</span></td>
+<!-- 						<td><a -->
+<!-- 							th:href="@{volume/title(volumeTitle=${result.volumeTitle})}" -->
+<!-- 							th:text="${result.volumeTitle}">Band I</a></td> -->
+<!-- 						<td><a -->
+<!-- 							th:href="@{chapter/title(chapterTitle=${result.chapter})}" -->
+<!-- 							th:text="${result.chapter}">Daniel Bonifaci</a></td> -->
+<!-- 						<td><span th:text="${result.language}">Sursilvan</span></td> -->
 						<td><span th:utext="${result.quotations[0]}"></span></td>
 <!-- 						th:href="@{showDocument(pageId=${result.pageId}, resultQuotations=${result.quotations})}"  -->
-						<td><a 
-							th:attr="data-pageId=${result.pageId}, data-resultQuotations=${result.quotations}"
-							data-toggle="modal"
-							data-target="#myModal"
-							href="#"
-							class="showInContextBtn">
-							<span th:text="${result.filename}"></span></a>
+						<td>
+<!-- 						<a  -->
+<!-- 							th:attr="data-pageId=${result.pageId}, data-resultQuotations=${result.quotations}" -->
+<!-- 							data-toggle="modal" -->
+<!-- 							data-target="#myModal" -->
+<!-- 							href="#" -->
+<!-- 							class="showInContextBtn"> -->
+<!-- 							<span th:text="${result.imageUrl}"></span></a> -->
+
+							<small><a class="btn btn-default btn-xs" th:href="@{/user/collection/{path}(path=${result.collectionId})}" title="Show Collection"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></small>
+							<small><a class="btn btn-default btn-xs" th:href="@{/edit/page/{path}(path=${result.pageId})}" title="Edit Page"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></small>
+							<small><a class="btn btn-default btn-xs" th:href="@{/user/profile/{path}(path=${result.ownerId})}" title="User Profile"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></small>
+							<small><a class="btn btn-default btn-xs" th:href="@{/export/page/{path}(path=${result.pageId})}" target="_blank" title="Exoprt"><span class="glyphicon glyphicon-share" aria-hidden="true"></span></a></small>
 						</td>
 					</tr>
 					<tr>
@@ -138,18 +144,18 @@ body {
 									<ul class="pagination pagination-sm">
 										<li th:class="${prev == true ? 'disabled' : ''}"><a
 											th:if="${prev} == false"
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, regex=${regex}, page=${page - 1}, langSelection=${langSelection}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page - 1})}"
 											aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 											<a th:if="${prev} == true" href="#" aria-label="Previous"><span
 												aria-hidden="true">&laquo;</span></a></li>
 										<li th:class="${(page - 1) == i ? 'active' : ''}"
 											th:each="i : ${#numbers.sequence(0, chunks/1)}"><a
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, regex=${regex}, page=${i + 1}, langSelection=${langSelection}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${i + 1})}"
 											th:text="${i + 1}">1 <span class="sr-only">(current)</span>
 										</a></li>
 										<li th:class="${next == true ? 'disabled' : ''}"><a
 											th:if="${next} == false"
-											th:href="@{searchResult(searchPhrase=${searchPhrase}, regex=${regex}, page=${page + 1}, langSelection=${langSelection}, volumeSort=${volumeSort}, chapterSort=${chapterSort})}"
+											th:href="@{searchResult(searchPhrase=${searchPhrase}, page=${page + 1})}"
 											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 										</a> <a th:if="${next} == true" href="#" aria-label="Next"><span
 												aria-hidden="true">&raquo;</span></a></li>
@@ -296,5 +302,6 @@ body {
 		}
 		/*]]>*/
 	</script>
+	<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>

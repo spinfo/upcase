@@ -52,11 +52,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			}
 		});
 		UpcaseUser upcaseUser4 = new UpcaseUser(new RegistrationForm("Admin", "Admin", "admin", "", "admin", "admin"), true, true, true, true, authorities);
+		UpcaseUser upcaseUser5 = new UpcaseUser(new RegistrationForm("User", "User", "user", "", "user", "user"));
+		UpcaseUser upcaseUser6 = new UpcaseUser(new RegistrationForm("Editor", "Editor", "editor", "", "editor", "editor"));
 		
 		users.add(upcaseUser1);
 		users.add(upcaseUser2);
 		users.add(upcaseUser3);
 		users.add(upcaseUser4);
+		users.add(upcaseUser5);
+		users.add(upcaseUser6);
 		
         return  new MyInMemoryUserDetailsManager(users);
     }
@@ -81,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.logoutSuccessUrl("/")
 		.and()
 			.exceptionHandling()
-			.accessDeniedPage("/something_went_wrong")
+			.accessDeniedPage("/access_denied")
 		.and()
 			.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))

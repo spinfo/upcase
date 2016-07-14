@@ -21,6 +21,7 @@ public class AdminController {
 		return"/admin/main";
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/admin/deleteAll", method = RequestMethod.GET)
 	public String deleteAll() {
 		upcaseUserRepository.deleteAll();

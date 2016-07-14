@@ -7,11 +7,63 @@
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js"></script>
 <link href="../../assets/css/upcase.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+.newOperator {
+	color: #c7254e;
+	font-family: Courier;
+}
+</style>
 </head>
 <body>
-
-	<h1 th:text="${collection.title}">YOR COLLECTIONS</h1>
-	<p th:text="${owner.lastName +', '+ owner.firstName}">COLLECTION OWNER</p>
-
+<div th:replace="fragments/nav-bar-user :: nav-bar-user"></div>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<code style="font-size: 26px;" ><span th:text="${collection.title}">YOR COLLECTIONS</span></code>
+			<small th:text="${collection.description}">DESCRIPTION</small><br/>
+			<span>Created on: </span><small th:text="${#dates.format(collection.creationDate, 'dd/MMM/yyyy, HH:mm')}">CREATED</small> <span> by <a href='#'>Guest, Guest</a></span><br/>
+		</div>
+	</div>
+	<hr/>
+	<div class="row">
+		<div class="col-md-12">
+			<button data-toggle="modal" data-target="#myModal" type="button" class="btn btn-default" aria-label="Left Align"> <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span> <span class="newOperator">new </span>Grouping( )</button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-3">
+			<h4>Pages</h4>
+			<div class="list-group" style="height: 350px;overflow: scroll;">
+				<a th:each="page : ${pages}" th:href="@{/edit/page/{path}(path=${page.id})}" class="list-group-item">
+					<span class="list-group-item-heading" th:text="${page.title}">TITLE</span> 
+					<span class="label label-default label-pill pull-xs-left" th:text="${'Page ' + page.pageNumber}">0</span>
+			    	<small th:text="${#dates.format(page.lastModified, 'dd/MMM/yyyy, HH:mm')}">LAST MODIFIED</small>
+			  	</a>
+			</div>
+		</div>
+		<div class="col-md-3">
+		
+		</div>
+	</div>
+</div>
+<div th:replace="fragments/footer :: footer"></div>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Uuups...</h4>
+      </div>
+      <div class="modal-body">
+      	<p>Sorry, but this function is not implemented yet...</p>
+      	 <img alt="" src="/images/sorry.png" style="width: 570px;"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

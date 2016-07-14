@@ -3,15 +3,15 @@
 <head>
 
 <title>Upload</title>
-<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"
-	type="text/css" />
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 <script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
 <link href="../assets/css/upcase.css" rel="stylesheet" type="text/css" />
-
-
-<meta name="_csrf" th:content="${_csrf.token}" />
-<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+ 
+<!-- dependencies -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+<link rel="stylesheet" href="../assets/license_plugin/license-selector.css" />
+<script type="text/javascript" src="../assets/license_plugin/license-selector.js"></script>
 
 <style type="text/css">
 body {
@@ -43,7 +43,6 @@ body {
 </head>
 <body>
 	<div th:replace="fragments/nav-bar-user :: nav-bar-user"></div>
-
 	<div class="container-fluid">
 		<div class="row">
 			<div class="wrapper">
@@ -70,17 +69,45 @@ body {
 					</div>
 					<div class="form-group">
 						<label for="exampleInputFile">File<span class="greyish">*</span></label>
-						<input type="file" name="files[]" accept=".png, .jpg" th:field="*{files}" multiple="multiple"/> <span
-							th:if="${#fields.hasErrors('files')}"
-							th:errors="*{files}" 
+						<input type="file" name="files[]" accept=".png, .jpg"
+							th:field="*{files}" multiple="multiple" /> <span
+							th:if="${#fields.hasErrors('files')}" th:errors="*{files}"
 							th:class="formError">Please choose a file to upload.</span>
 						<p class="help-block">Selectable file types are: PNG or JPEG</p>
 					</div>
-					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+					<div class="form-group">
+						<label for="licenseSelection">License<span class="greyish">*</span></label>
+						<div id="licenseWrapper"></div>
+					</div>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
 					<button type="submit" class="btn btn-default">Submit</button>
 				</form>
 			</div>
 		</div>
 	</div>
+	<div th:replace="fragments/footer :: footer"></div>
+	
+	<script type="text/javascript">
+		//<![CDATA[
+			 $(function() {
+			     var ls = $('<a href="#">Click to choose a license</a>')
+				 	.appendTo('#licenseWrapper')
+				 	.licenseSelector({
+					    	showLabels : true,
+					        onLicenseSelected : function (license) {
+					       		$('body').append($('<pre></pre>').text(JSON.stringify(license, null, 4)))
+					            	console.log(license)
+						     	}
+					 });
+			 
+			     ls.on("click", function() {
+			    	 ls.click(); 
+			     });
+			 		
+			 });
+		//]]>
+	</script>
+
 </body>
 </html>

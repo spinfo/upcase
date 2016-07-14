@@ -1,5 +1,7 @@
 package de.uni_koeln.spinfo.upcase.mongodb.repository.future;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -49,6 +51,16 @@ public class CollectionRepositoryImpl implements CollectionRepository {
 		update.setTitle(c.getTitle());
 		operations.save(update);
 		return update;
+	}
+
+	@Override
+	public List<Collection> findAll() {
+		return operations.findAll(Collection.class);
+	}
+
+	@Override
+	public List<Collection> findByOwner(String ownerId) {
+		return operations.find(new Query(Criteria.where("owner").is(ownerId)), Collection.class);
 	}
 
 }
