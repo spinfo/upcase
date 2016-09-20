@@ -38,17 +38,10 @@ public class CollectionController {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired
-	private CollectionService collectionService;
-
-	@Autowired
-	private CollectionRepository collectionRepository;
-	
-	@Autowired
-	private UpcaseUserRepository upcaseUserRepository;
-	
-	@Autowired
-	private PageRepository pageRepository;
+	@Autowired private CollectionService collectionService;
+	@Autowired private CollectionRepository collectionRepository;
+	@Autowired private UpcaseUserRepository upcaseUserRepository;
+	@Autowired private PageRepository pageRepository;
 	
 	@ModelAttribute("userName")
 	public Model userName(Model model) {
@@ -64,6 +57,8 @@ public class CollectionController {
 	@RequestMapping(value = "/user/collection/{id}", method = RequestMethod.GET)
 	public String userCollection(@PathVariable("id") String id, Model model) {
 		Collection collection = collectionRepository.findbyId(id);
+		if(collection == null)
+			return "/";
 		UpcaseUser owner = upcaseUserRepository.findById(collection.getOwner());
 		List<Page> pages = pageRepository.findByCollectionId(id);
 		model.addAttribute("collection", collection);
