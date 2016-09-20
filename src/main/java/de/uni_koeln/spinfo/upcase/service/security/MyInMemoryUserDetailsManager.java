@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.upcase.security;
+package de.uni_koeln.spinfo.upcase.service.security;
 
 import java.util.Collection;
 

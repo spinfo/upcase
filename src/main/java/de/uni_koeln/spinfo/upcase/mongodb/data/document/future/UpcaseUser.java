@@ -17,9 +17,12 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.util.Assert;
 
+import de.uni_koeln.spinfo.upcase.model.Role;
 import de.uni_koeln.spinfo.upcase.model.form.RegistrationForm;
 
 @Document(collection = "ref_users")
@@ -38,25 +41,22 @@ public class UpcaseUser implements UserDetails {
 	private String institution;
 	private String firstName;
 	private String lastName;
-	private String hash; // password
+	private String hash; // hashed password
 	private boolean enabled;
-
+	private Set<String> roles;
+	
 	// @DBRef private List<Collection> owns;
 	private Set<String> owns;
 
 	// @DBRef private List<Collection> contributes;
 	private Set<String> contributesTo;
 
-	@Transient
-	private Set<GrantedAuthority> authorities;
-	@Transient
+	@Transient private Set<GrantedAuthority> authorities;
 	private boolean accountNonExpired;
-	@Transient
 	private boolean credentialsNonExpired;
-	@Transient
 	private boolean accountNonLocked;
 
-	private Set<String> roles;
+	
 
 	public UpcaseUser() {
 	}
@@ -69,58 +69,28 @@ public class UpcaseUser implements UserDetails {
 		this.firstName = registrationForm.getFirstName();
 		this.lastName = registrationForm.getLastName();
 		this.institution = registrationForm.getInstitution();
-		// this.hash = BCrypt.hashpw(registrationForm.getPassword(),
-		// BCrypt.gensalt());
-		this.hash = registrationForm.getPassword();
+		this.hash = BCrypt.hashpw(registrationForm.getPassword(), BCrypt.gensalt());
 		this.owns = new HashSet<>();
 		this.contributesTo = new HashSet<>();
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		this.enabled = true;
 		this.accountNonExpired = true;
 		this.credentialsNonExpired = true;
 		this.accountNonLocked = true;
+		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		authorities.add(new GrantedAuthority() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public String getAuthority() {
-				return "ROLE_USER";
+				return Role.GUEST.getRoleId();
 			}
 		});
-		
-		roles = new HashSet<>();
-		for (GrantedAuthority role : authorities) {
-			roles.add(role.getAuthority());
-		}
-		
-		this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
-	}
 
-	public UpcaseUser(final RegistrationForm registrationForm, boolean enabled, boolean accountNonExpired,
-			boolean credentialsNonExpired, boolean accountNonLocked,
-			Collection<? extends GrantedAuthority> authorities) {
-		super();
-		this.email = registrationForm.getEmail();
-		this.creationDate = new Date();
-		this.lastLogin = new Date();
-		this.firstName = registrationForm.getFirstName();
-		this.lastName = registrationForm.getLastName();
-		this.institution = registrationForm.getInstitution();
-		// this.hash = BCrypt.hashpw(registrationForm.getPassword(),
-		// BCrypt.gensalt());
-		this.hash = registrationForm.getPassword();
-		this.owns = new HashSet<>();
-		this.contributesTo = new HashSet<>();
-		this.enabled = enabled;
-		this.accountNonExpired = accountNonExpired;
-		this.credentialsNonExpired = credentialsNonExpired;
-		this.accountNonLocked = accountNonLocked;
-		
 		roles = new HashSet<>();
 		for (GrantedAuthority role : authorities) {
 			roles.add(role.getAuthority());
 		}
-		
+
 		this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
 	}
 
@@ -227,8 +197,8 @@ public class UpcaseUser implements UserDetails {
 
 	@Override
 	public String toString() {
-		return "UpcaseUser [role=" + roles + ", email=" + email + ", firstName=" + firstName
-				+ ", lastName=" + lastName + "]";
+		return "UpcaseUser [role=" + roles + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName
+				+ "]";
 	}
 
 	public boolean isEnabled() {
@@ -241,6 +211,14 @@ public class UpcaseUser implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+
+		if (authorities == null) {
+			authorities = new HashSet<>();
+			for (String role : roles) {
+				authorities.add(new SimpleGrantedAuthority(role));
+			}
+		}
+
 		return authorities;
 	}
 
