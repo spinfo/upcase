@@ -77,4 +77,9 @@ public class PageRepositoryImpl implements PageRepository {
 		return mongoTemplate.find(new Query(Criteria.where("collection").is(collectionId)), Page.class);
 	}
 
+	@Override
+	public void deleteAll() {
+		mongoTemplate.remove(new Query(), Page.class);
+	}
+
 }

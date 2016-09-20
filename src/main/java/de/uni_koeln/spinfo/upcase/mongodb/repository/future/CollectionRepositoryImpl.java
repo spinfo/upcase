@@ -63,4 +63,9 @@ public class CollectionRepositoryImpl implements CollectionRepository {
 		return operations.find(new Query(Criteria.where("owner").is(ownerId)), Collection.class);
 	}
 
+	@Override
+	public void deleteALl() {
+		operations.remove(new Query(), Collection.class);
+	}
+
 }

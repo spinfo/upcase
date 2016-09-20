@@ -27,5 +27,7 @@ public interface PageRepository extends Repository<Page, String> {
 	public List<Page> save(List<Page> pages);
 
 	public List<Page> findByCollectionId(String collectionId);
+
+	public void deleteAll();
 	
 }

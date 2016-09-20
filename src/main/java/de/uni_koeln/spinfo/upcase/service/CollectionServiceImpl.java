@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import de.uni_koeln.spinfo.upcase.mongodb.repository.future.CollectionRepository
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.PageRepository;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.WordRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.future.WordVersionRepository;
 import de.uni_koeln.spinfo.upcase.util.HOCRParser;
 import net.sourceforge.tess4j.TesseractException;
 
@@ -50,6 +52,9 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Autowired
 	private WordRepository wordRepository;
+	
+	@Autowired
+	private WordVersionRepository wordVersionRepository;
 
 	@Autowired
 	private OCRService ocrService;
@@ -160,6 +165,15 @@ public class CollectionServiceImpl implements CollectionService {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void deleteAllColletions() {
+		collectionRepository.deleteALl();
+		pageRepository.deleteAll();
+		wordRepository.deleteAll();
+		wordVersionRepository.deleteAll();
+		indexer.deleteIndex();
 	}
 
 }

@@ -6,14 +6,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
+import de.uni_koeln.spinfo.upcase.service.CollectionService;
 
 
 @Controller()
 public class AdminController {
 	
+//	@Autowired
+//	private UpcaseUserRepository upcaseUserRepository;
+	
 	@Autowired
-	private UpcaseUserRepository upcaseUserRepository;
+	private CollectionService collectionService;
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/admin", method = RequestMethod.GET)
@@ -22,10 +25,10 @@ public class AdminController {
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = "/admin/deleteAll", method = RequestMethod.GET)
-	public String deleteAll() {
-		upcaseUserRepository.deleteAll();
+	@RequestMapping(value = "/admin/delete/collection/all", method = RequestMethod.GET)
+	public String deleteAllCollections() {
+		collectionService.deleteAllColletions();
 		return mainPanel();
 	}
-
+	
 }
