@@ -56,7 +56,6 @@ public class UpcaseUser implements UserDetails {
 	private boolean credentialsNonExpired;
 	private boolean accountNonLocked;
 
-	
 
 	public UpcaseUser() {
 	}
@@ -82,7 +81,7 @@ public class UpcaseUser implements UserDetails {
 
 			@Override
 			public String getAuthority() {
-				return Role.GUEST.getRoleId();
+				return Role.USER.getRoleId();
 			}
 		});
 
