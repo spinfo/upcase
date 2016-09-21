@@ -5,11 +5,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -17,23 +15,16 @@ import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Collection;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.UpcaseUser;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.CollectionRepository;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
+import de.uni_koeln.spinfo.upcase.service.security.UpcaseAuthProvider;
 
 @Controller
 public class ProfileController {
+	
+	@Autowired private UpcaseUserRepository upcaseUserRepository;
+	@Autowired private CollectionRepository collectionRepository;
+	@Autowired private UpcaseAuthProvider authProvider;
 
-	Logger logger = LoggerFactory.getLogger(getClass());
-
-	@Autowired
-	private UpcaseUserRepository upcaseUserRepository;
-
-	@Autowired
-	private CollectionRepository collectionRepository;
-
-	@ModelAttribute("userName")
-	public Model userName(Model model) {
-		model.addAttribute("userName", getUserName());
-		return model;
-	}
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@RequestMapping(value = "user/profile/{id}")
 	public String showProfile(@PathVariable("id") String id, Model model) {
@@ -41,10 +32,10 @@ public class ProfileController {
 		return "profile";
 	}
 
+	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "user/profile/my")
 	public String showMyProfile(Model model) {
-		String email = getUserName();
-		UpcaseUser user = upcaseUserRepository.findByEmail(email);
+		UpcaseUser user = authProvider.getCurrentUser();
 		findUser(user.getId(), model);
 		return "profile";
 	}
@@ -54,14 +45,6 @@ public class ProfileController {
 		List<Collection> collections = collectionRepository.findByOwner(user.getId());
 		model.addAttribute("collections", collections);
 		model.addAttribute("user", user);
-	}
-
-	private String getUserName() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String userName = "unknown";
-		if (auth != null)
-			userName = auth.getName();
-		return userName;
 	}
 
 }

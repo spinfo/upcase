@@ -37,13 +37,11 @@ import de.uni_koeln.spinfo.upcase.service.WordUpdateService;
 public class EditPageController {
 	
 	
-	Logger logger = LoggerFactory.getLogger(getClass());
+	@Autowired private PageRepository pageRepository;
+	@Autowired private WordUpdateService wordUpdateService;
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired
-	private PageRepository pageRepository;
-
-	@Autowired
-	private WordUpdateService wordUpdateService;
 	
 	@ModelAttribute("userName")
 	public Model userName(Model model) {

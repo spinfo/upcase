@@ -26,10 +26,9 @@ import de.uni_koeln.spinfo.upcase.mongodb.repository.future.PageRepository;
 @Controller
 public class ExportController {
 
-	Logger logger = LoggerFactory.getLogger(getClass());
-
-	@Autowired
-	private PageRepository pageRepository;
+	@Autowired private PageRepository pageRepository;
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/export/page/{id}")

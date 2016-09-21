@@ -39,14 +39,14 @@ public class RegistrationController {
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public String signup(@Valid @ModelAttribute("registrationForm") RegistrationForm registrationForm, BindingResult bindingResult) {
+	public String signup(@Valid @ModelAttribute("registrationForm") RegistrationForm registrationForm, BindingResult bindingResult, Model model) {
 		
 		if (bindingResult.hasErrors()) {
 			logger.error("Errors detected, error count: " + bindingResult.getGlobalErrorCount());
 			return "signup";
 		}
 		
-		return accountService.createAccount(registrationForm);
+		return accountService.createAccount(registrationForm, model);
 	}
 	
 }

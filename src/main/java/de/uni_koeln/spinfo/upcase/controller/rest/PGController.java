@@ -1,4 +1,4 @@
-package de.uni_koeln.spinfo.upcase.controller;
+package de.uni_koeln.spinfo.upcase.controller.rest;
 
 import java.io.IOException;
 import java.util.List;
