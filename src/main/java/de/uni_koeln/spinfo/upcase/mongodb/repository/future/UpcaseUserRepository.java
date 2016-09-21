@@ -20,4 +20,6 @@ public interface UpcaseUserRepository extends Repository<UpcaseUser, String> {
 
 	public void deleteAll();
 
+	public void updateLastLogin(String name);
+
 }
