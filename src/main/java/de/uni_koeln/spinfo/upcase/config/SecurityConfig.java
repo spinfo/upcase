@@ -32,7 +32,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //		auth.inMemoryAuthentication().withUser("user").password("user").roles("USER");
 //		auth.inMemoryAuthentication().withUser("admin").password("admin").roles("ADMIN");
 //	}
-	 
 //	  @Bean
 //    public MyInMemoryUserDetailsManager inMemoryUserDetailsManager() {
 //
@@ -80,10 +79,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.passwordParameter("passwd")
 			.permitAll()
 		.and()
-			.logout()
-			.logoutUrl("/logout")
-			.logoutSuccessUrl("/")
-		.and()
 			.exceptionHandling()
 			.accessDeniedPage("/access_denied")
 		.and()
@@ -93,6 +88,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.logoutSuccessUrl("/")
 		.and()
 			.httpBasic();
+		
+		
 	}
 	// @formatter:on
 
