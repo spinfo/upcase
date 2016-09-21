@@ -27,7 +27,13 @@
 				<span>User: </span><span style="color: #c7254e;" th:text="${user.lastName +', '+ user.firstName}"></span>
 			</div>
 			<div class="inline">
+				<span>Institution: </span><span style="color: #c7254e;" th:text="${user.institution}"></span>
+			</div>
+			<div class="inline">
 				<span>Member since: </span><span style="color: #c7254e;" th:text="${#dates.format(user.creationDate, 'dd/MMM/yyyy')}"></span>
+			</div>
+			<div class="inline">
+				<span>Last login: </span><span style="color: #c7254e;" th:text="${#dates.format(user.lastLogin, 'dd/MMM/yyyy')}"></span>
 			</div>
 		</div>
 		<div class="col-md-4">

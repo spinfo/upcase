@@ -52,7 +52,7 @@ li a.nav-a-items:hover {
 	color:#aa2c0b;
 }
 .greyish {
-	color:#333;
+	color:#999;
 }
 .pinkishComplimentary {
 	color: #c5e3bf;
@@ -60,4 +60,13 @@ li a.nav-a-items:hover {
 
 .jumbotron {
 	background-color: #C5E3BF; important!
+}
+
+.jumbotron > h1 {
+	margin: -10px 0px 0px 1em;
+	padding: 0px 0px 0.5em 10px;
+}
+
+.formError {
+	color: red;
 }
