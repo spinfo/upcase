@@ -22,7 +22,6 @@ public class UploadFormValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		UploadForm uploadForm = (UploadForm) target;
 		
-		
 		for (MultipartFile multipartFile : uploadForm.getFiles()) {
 			if(multipartFile.getOriginalFilename().isEmpty()) {
 				logger.info("FILES NOT UPLOADED");
@@ -31,6 +30,7 @@ public class UploadFormValidator implements Validator {
 		}
 		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "collectionName", "NotBlank.uploadForm.collectionName");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "license", "NotBlank.uploadForm.license");
 	}
 
 }
