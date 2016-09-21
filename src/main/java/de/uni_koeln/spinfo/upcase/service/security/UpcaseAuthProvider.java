@@ -1,6 +1,7 @@
 package de.uni_koeln.spinfo.upcase.service.security;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -11,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.UpcaseUser;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
@@ -41,6 +44,12 @@ public class UpcaseAuthProvider implements AuthenticationProvider {
 			if (BCrypt.checkpw(password, principal.getPassword())) {
 				Authentication authenticate = new UsernamePasswordAuthenticationToken(principal, "ignored", principal.getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(authenticate);
+				upcaseUserRepository.updateLastLogin(authentication.getName());
+				
+				ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+			    HttpSession session = attr.getRequest().getSession(true);
+			    session.setAttribute("userName", username);
+				
 				return authenticate;
 			}
 		}
