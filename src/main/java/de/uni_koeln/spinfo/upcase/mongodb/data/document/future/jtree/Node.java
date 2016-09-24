@@ -33,14 +33,31 @@ public class Node {
 	private State state;
 	@JsonProperty(value="li_attr") private List<String> listAttributes;
 	@JsonProperty(value="a_attr") private List<String> anchorAttributes;
+	private String type;
 	
-	public Node(String id, String text, String parent) {
+	public Node(String id, String text, String parent, Type type) {
 		this.id = id;
 		this.text = text;
 		this.parent = parent;
 		this.state = new State();
 		this.listAttributes = new ArrayList<>();
 		this.anchorAttributes = new ArrayList<>();
+		this.type = type.getType();
+	}
+	
+	public enum Type {
+		
+		ROOT("root"), FOLDER("folder"), FILE("file");
+		
+		private String type;
+		
+		Type(String type) {
+			this.type = type;
+		}
+		
+		public String getType() {
+			return type;
+		}
 	}
 	
 	class State {
@@ -123,6 +140,14 @@ public class Node {
 
 	public void setAnchorAttributes(List<String> anchorAttributes) {
 		this.anchorAttributes = anchorAttributes;
+	}
+	
+	public String getType() {
+		return type;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

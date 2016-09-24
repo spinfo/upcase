@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.jtree.Node;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.jtree.Node.Type;
 
 @Controller
 public class TreeController {
@@ -30,11 +31,12 @@ public class TreeController {
 	@RequestMapping(value = { "/tree/json" }, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public @ResponseBody String data() throws JsonGenerationException, JsonMappingException, IOException {
 		
-		Node root = new Node("collectionID", "collectionName", "#"); // ROOT
-		Node n1 = new Node("n1_ID", "node 1", "collectionID");
-		Node n2 = new Node("n2_ID", "node 2", "collectionID");
-		Node n3 = new Node("n3_ID", "node 3", "collectionID");
-		Node n4 = new Node("n4_ID", "node 4", "collectionID");
+		Node root = new Node("collectionID", "collectionName", "#", Type.ROOT); // ROOT
+		Node n1 = new Node("n1_ID", "page 1", "collectionID", Type.FILE);
+		Node n2 = new Node("n2_ID", "page 2", "collectionID", Type.FILE);
+		Node n3 = new Node("n3_ID", "chapterName", "collectionID", Type.FOLDER);
+		Node n4 = new Node("n4_ID", "page 4", "n3_ID", Type.FILE);
+		Node n5 = new Node("n5_ID", "page 5", "n3_ID", Type.FILE);
 
 		List<Node> tree = new ArrayList<>();
 		tree.add(root);
@@ -42,6 +44,7 @@ public class TreeController {
 		tree.add(n2);
 		tree.add(n3);
 		tree.add(n4);
+		tree.add(n5);
 
 		final OutputStream out = new ByteArrayOutputStream();
 	    final ObjectMapper mapper = new ObjectMapper();
