@@ -5,53 +5,87 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.util.MimeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.jtree.Node;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.jtree.Node.Type;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.tree.Node;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.tree.Type;
 
-@Controller
+@RestController
 public class TreeController {
-
-	@RequestMapping(value = { "/tree" })
-	public String tree() {
-		return "tree";
-	}
 	
-	@RequestMapping(value = { "/tree/json" }, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public @ResponseBody String data() throws JsonGenerationException, JsonMappingException, IOException {
-		
-		Node root = new Node("collectionID", "collectionName", "#", Type.ROOT); // ROOT
-		Node n1 = new Node("n1_ID", "page 1", "collectionID", Type.FILE);
-		Node n2 = new Node("n2_ID", "page 2", "collectionID", Type.FILE);
-		Node n3 = new Node("n3_ID", "chapterName", "collectionID", Type.FOLDER);
-		Node n4 = new Node("n4_ID", "page 4", "n3_ID", Type.FILE);
-		Node n5 = new Node("n5_ID", "page 5", "n3_ID", Type.FILE);
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
-		List<Node> tree = new ArrayList<>();
-		tree.add(root);
-		tree.add(n1);
-		tree.add(n2);
-		tree.add(n3);
-		tree.add(n4);
-		tree.add(n5);
-
+	
+	private AtomicInteger idGen = new AtomicInteger(100000);
+	
+	Node root = new Node("_" + idGen.getAndIncrement(), "my collection", "#", Type.ROOT.getType(), true);
+	Node folder_1 = new Node("_" + idGen.getAndIncrement(), "chapter 1", root.getId(), Type.FOLDER.getType(), false);
+	Node folder_2 = new Node("_" + idGen.getAndIncrement(), "chapter 2", root.getId(), Type.FOLDER.getType(), true);
+	Node file_1 = new Node("_" + idGen.getAndIncrement(), "page 1", root.getId(), Type.FILE.getType());
+	Node file_2 = new Node("_" + idGen.getAndIncrement(), "page 2", root.getId(), Type.FILE.getType());
+	Node file_3 = new Node("_" + idGen.getAndIncrement(), "page 3", root.getId(), Type.FILE.getType());
+	Node file_4 = new Node("_" + idGen.getAndIncrement(), "page 4", folder_2.getId(), Type.FILE.getType());
+	Node file_5 = new Node("_" + idGen.getAndIncrement(), "page 5", folder_2.getId(), Type.FILE.getType());
+	
+	List<Node> nodes;
+	
+	private String getJsonString(Object obj) throws IOException, JsonGenerationException, JsonMappingException {
 		final OutputStream out = new ByteArrayOutputStream();
 	    final ObjectMapper mapper = new ObjectMapper();
 	    mapper.enable(SerializationFeature.INDENT_OUTPUT);
-	    mapper.writeValue(out, tree);
+	    mapper.writeValue(out, obj);
 	    final byte[] data = ((ByteArrayOutputStream) out).toByteArray();
-	    
 		return new String(data);
 	}
+	
+	@RequestMapping(value = { "/tree" }, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public @ResponseBody String init(@RequestParam("id") String id) throws JsonGenerationException, JsonMappingException, IOException {
+		
+		if(nodes == null) {
+			nodes = new ArrayList<>();
+			nodes.add(root);
+			nodes.add(folder_1);
+			nodes.add(folder_2);
+			nodes.add(file_1);
+			nodes.add(file_2);
+			nodes.add(file_3);
+			nodes.add(file_4);
+			nodes.add(file_5);
+		}
+		
+		if(id.equals("#")) {
+			return getJsonString(root);
+		} else {
+			List<Node> toReturn = new ArrayList<>();
+			for (Node node : nodes) {
+				if(node.getParent().equals(id)) {
+					toReturn.add(node);
+				}
+			}
+			return getJsonString(toReturn);
+			
+		}
+	}
+	
+	@RequestMapping(value = "/tree/update/", method = RequestMethod.POST)
+	public @ResponseBody Node updateNode(@RequestBody Node node) {
+		logger.info("update.node: " + node);
+		return node;
+	}
+
 }
