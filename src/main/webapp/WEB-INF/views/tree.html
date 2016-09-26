@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head>
+
+<title>TreeView</title>
+
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="../assets/css/upcase.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+	
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+</head>
+<body>
+
+	<div th:replace="fragments/nav-bar :: nav-bar"></div>
+
+	<div class="container">
+		<div id="tree_div"></div>
+	</div>
+
+	<div th:replace="fragments/footer :: footer"></div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		$(document).ready(function() {
+			$('#tree_div').jstree({
+				'core' : {
+					'check_callback' : true,
+					'animation' : 0,
+					'strings' : {
+				        'New node' : 'new group',
+					},
+					'data' : {
+						"url" : "/tree/?lazy",
+						"dataType" : "json",
+					    "data" : function (node) {
+					        return { "id" : node.id };
+					    }
+					}
+				},
+				'contextmenu' : {
+					'items' : function(node) {
+						var tmp = $.jstree.defaults.contextmenu.items();
+						delete tmp.ccp;
+						tmp.create.label = "New Group";
+						tmp.create.action = function (data) {
+							var inst = $.jstree.reference(data.reference),
+							obj = inst.get_node(data.reference);
+							inst.create_node(obj, { type : "folder" }, "first", function (new_node) {
+								setTimeout(function () { inst.edit(new_node); }, 0);
+							});
+						};
+						if(this.get_type(node) === "file") {
+							delete tmp.create;
+							delete tmp.remove;
+						}
+						if(node.parent === "#") {
+							delete tmp.rename;
+							delete tmp.remove;
+							delete tmp.ccp;
+						}
+						return tmp;
+					}
+				},
+				'types' : {
+				    "#" : { "valid_children" : ["root"] },
+				    "root" : {  "icon" : "glyphicon glyphicon-book", "valid_children" : ["folder"] },
+				    "default" : { "icon" : "glyphicon glyphicon-folder-open", "valid_children" : ["folder","file"] },
+				    "file" : { "icon" : "glyphicon glyphicon-file", "valid_children" : [] }
+				  },
+				"plugins" : [ "contextmenu", "dnd", "search", "state", "types", "wholerow" ]
+			}).on("select_node.jstree", function(e, data) {
+				console.log("selected: ", data.selected);
+			}).on("move_node.jstree", function(e, data) {
+				var node = new Node(data.node.id, data.node.text, data.parent, data.node.original.type, data.node.children);
+				updateNode(node);
+			}).on("create_node.jstree", function (e, data) {
+				console.log("create_node.jstree ", data.node.id);
+			});
+			
+		});
+			
+		function updateNode(node) {
+			$(function () {
+			    var token = $("meta[name='_csrf']").attr("content");
+			    var header = $("meta[name='_csrf_header']").attr("content");
+			    $(document).ajaxSend(function(e, xhr, options) {
+			        xhr.setRequestHeader(header, token);
+			    });
+			});
+			$.ajax({
+				  method: "POST",
+				  contentType: "application/json",
+				  url: "/tree/update/",
+				  data: JSON.stringify(node),
+				  dataType : 'json',
+				  success : function(data) {
+					console.log("SUCCESS: ", data);
+				  },
+				  error : function(e) {
+				  	console.log("STATUS: ", e.status);
+				  }
+			});
+		} 
+		
+		class Node {
+			
+			constructor(id, text, parent, type, children) {
+				this.id = id;
+				this.text = text;
+				this.parent = parent;
+				this.type = type;
+				this.children = children.length > 0 ? true : false;
+			}
+			
+			getId() {
+				return this.id;
+			}
+			
+			getParent() {
+				return this.parent;
+			}
+			
+			getText() {
+				return this.text;
+			}
+			
+			getType() {
+				return this.type;
+			}
+		}
+		/*]]>*/
+	</script>
+</body>
+</html>

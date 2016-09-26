@@ -21,7 +21,8 @@
 		<div class="col-md-12">
 			<code style="font-size: 26px;" ><span th:text="${collection.title}">YOR COLLECTIONS</span></code>
 			<small th:text="${collection.description}">DESCRIPTION</small><br/>
-			<span>Created on: </span><small th:text="${#dates.format(collection.creationDate, 'dd/MMM/yyyy, HH:mm')}">CREATED</small> <span> by <a href='#'>Guest, Guest</a></span><br/>
+			<span>Created on: </span><small th:text="${#dates.format(collection.creationDate, 'dd/MMM/yyyy, HH:mm')}">CREATED</small> <span> by <a th:href="@{/user/profile/{id}(id=${owner.id})}" th:text="${owner.lastName +', '+ owner.firstName}">Guest, Guest</a></span><br/>
+			<span>License: </span><small th:text="${collection.license}">CC-BY</small><br/>
 		</div>
 	</div>
 	<hr/>

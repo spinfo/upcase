@@ -19,23 +19,25 @@ public class Collection {
 	private String title;
 	private String description;
 	private String pathToCollection;
-//	@DBRef private UpcaseUser owner;
+	private String license = "CC-BY";
+
+	//	@DBRef private UpcaseUser owner;
 	private String owner;
 	
 	private Date creationDate;
 	private Date lastModified;
 	private boolean contributable;
+	private boolean _private = false;
 
-//	@DBRef private List<UpcaseUser> contributers;
+	//	@DBRef private List<UpcaseUser> contributers;
 	private Set<String> contributers;
 	
-//	@DBRef private List<Page> pages;
+	//	@DBRef private List<Page> pages;
 	private Set<String> pages;
 
 	
-	
-//	@DBRef private List<Chapter> chapters;
-//	@DBRef private List<Volume> volumes;
+	//	@DBRef private List<Chapter> chapters;
+	//	@DBRef private List<Volume> volumes;
 
 	
 	public Collection() {
@@ -72,7 +74,16 @@ public class Collection {
 		this.contributers = new HashSet<>();
 	}
 	
-	public Collection(final String title, UpcaseUser owner, final String description, final String pathToCollection) {
+	/**
+	 * The constructor used when creating a new collection
+	 * 
+	 * @param title
+	 * @param owner
+	 * @param description
+	 * @param pathToCollection
+	 * @param license
+	 */
+	public Collection(final String title, UpcaseUser owner, final String description, final String pathToCollection, final String license) {
 		super();
 		this.title = title;
 		this.creationDate = new Date();
@@ -82,6 +93,7 @@ public class Collection {
 		this.contributers = new HashSet<>();
 		this.description = description;
 		this.pathToCollection = pathToCollection;
+		this.license = license;
 	}
 	
 	public String getPathToCollection() {
@@ -224,6 +236,21 @@ public class Collection {
 	public String toString() {
 		return "Collection [id=" + id + ", creationDate=" + creationDate + ", contributable=" + contributable
 				+ ", title=" + title + ", pages=" + pages.size() + ", owner=" + owner + "]";
+	}
+
+	public boolean isPrivate() {
+		return _private;
+	}
+	public void setPrivate(boolean _private) {
+		this._private = _private;
+	}
+	
+	public void setLicense(String license) {
+		this.license = license;
+	}
+	
+	public String getLicense() {
+		return license;
 	}
 
 	

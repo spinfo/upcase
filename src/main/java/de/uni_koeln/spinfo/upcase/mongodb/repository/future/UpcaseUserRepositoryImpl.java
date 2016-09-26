@@ -1,9 +1,8 @@
 package de.uni_koeln.spinfo.upcase.mongodb.repository.future;
 
+import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,8 +13,6 @@ import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.UpcaseUser;
 
 @Repository
 public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
-
-	Logger logger = LoggerFactory.getLogger(getClass());
 
 	private MongoTemplate template;
 
@@ -53,6 +50,13 @@ public class UpcaseUserRepositoryImpl implements UpcaseUserRepository {
 	@Override
 	public void deleteAll() {
 		template.remove(new Query(), UpcaseUser.class);
+	}
+
+	@Override
+	public void updateLastLogin(String email) {
+		UpcaseUser user = template.findOne(new Query(Criteria.where("email").is(email)), UpcaseUser.class);
+		user.setLastLogin(new Date());
+		template.save(user, UpcaseUser.COLLECTION);
 	}
 
 }

@@ -27,7 +27,13 @@
 				<span>User: </span><span style="color: #c7254e;" th:text="${user.lastName +', '+ user.firstName}"></span>
 			</div>
 			<div class="inline">
+				<span>Institution: </span><span style="color: #c7254e;" th:text="${user.institution}"></span>
+			</div>
+			<div class="inline">
 				<span>Member since: </span><span style="color: #c7254e;" th:text="${#dates.format(user.creationDate, 'dd/MMM/yyyy')}"></span>
+			</div>
+			<div class="inline">
+				<span>Last login: </span><span style="color: #c7254e;" th:text="${#dates.format(user.lastLogin, 'dd/MMM/yyyy')}"></span>
 			</div>
 		</div>
 		<div class="col-md-4">
@@ -40,7 +46,7 @@
 					<span style="font-size: 13px; color: #333;" th:text="${collection.description}"></span>
 					<p>
 					<small><span>Created on: </span><span th:text="${#dates.format(collection.creationDate, 'dd/MMM/yyyy')}">2009-08-01</span></small>
-					<small> <a class="btn btn-default btn-xs" th:href="@{/user/collection/{path}(path=${collection.id})}" title="Show"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></small>
+					<small> <a class="btn btn-default btn-xs" th:href="@{/user/collection/{title}(title=${collection.title})}" title="Show"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></small>
 					<small sec:authorize="hasRole('ROLE_USER')"><a class="btn btn-default btn-xs" data-toggle="modal" data-target="#myModal" href="#" title="Contribute"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a></small>
 					<small sec:authorize="hasRole('ROLE_USER')"><a class="btn btn-default btn-xs" href="#" title="Like"><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span></a></small>
 					</p>

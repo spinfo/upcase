@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+	<title>Home</title>
+	<link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="../../assets/css/upcase.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+	<div sec:authorize="hasRole('ROLE_USER')">
+		<div th:replace="fragments/nav-bar-user :: nav-bar-user"></div>
+	</div>
+	<div sec:authorize="hasRole('ROLE_ADMIN')">
+		<div th:replace="fragments/nav-bar-admin :: nav-bar-admin"></div>
+	</div>
+	<div sec:authorize="isAnonymous()">
+		<div th:replace="fragments/nav-bar :: nav-bar"></div>
+	</div>
+	
+	<div class="container">
+		<div class="jumbotron">
+			<h2 th:text="${errorTitle}">Error title</h2>
+			<p th:text="${errorMessage}">Error message</p>
+		</div>
+	</div>
+	
+	<div th:replace="fragments/footer :: footer"></div>
+	
+</body>
+</html>

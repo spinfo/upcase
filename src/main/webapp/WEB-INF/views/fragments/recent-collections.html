@@ -14,8 +14,8 @@
 				<small><span>Created on: </span><span th:text="${#dates.format(collection.creationDate, 'dd/MMM/yyyy')}">2009-08-01</span></small>
 <!-- 				<small>by <a th:href="@{/user/profile/{path}(path=${collection.owner})}"><span class="redish" th:text="${#strings.substring(collection.owner,0,5)}">OWNER</span></a></small> -->
 				 <span> | </span> 
-				<small> <a class="btn btn-default btn-xs" th:href="@{/user/collection/{path}(path=${collection.id})}" title="Show"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></small>
-				<small><a class="btn btn-default btn-xs" th:href="@{/user/profile/{path}(path=${collection.owner})}" title="User Profile"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></small>
+				<small> <a class="btn btn-default btn-xs" th:href="@{/user/collection/{title}(title=${collection.title})}" title="Show"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></small>
+				<small><a class="btn btn-default btn-xs" th:href="@{/user/profile/{owner}(owner=${collection.owner})}" title="User Profile"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></small>
 				<small sec:authorize="hasRole('ROLE_USER')"><a data-toggle="modal" data-target="#myModal"  class="btn btn-default btn-xs" title="Contribute"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a></small>
 				<small sec:authorize="hasRole('ROLE_USER')"><a class="btn btn-default btn-xs" href="#" title="Like"><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span></a></small>
 			</p>

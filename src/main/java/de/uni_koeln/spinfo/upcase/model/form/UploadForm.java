@@ -9,22 +9,25 @@ public class UploadForm {
 	private List<MultipartFile> files;
 	private String collectionName;
 	private String description;
+	private String license;
 
 	public UploadForm() {
 		super();
 	}
 
-	public UploadForm(List<MultipartFile> files, String collectionName) {
+	public UploadForm(List<MultipartFile> files, String collectionName, final String license) {
 		super();
 		this.files = files;
 		this.collectionName = collectionName;
+		this.license = license;
 	}
 
-	public UploadForm(List<MultipartFile> files, String collectionName, String description) {
+	public UploadForm(List<MultipartFile> files, String collectionName, String description, final String license) {
 		super();
 		this.files = files;
 		this.collectionName = collectionName;
 		this.description = description;
+		this.license = license;
 	}
 
 	public List<MultipartFile> getFiles() {
@@ -49,6 +52,14 @@ public class UploadForm {
 	
 	public void setCollectionName(String collectionName) {
 		this.collectionName = collectionName;
+	}
+	
+	public String getLicense() {
+		return license;
+	}
+	
+	public void setLicense(String license) {
+		this.license = license;
 	}
 
 	@Override

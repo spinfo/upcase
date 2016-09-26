@@ -22,4 +22,6 @@ public interface CollectionRepository extends Repository<Collection, String> {
 
 	public List<Collection> findByOwner(String ownerId);
 
+	public void deleteALl();
+
 }
