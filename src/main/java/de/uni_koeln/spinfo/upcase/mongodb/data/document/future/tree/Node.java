@@ -1,7 +1,5 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future.tree;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Node {
 	
 	private String id;
@@ -9,6 +7,7 @@ public class Node {
 	private String text;
 	private String type;
 	private boolean children;
+	private int position;
 	
 	public Node() {
 	}
@@ -23,6 +22,15 @@ public class Node {
 		this.parent = parent;
 		this.type = type;
 		this.children = children;
+	}
+	
+	public Node(String id, String text, String parent, String type, boolean children, int position) {
+		this.id = id;
+		this.text = text;
+		this.parent = parent;
+		this.type = type;
+		this.children = children;
+		this.position = position;
 	}
 	
 	public String getId() {
@@ -64,11 +72,19 @@ public class Node {
 	public boolean isChildren() {
 		return children;
 	}
+	
+	public int getPosition() {
+		return position;
+	}
+	
+	public void setPosition(int position) {
+		this.position = position;
+	}
 
 	@Override
 	public String toString() {
 		return "Node [id=" + id + ", parent=" + parent + ", text=" + text + ", type=" + type + ", children=" + children
-				+ "]";
+				+ ", position=" + position + "]";
 	}
 	
 

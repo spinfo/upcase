@@ -31,7 +31,7 @@ public class TreeController {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	
-	private AtomicInteger idGen = new AtomicInteger(100000);
+	private AtomicInteger idGen = new AtomicInteger();
 	
 	Node root = new Node("_" + idGen.getAndIncrement(), "my collection", "#", Type.ROOT.getType(), true);
 	Node folder_1 = new Node("_" + idGen.getAndIncrement(), "chapter 1", root.getId(), Type.FOLDER.getType(), false);
@@ -84,7 +84,23 @@ public class TreeController {
 	
 	@RequestMapping(value = "/tree/update/", method = RequestMethod.POST)
 	public @ResponseBody Node updateNode(@RequestBody Node node) {
-		logger.info("update.node: " + node);
+		logger.info("update on: " + node);
+		for (Node n : nodes) {
+			if(n.getId().equals(node.getId())) {
+				n.setParent(node.getParent());
+				n.setText(node.getText());
+				n.setChildren(node.isChildren());
+				n.setPosition(node.getPosition());
+				break;
+			}
+		}
+		return node;
+	}
+	
+	@RequestMapping(value = "/tree/create/", method = RequestMethod.POST)
+	public @ResponseBody Node createNode(@RequestBody Node node) {
+		node.setId("_" + idGen.getAndIncrement());
+		nodes.add(node);
 		return node;
 	}
 

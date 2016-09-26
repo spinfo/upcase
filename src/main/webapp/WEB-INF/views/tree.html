@@ -80,15 +80,103 @@
 			}).on("select_node.jstree", function(e, data) {
 				console.log("selected: ", data.selected);
 			}).on("move_node.jstree", function(e, data) {
-				var node = new Node(data.node.id, data.node.text, data.parent, data.node.original.type, data.node.children);
-				updateNode(node);
+				console.log("move.node: ", data.node);
+				var position = getPosition(data.node);
+				var node = new Node(data.node.id, data.node.text, data.parent, data.node.original.type, data.node.children, position);
+				setRequestHeader();
+				$.ajax({
+					  method: "POST",
+					  contentType: "application/json",
+					  url: UPDATE_NODE_URL,
+					  data: JSON.stringify(node),
+					  dataType : 'json',
+					  success : function(d) {
+						console.log("move.node.success: ", d);
+						data.instance.set_id(data.node, d.id);
+					  },
+					  error : function(e) {
+					  	console.log("status: ", e.status);
+					  }
+				});
 			}).on("create_node.jstree", function (e, data) {
-				console.log("create_node.jstree ", data.node.id);
+				console.log("create.node: ", data.node);
+				var position = getPosition(data.node);
+				var node = new Node(data.node.id, data.node.text, data.node.parent, data.node.original.type, true, position);
+				setRequestHeader();
+				$.ajax({
+					  method: "POST",
+					  contentType: "application/json",
+					  url: CREATE_NODE_URL,
+					  data: JSON.stringify(node),
+					  dataType : 'json',
+					  success : function(d) {
+						console.log("create.node.success: ", d);
+						data.instance.set_id(data.node, d.id);
+					  },
+					  error : function(e) {
+					  	console.log("status: ", e.status);
+					  }
+				});
+			}).on("rename_node.jstree", function (e, data) {
+				console.log("rename.node: ", data.node);
+				var position = getPosition(data.node);
+				var node = new Node(data.node.id, data.node.text, data.node.parent, data.node.original.type, data.node.children, position);
+				setRequestHeader();
+				$.ajax({
+					  method: "POST",
+					  contentType: "application/json",
+					  url: UPDATE_NODE_URL,
+					  data: JSON.stringify(node),
+					  dataType : 'json',
+					  success : function(d) {
+						console.log("rename.node.success: ", d);
+						data.instance.set_id(data.node, d.id);
+					  },
+					  error : function(e) {
+					  	console.log("status: ", e.status);
+					  }
+				});
 			});
-			
 		});
+		
+		var UPDATE_NODE_URL =  "/tree/update/";
+		var CREATE_NODE_URL =  "/tree/create/";
 			
+		function getPosition(node) {
+			var inst = $('#tree_div').jstree(true),
+		    tmp = inst.get_node(node.id),
+		    parent = inst.get_node(tmp.parent);
+			return $.inArray(tmp.id, parent.children);
+		}
+		
 		function updateNode(node) {
+			setRequestHeader();
+			post(UPDATE_NODE_URL, node);
+		} 
+		
+		function createNode(node) {
+			setRequestHeader();
+			post(CREATE_NODE_URL, node);
+		} 
+		
+		function post(url, node) {
+			$.ajax({
+				  method: "POST",
+				  contentType: "application/json",
+				  url: url,
+				  data: JSON.stringify(node),
+				  dataType : 'json',
+				  success : function(data) {
+					console.log("update.node.success: ", data);
+					return data;
+				  },
+				  error : function(e) {
+				  	console.log("status: ", e.status);
+				  }
+			});
+		}
+		
+		function setRequestHeader() {
 			$(function () {
 			    var token = $("meta[name='_csrf']").attr("content");
 			    var header = $("meta[name='_csrf_header']").attr("content");
@@ -96,29 +184,17 @@
 			        xhr.setRequestHeader(header, token);
 			    });
 			});
-			$.ajax({
-				  method: "POST",
-				  contentType: "application/json",
-				  url: "/tree/update/",
-				  data: JSON.stringify(node),
-				  dataType : 'json',
-				  success : function(data) {
-					console.log("SUCCESS: ", data);
-				  },
-				  error : function(e) {
-				  	console.log("STATUS: ", e.status);
-				  }
-			});
-		} 
+		}
 		
 		class Node {
 			
-			constructor(id, text, parent, type, children) {
+			constructor(id, text, parent, type, children, position) {
 				this.id = id;
 				this.text = text;
 				this.parent = parent;
 				this.type = type;
 				this.children = children.length > 0 ? true : false;
+				this.position = position;
 			}
 			
 			getId() {
@@ -135,6 +211,14 @@
 			
 			getType() {
 				return this.type;
+			}
+			
+			isChildren() {
+				return this.children;
+			}
+			
+			getPosition() {
+				return this.position;
 			}
 		}
 		/*]]>*/
