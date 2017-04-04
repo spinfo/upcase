@@ -31,7 +31,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
 @Configuration
-@EnableMongoRepositories
+@EnableMongoRepositories(basePackages = "de.uni_koeln.spinfo.upcase.mongodb.repository")
 @PropertySource("classpath:database.properties")
 public class MongoDbConfig extends AbstractMongoConfiguration {
 

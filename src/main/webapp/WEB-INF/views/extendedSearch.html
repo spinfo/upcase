@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<html lang="de" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 
-<title>Extended search</title>
+<title>Search ...</title>
 
 <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 <link href="../css/search.css" rel="stylesheet" type="text/css" />
@@ -17,14 +18,15 @@ body {
 
 <body>
 
-	<nav class="navbar navbar-default navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-				<a class="navbar-brand" th:href="@{volumes}">UpCASE -
-					Crestomazia Retoromontscha</a>
-			</div>
-		</div>
-	</nav>
+	<div sec:authorize="hasRole('ROLE_USER')">
+		<div th:replace="fragments/nav-bar-user :: nav-bar-user"></div>
+	</div>
+	<div sec:authorize="hasRole('ROLE_ADMIN')">
+		<div th:replace="fragments/nav-bar-admin :: nav-bar-admin"></div>
+	</div>
+	<div sec:authorize="isAnonymous()">
+		<div th:replace="fragments/nav-bar :: nav-bar"></div>
+	</div>
 
 	<div class="container">
 		<div class="row">
@@ -56,5 +58,6 @@ body {
 			</div>
 		</div>
 	</div>
+	<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>

@@ -1,29 +1,37 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "re_words")
+@Document(collection = "ref_words")
 public class Word {
+	
+	@Transient
+	public static final String COLLECTION = "ref_words";
 	
 	@Id private String id;
 	
 	private String token;
 	private Date lastModified;
 	
-	@DBRef private List<Annotation> annotations;
-	@DBRef private Box box;
+	// ANNOTATION IDS
+	private Set<Annotation> annotations;
+	private Box box;
+	
+	public Word() {
+		super();
+	}
 	
 	public Word(String token, Box box) {
 		super();
 		this.token = token;
 		this.lastModified = new Date();
-		this.annotations = new ArrayList<>();
+		this.annotations = new TreeSet<>();
 		this.box = box;
 	}
 
@@ -51,11 +59,15 @@ public class Word {
 		this.lastModified = lastModified;
 	}
 
-	public List<Annotation> getAnnotations() {
+	public Set<Annotation> getAnnotations() {
 		return annotations;
 	}
+	
+	public void setAnnotation(Annotation annotation) {
+		this.annotations.add(annotation);
+	}
 
-	public void setAnnotations(List<Annotation> annotations) {
+	public void setAnnotations(Set<Annotation> annotations) {
 		this.annotations = annotations;
 	}
 
@@ -106,8 +118,7 @@ public class Word {
 
 	@Override
 	public String toString() {
-		return "Word [id=" + id + ", token=" + token + ", lastModified=" + lastModified + ", annotations=" + annotations
-				+ ", box=" + box + "]";
+		return "Word [id=" + id + ", token=" + token + ", annotations=" + annotations + ", box=" + box + "]";
 	}
 	
 	

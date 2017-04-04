@@ -26,18 +26,17 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.uni_koeln.spinfo.upcase.util.PropertyReader;
+import de.uni_koeln.spinfo.upcase.model.SearchResult;
 
 @Service
 public class Searcher {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired
-	PropertyReader propertyReader;
+	// @Autowired
+	// PropertyReader propertyReader;
 
 	private int totalHits;
 
@@ -52,15 +51,14 @@ public class Searcher {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public List<SearchResult> search(String q) throws IOException,
-			ParseException {
+	public List<SearchResult> search(String q) throws IOException, ParseException {
 
 		DirectoryReader dirReader = openDirectory();
 		IndexSearcher is = new IndexSearcher(dirReader);
 
 		QueryParser parser = new QueryParser("contents", new StandardAnalyzer());
 		Query query = parser.parse(q);
-		TopDocs hits = is.search(query, propertyReader.getMaxHits());
+		TopDocs hits = is.search(query, 100);
 		this.setTotalHits(hits.totalHits);
 		logger.info("QUERY: " + query);
 
@@ -71,13 +69,11 @@ public class Searcher {
 	}
 
 	private Directory getLuceneDir() throws IOException {
-		String indexDir = propertyReader.getIndexDir();
-		Directory dir = new SimpleFSDirectory(new File(indexDir).toPath());
-		return dir;
+		File indexDir = new File("index");
+		return new SimpleFSDirectory(indexDir.toPath());
 	}
 
-	private List<SearchResult> toResult(IndexSearcher is, TopDocs hits)
-			throws IOException {
+	private List<SearchResult> toResult(IndexSearcher is, TopDocs hits) throws IOException {
 		List<SearchResult> resultList = new ArrayList<SearchResult>();
 		for (int i = 0; i < hits.scoreDocs.length; i++) {
 			ScoreDoc scoreDoc = hits.scoreDocs[i];
@@ -97,25 +93,16 @@ public class Searcher {
 	 */
 	private SearchResult wrapFieldResults(Document doc) {
 
-		String filename = doc.get("url");
+		String imageUrl = doc.get("imageUrl");
+		String ownerId = doc.get("ownerId");
+		String collectionId = doc.get("collectionId");
 		String pageId = doc.get("pageId");
-		String content = doc.get("contents");
-		String language = doc.get("languages");
-		String chapterId = doc.get("chapterId");
-		String chapter = doc.get("chapters");
-		String volumeId = doc.get("volumeId");
-		String volumeTitle = doc.get("volumeTitle");
+		String contents = doc.get("contents");
+		String collectionTitle = doc.get("collectionTitle");
+		String collectionDescription = doc.get("collectionDescription");
 
-		SearchResult result = new SearchResult();
-		result.setFilename(filename);
-		result.setContent(content);
-		result.setPageId(pageId);
-		result.setLanguage(language);
-		result.setChapterId(chapterId);
-		result.setChapter(chapter);
-		result.setVolumeId(volumeId);
-		result.setVolumeTitle(volumeTitle);
-		result.setURL("localhost:8080/drc/page?pageId=" + pageId);
+		SearchResult result = new SearchResult(imageUrl, ownerId, collectionId, pageId, contents, collectionTitle,
+				collectionDescription, new ArrayList<>());
 
 		return result;
 	}
@@ -134,47 +121,39 @@ public class Searcher {
 		this.totalHits = totalHits;
 	}
 
-	public List<SearchResult> withQuotations(final String searchPhrase,
-			boolean regex, final String volumeSelection,
-			final String chapterSelection, final String langSelection,
-			int numFragments, int page) throws IOException, ParseException,
-			InvalidTokenOffsetsException {
+	public List<SearchResult> withQuotations(final String searchPhrase, boolean regex, int numFragments, int page)
+			throws IOException, ParseException, InvalidTokenOffsetsException {
 
 		DirectoryReader dirReader = openDirectory();
 		IndexSearcher is = new IndexSearcher(dirReader);
 		StandardAnalyzer analyzer = new StandardAnalyzer();
 
-		int hitsPerPage = propertyReader.getHitsPerPage();
-		TopScoreDocCollector collector = TopScoreDocCollector.create(dirReader
-				.maxDoc());
+		// TODO: EXTERNALIZE INTO PROPERTIES
+		int hitsPerPage = 16;
+		TopScoreDocCollector collector = TopScoreDocCollector.create(dirReader.maxDoc());
 		int startIndex = (page - 1) * hitsPerPage;
 
-		Query query = getQuery(searchPhrase, regex, volumeSelection,
-				chapterSelection, langSelection, analyzer);
+		Query query = getQuery(searchPhrase, regex, analyzer);
 
 		is.search(query, collector);
 		TopDocs hits = collector.topDocs(startIndex, hitsPerPage);
 
 		this.setTotalHits(hits.totalHits);
-		SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter(
-				"<span class=\"quotation\">", "</span>");
+		SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter("<span class=\"quotation\">", "</span>");
 		QueryScorer queryScorer = new QueryScorer(query, "contents");
 		Highlighter highlighter = new Highlighter(htmlFormatter, queryScorer);
-		highlighter
-				.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, 100));
+		highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, 100));
 		List<SearchResult> resultList = new ArrayList<>();
 		for (ScoreDoc scoreDoc : hits.scoreDocs) {
 			int id = scoreDoc.doc;
 			Document doc = is.doc(id);
 			String text = doc.get("contents");
 			TokenStream tokenStream = analyzer.tokenStream("contents", text);
-			TextFragment[] frag = highlighter.getBestTextFragments(tokenStream,
-					text, false, numFragments);
+			TextFragment[] frag = highlighter.getBestTextFragments(tokenStream, text, false, numFragments);
 			List<String> quots = new ArrayList<>();
 			for (TextFragment textFragment : frag) {
 				if ((textFragment != null) && (textFragment.getScore() > 0)) {
-					String quotation = "[...] " + textFragment.toString()
-							+ " [...]";
+					String quotation = "[...] " + textFragment.toString() + " [...]";
 					quots.add(quotation);
 				}
 			}
@@ -185,52 +164,49 @@ public class Searcher {
 		return resultList;
 	}
 
-	private Query getQuery(final String searchPhrase, boolean regex,
-			final String volumeSelection, final String chapterSelection,
-			final String langSelection, StandardAnalyzer analyzer)
-			throws ParseException {
-		
+	private Query getQuery(final String searchPhrase, boolean regex, StandardAnalyzer analyzer) throws ParseException {
+
 		String contents = "";
 		if (regex) {
 			contents = "contents:/" + searchPhrase + "/ ";
 		} else {
 			contents = "contents:" + "\"" + searchPhrase + "\"" + "~10 ";
 		}
-		String volumeQuery = "";
-		if (!volumeSelection.equals("alle")) {
-			volumeQuery = "AND volumeTitle:\"" + volumeSelection + "\" ";
-		}
-		String chapterQuery = "";
-		if (!chapterSelection.equals("alle")) {
-			chapterQuery = "AND chapters:\"" + chapterSelection + "\" ";
-		}
-		String langQuery = "";
-		if (!langSelection.equals("alle")) {
-			logger.info(langSelection);
-			chapterQuery = "AND languages:\"" + langSelection + "\" ";
-		}
+		// String volumeQuery = "";
+		// if (!volumeSelection.equals("alle")) {
+		// volumeQuery = "AND volumeTitle:\"" + volumeSelection + "\" ";
+		// }
+		// String chapterQuery = "";
+		// if (!chapterSelection.equals("alle")) {
+		// chapterQuery = "AND chapters:\"" + chapterSelection + "\" ";
+		// }
+		// String langQuery = "";
+		// if (!langSelection.equals("alle")) {
+		// logger.info(langSelection);
+		// chapterQuery = "AND languages:\"" + langSelection + "\" ";
+		// }
 		QueryParser parser = new QueryParser("contents", analyzer);
-		String q = contents + volumeQuery + chapterQuery + langQuery;
+		// String q = contents + volumeQuery + chapterQuery + langQuery;
+
+		// TODO: SEARCH IN GROUPINGS
+		String q = contents;
 
 		Query query = parser.parse(q);
 		logger.info("QUERY:" + query);
 		return query;
 	}
 
-	private DirectoryReader openDirectory() throws IOException {
+	public DirectoryReader openDirectory() throws IOException {
 		return DirectoryReader.open(getLuceneDir());
 	}
 
 	private SearchResult wrapFieldResults(Document doc, List<String> quotations) {
-		SearchResult result = new SearchResult();
-		result.setPageId(doc.get("pageId"));
-		result.setFilename(doc.get("url"));
-		result.setQuotations(quotations);
-		result.setLanguage(doc.get("languages"));
-		result.setChapter(doc.get("chapters"));
-		result.setVolumeTitle(doc.get("volumeTitle"));
-		result.setURL("localhost:8080/drc/page?pageName=" + doc.get("url"));
-		return result;
+		return new SearchResult(doc, quotations);
 	}
+
+	//	public SimpleFSDirectory getReader() throws IOException {
+//		File indexDir = new File("index");
+//		return new SimpleFSDirectory(indexDir.toPath());
+//	}
 
 }

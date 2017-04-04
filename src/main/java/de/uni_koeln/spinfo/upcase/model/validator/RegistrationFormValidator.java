@@ -3,17 +3,23 @@ package de.uni_koeln.spinfo.upcase.model.validator;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import de.uni_koeln.spinfo.upcase.model.RegistrationForm;
+import de.uni_koeln.spinfo.upcase.model.form.RegistrationForm;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.UpcaseUser;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
 
-@Service
 public class RegistrationFormValidator implements Validator {
 
+	private UpcaseUserRepository upcaseUserRepository;
+	
 	Logger logger = LoggerFactory.getLogger(getClass());
+	
+	public RegistrationFormValidator(UpcaseUserRepository upcaseUserRepository) {
+		this.upcaseUserRepository = upcaseUserRepository;
+	}
 
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -45,6 +51,13 @@ public class RegistrationFormValidator implements Validator {
 			if (!form.getConfirmPassword().equals(form.getPassword())) {
 				errors.rejectValue("confirmPassword", "NotEqual.registrationForm.confirmPassword");
 			}
+		}
+		
+		UpcaseUser user = upcaseUserRepository.findByEmail(form.getEmail());
+		
+		if (user != null) {
+			logger.info("Email " + form.getEmail() + " already exists!");
+			errors.rejectValue("email", "Invalid.registrationForm.email.exists");
 		}
 	}
 

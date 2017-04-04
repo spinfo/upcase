@@ -2,7 +2,9 @@ package de.uni_koeln.spinfo.upcase.lucene;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -13,19 +15,19 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.Page;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.Volume;
-import de.uni_koeln.spinfo.upcase.mongodb.data.document.Word;
-import de.uni_koeln.spinfo.upcase.mongodb.util.DataBase;
-import de.uni_koeln.spinfo.upcase.util.PropertyReader;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Collection;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Page;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Word;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.future.CollectionRepository;
+import de.uni_koeln.spinfo.upcase.mongodb.repository.future.PageRepository;
 
 @Service
 public class Indexer {
@@ -33,88 +35,74 @@ public class Indexer {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	private DataBase db;
+	private PageRepository pageRepository;
 
 	@Autowired
-	PropertyReader propertyReader;
+	private CollectionRepository collectionRepository;
 
 	private IndexWriter writer;
-
-	/**
-	 * Creates a new index if there is none on startup (PostConstruct = called
-	 * after all services are initialized).
-	 * 
-	 * @throws IOException
-	 */
-	@PostConstruct
-	public void initialIndex() throws IOException {
-		init(null);
-		int numdocs = (this.writer.numDocs() == 0 ? index() : this.writer.numDocs());
-		logger.info("Index size: " + numdocs);
-		this.writer.close();
-	}
 
 	/**
 	 * Init an indexWriter for the directory specified in properties file.
 	 * 
 	 * @throws IOException
 	 */
-	public void init(final String path) throws IOException {
-		String indexDir = path == null ? propertyReader.getIndexDir() : path;
-		Directory dir = new SimpleFSDirectory(new File(indexDir).toPath());
+	
+	@PostConstruct
+	public void postContruct() throws IOException {
+		init();
+		this.writer.deleteAll();
+		this.writer.close();
+	}
+	public void init() throws IOException {
+		File indexDir = new File("index");
+		indexDir.mkdirs();
+		Directory dir = new SimpleFSDirectory(indexDir.toPath());
 		IndexWriterConfig writerConfig = new IndexWriterConfig(new StandardAnalyzer());
 		this.writer = new IndexWriter(dir, writerConfig);
 	}
 
-	/**
-	 * Build index over db, optionally restricted to a predefined size (for test
-	 * purposes).
-	 * 
-	 * @param size
-	 * @return Total number of indexed documents.
-	 */
-	public int index() {
+	public void index(Collection collection) throws IOException {
+		// TODO ROUTINE FOR LUCENE INDEX UPDATE
+
+		init();
 
 		long start = System.currentTimeMillis();
-		logger.info("Indexing collection...");
-		logger.info("MAXSIZE: " + propertyReader.getMaxIndexSize());
-		logger.info("Docs to index: " + db.getMongoTemplate().count(new Query(), Page.class));
+		logger.info("Indexing collection ...");
 
-		Iterable<Volume> volumes = db.getVolumeRepository().findAll();
-		int pageCount = 0;
-		boolean breakInnerLoop = false;
-		for (Volume volume : volumes) {
-			List<Page> pages = db.getPageRepository().findByVolumeId(
-					volume.getId());
-			for (Page p : pages) {
-				pageCount++;
-				if (pageCount <= propertyReader.getMaxIndexSize()) {
-					logger.info(pageCount + ": " + p.toString());
-					indexPage(p);
-				} else {
-					breakInnerLoop = true;
-					break;
-				}
-			}
-			if (breakInnerLoop)
-				break;
+		Set<String> pages = collection.getPages();
+		for (String pageId : pages) {
+			Page page = pageRepository.findByPageId(pageId);
+			indexPage(page, collection);
 		}
-		logger.info("Indexing took " + (System.currentTimeMillis() - start)
-				+ " ms.");
-		return this.writer.numDocs();
+		this.writer.close();
+		logger.info("Indexing took " + (System.currentTimeMillis() - start) + " ms.");
+
 	}
 
-	/**
-	 * Convert page and add to index.
-	 * 
-	 * @param page
-	 * @param langTitle
-	 */
-	private void indexPage(Page page) {
-		Document doc = pageToLuceneDoc(page);
+	public void index(List<Collection> collections) throws IOException {
+		init();
+		long start = System.currentTimeMillis();
+		logger.info("Reindexing collections ...");
+		for (Collection collection : collections) {
+			Set<String> pages = collection.getPages();
+			for (String pageId : pages) {
+				Page page = pageRepository.findByPageId(pageId);
+				indexPage(page, collection);
+			}
+		}
+		this.writer.close();
+		logger.info("Indexing took " + (System.currentTimeMillis() - start) + " ms.");
+	}
+
+	private void indexPage(Page page, Collection collection) {
+		Document doc = pageToLuceneDoc(page, collection);
 		if (doc != null) {
 			logger.info("Adding doc: " + page.toString());
 			try {
+				if (writer == null)
+					logger.info("writer is null");
+
 				this.writer.addDocument(doc);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -122,94 +110,33 @@ public class Indexer {
 		}
 	}
 
-	/**
-	 * Convert page into Lucene Document.
-	 * 
-	 * @param page
-	 * @param langTitle
-	 * @return Lucene Document to be indexed.
-	 */
-	private Document pageToLuceneDoc(Page page) {
+	private Document pageToLuceneDoc(Page page, Collection collection) {
+
+		String ownerId = collection.getOwner();
+		String collectionId = collection.getId();
+		String collectionTitle = collection.getTitle();
+		String collectionDescription = collection.getDescription();
+
 		Document doc = new Document();
-		doc.add(new StringField("url", page.getUrl(), Store.YES));
+		doc.add(new StringField("imageUrl", page.getImageUrl(), Store.YES));
+		doc.add(new StringField("ownerId", ownerId, Store.YES));
+		doc.add(new StringField("collectionId", collectionId, Store.YES));
 		doc.add(new StringField("pageId", page.getId(), Store.YES));
+
 		doc.add(new TextField("contents", pageContent(page), Store.YES));
-		doc.add(new TextField("languages", languages(page), Store.YES));
-		doc.add(new TextField("chapterId", chapterIds(page), Store.YES));
-		doc.add(new TextField("chapters", chapters(page), Store.YES));
-		doc.add(new StringField("volumeId", page.getVolumeId(), Store.YES));
-		String volume = db.getVolumeRepository().findOne(page.getVolumeId()).getTitle();
-		doc.add(new TextField("volumeTitle", volume, Store.YES));
-		String ppn = page.getPrintedPageNuber();
-		if (ppn != null)
-			doc.add(new StringField("pageNumber", ppn, Store.YES));
+		doc.add(new TextField("collectionTitle", collectionTitle, Store.YES));
+		doc.add(new TextField("collectionDescription", collectionDescription, Store.YES));
 		return doc;
 	}
 
-	/**
-	 * Retrieve chapter Id(s) a page belongs to. May contain two ids, for in
-	 * some cases chapters start in the middle of a page.
-	 * 
-	 * @param page
-	 * @return (blank separated) chapter id(s)
-	 */
-	private String chapterIds(Page page) {
-		StringBuilder sb = new StringBuilder();
-		List<String> chapterIds = page.getChapterIds();
-		for (String id : chapterIds) {
-			sb.append(id + " ");
-		}
-		return sb.toString().trim();
-	}
-
-	/**
-	 * Retrieve chapter name(s) a page belongs to. May contain two chapter
-	 * titles, for in some cases chapters start in the middle of a page.
-	 * 
-	 * @param page
-	 * @return (blank separated) chapter title(s)
-	 */
-	private String chapters(Page page) {
-		StringBuilder sb = new StringBuilder();
-		List<String> chapterIds = page.getChapterIds();
-		for (String id : chapterIds) {
-			sb.append(db.getChapterRepository().findOne(id).getTitle() + " ");
-		}
-		return sb.toString().trim();
-	}
-
-	/**
-	 * Retrieve page language(s) from LanguageRepository. May contain multiple
-	 * language tags.
-	 * 
-	 * @param page
-	 * @return (blank separated) language tag(s)
-	 */
-	private String languages(Page page) {
-		StringBuilder sb = new StringBuilder();
-		List<String> languageIds = page.getLanguageIds();
-		for (String id : languageIds) {
-			sb.append(db.getLanguageRepository().findOne(id).getTitle() + " ");
-		}
-		return sb.toString().trim();
-	}
-
-	/**
-	 * Retrieve page contents from WordRepository.
-	 * 
-	 * @param page
-	 * @return page contents
-	 */
 	private String pageContent(Page page) {
 		long start = System.currentTimeMillis();
 		StringBuilder sb = new StringBuilder();
-		List<Word> words = db.getWordRepository().findByRange(page.getStart(),
-				page.getEnd());
+		List<Word> words = page.getWords();
 		for (Word word : words) {
-			sb.append(word.getCurrentVersion().getValue() + " ");
+			sb.append(word.getToken() + " ");
 		}
-		logger.info("... parse took " + (System.currentTimeMillis() - start)
-				+ " ms.");
+		logger.info("Page parse took " + (System.currentTimeMillis() - start) + " ms.");
 		return sb.toString().trim();
 	}
 
@@ -232,7 +159,22 @@ public class Indexer {
 	 */
 	public void deleteIndex() {
 		try {
+			init();
 			this.writer.deleteAll();
+			this.writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Delete existing index.
+	 */
+	public void reIndex() {
+		try {
+			init();
+			List<Collection> collections = collectionRepository.findAll();
+			index(collections);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -243,6 +185,16 @@ public class Indexer {
 	 */
 	public boolean isAvailable() {
 		return writer.isOpen();
+	}
+	
+	public void update(Page page, Collection collection) throws IOException {
+		if(!isAvailable()) {
+			init();
+		}
+		Document doc = pageToLuceneDoc(page, collection);
+		this.writer.updateDocument(new Term("pageId", page.getId()), doc);
+		this.writer.commit();
+		this.writer.close();
 	}
 
 }

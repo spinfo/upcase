@@ -7,6 +7,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -20,11 +21,13 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 @Configuration
+@EnableAsync
 @EnableWebMvc
 public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/users/**").addResourceLocations("/users/");
 		registry.addResourceHandler("/assets/**").addResourceLocations("/assets/");
 		registry.addResourceHandler("/bootstrap/**").addResourceLocations("/bootstrap/");
 		registry.addResourceHandler("/favicon.ico").addResourceLocations("/");
@@ -48,7 +51,7 @@ public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
-	public SpringTemplateEngine templateEngine() {	
+	public SpringTemplateEngine templateEngine() {
 		SpringTemplateEngine engine = new SpringTemplateEngine();
 		engine.setTemplateResolver(templateResolver());
 		Set<IDialect> dialetcs = new HashSet<>();
@@ -72,13 +75,13 @@ public class ThymeLeafConfig extends WebMvcConfigurerAdapter {
 		messageSource.setBasename("locale/messages");
 		return messageSource;
 	}
-	
-	@Bean
-	public CommonsMultipartResolver multipartResolver() {
+
+	@Bean(name = "filterMultipartResolver")
+	public CommonsMultipartResolver filterMultipartResolver() {
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(104857600);
+		resolver.setMaxUploadSize(10485760);
 		resolver.setDefaultEncoding("UTF-8");
 		return resolver;
 	}
-	
+
 }

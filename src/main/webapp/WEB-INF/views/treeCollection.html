@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head>
+
+<title>TreeView</title>
+
+<link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="../../assets/css/upcase.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+	
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+</head>
+<body>
+
+	<div th:replace="fragments/nav-bar :: nav-bar"></div>
+
+	<div class="container">
+		<div id="tree_div"></div>
+	</div>
+
+	<div th:replace="fragments/footer :: footer"></div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		           
+		var tree = /*[[${tree}]]*/;
+		var collectionId = /*[[${collectionId}]]*/;
+		
+		var UPDATE_NODE_URL =  "/tree/collection/" + collectionId + "/update/";
+		var CREATE_NODE_URL =  "/tree/collection/" + collectionId + "/create/";
+		
+		$(document).ready(function() {
+			$('#tree_div').jstree({
+				'core' : {
+					'check_callback' : true,
+					'dnd' : {
+						'is_draggable' : true
+					},
+					'animation' : 0,
+					'strings' : {
+				        'New node' : 'new group'
+					},
+					'data' : tree
+				},
+				'contextmenu' : {
+					'items' : function(node) {
+						var tmp = $.jstree.defaults.contextmenu.items();
+						delete tmp.ccp;
+						tmp.create.label = "New Group";
+						tmp.create.action = function (data) {
+							var inst = $.jstree.reference(data.reference),
+							obj = inst.get_node(data.reference);
+							inst.create_node(obj, { type : "folder" }, "first", function (new_node) {
+								setTimeout(function () { inst.edit(new_node); }, 0);
+							});
+						};
+						if(this.get_type(node) === "file") {
+							delete tmp.create;
+							delete tmp.remove;
+						}
+						if(node.parent === "#") {
+							delete tmp.rename;
+							delete tmp.remove;
+							delete tmp.ccp;
+						}
+						return tmp;
+					}
+				},
+				'types' : {
+				    "#" : { "valid_children" : ["root"] },
+				    "root" : {  "icon" : "glyphicon glyphicon-book", "valid_children" : ["folder", "file"] },
+				    "folder" : { "icon" : "glyphicon glyphicon-folder-open", "valid_children" : ["folder","file"] },
+				    "file" : { "icon" : "glyphicon glyphicon-file", "valid_children" : [] }
+				  },
+				"plugins" : [ "contextmenu", "dnd", "types" ]
+			}).on("select_node.jstree", function(e, data) {
+				console.log("selected: ", data.node);
+			}).on("move_node.jstree", function(e, data) {
+				console.log("move.node: ", data.node);
+				var position = getPosition(data.node);
+				var node = new Node(data.node.id, data.node.text, data.parent, data.node.original.type, position);
+				setRequestHeader();
+				$.ajax({
+					  method: "POST",
+					  contentType: "application/json",
+					  url: UPDATE_NODE_URL,
+					  data: JSON.stringify(node),
+					  dataType : 'json',
+					  success : function(d) {
+						console.log("move.node.success: ", d);
+						data.instance.set_id(data.node, d.id);
+					  },
+					  error : function(e) {
+					  	console.log("status: ", e.status);
+					  }
+				});
+			}).on("create_node.jstree", function (e, data) {
+				console.log("create.node: ", data.node);
+				var position = getPosition(data.node);
+				var node = new Node(data.node.id, data.node.text, data.node.parent, data.node.original.type, true, position);
+				setRequestHeader();
+				$.ajax({
+					  method: "POST",
+					  contentType: "application/json",
+					  url: CREATE_NODE_URL,
+					  data: JSON.stringify(node),
+					  dataType : 'json',
+					  success : function(d) {
+						console.log("create.node.success: ", d);
+						data.instance.set_id(data.node, d.id);
+					  },
+					  error : function(e) {
+					  	console.log("status: ", e.status);
+					  }
+				});
+			}).on("rename_node.jstree", function (e, data) {
+				console.log("rename.node: ", data.node);
+				var position = getPosition(data.node);
+				var node = new Node(data.node.id, data.node.text, data.node.parent, data.node.original.type, position);
+				setRequestHeader();
+				$.ajax({
+					  method: "POST",
+					  contentType: "application/json",
+					  url: UPDATE_NODE_URL,
+					  data: JSON.stringify(node),
+					  dataType : 'json',
+					  success : function(d) {
+						console.log("rename.node.success: ", d);
+						data.instance.set_id(data.node, d.id);
+					  },
+					  error : function(e) {
+					  	console.log("status: ", e.status);
+					  }
+				});
+			});
+		});
+		
+		function getPosition(node) {
+			var inst = $('#tree_div').jstree(true),
+		    tmp = inst.get_node(node.id),
+		    parent = inst.get_node(tmp.parent);
+			return $.inArray(tmp.id, parent.children);
+		}
+		
+		function updateNode(node) {
+			setRequestHeader();
+			post(UPDATE_NODE_URL, node);
+		} 
+		
+		function createNode(node) {
+			setRequestHeader();
+			post(CREATE_NODE_URL, node);
+		} 
+		
+		function post(url, node) {
+			$.ajax({
+				  method: "POST",
+				  contentType: "application/json",
+				  url: url,
+				  data: JSON.stringify(node),
+				  dataType : 'json',
+				  success : function(data) {
+					console.log("update.node.success: ", data);
+					return data;
+				  },
+				  error : function(e) {
+				  	console.log("status: ", e.status);
+				  }
+			});
+		}
+		
+		function setRequestHeader() {
+			$(function () {
+			    var token = $("meta[name='_csrf']").attr("content");
+			    var header = $("meta[name='_csrf_header']").attr("content");
+			    $(document).ajaxSend(function(e, xhr, options) {
+			        xhr.setRequestHeader(header, token);
+			    });
+			});
+		}
+		
+		class Node {
+			
+			constructor(id, text, parent, type, position) {
+				this.id = id;
+				this.text = text;
+				this.parent = parent;
+				this.type = type;
+				this.position = position;
+			}
+			
+			getId() {
+				return this.id;
+			}
+			
+			getParent() {
+				return this.parent;
+			}
+			
+			getText() {
+				return this.text;
+			}
+			
+			getType() {
+				return this.type;
+			}
+			
+			getPosition() {
+				return this.position;
+			}
+		}
+		/*]]>*/
+	</script>
+</body>
+</html>

@@ -1,61 +1,132 @@
 package de.uni_koeln.spinfo.upcase.mongodb.data.document.future;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "re_collections")
+@Document(collection = "ref_collections")
 public class Collection {
 
+	@Transient
+	public static final String COLLECTION = "ref_collections";
+	
 	@Id private String id;
 
+	private String title;
+	private String description;
+	private String pathToCollection;
+	private String license = "CC-BY";
+
+	//	@DBRef private UpcaseUser owner;
+	private String owner;
+	
 	private Date creationDate;
 	private Date lastModified;
 	private boolean contributable;
-	private String title;
+	private boolean _private = false;
 
-	@DBRef private UpcaseUser owner;
-	@DBRef private List<UpcaseUser> contributers;
+	//	@DBRef private List<UpcaseUser> contributers;
+	/**
+	 * Set of contributer ids. <br>
+	 * {@link UpcaseUser}
+	 */
+	private Set<String> contributers;
 	
-	@DBRef private List<Page> pages;
-	@DBRef private List<Chapter> chapters;
-	@DBRef private List<Volume> volumes;
+	//	@DBRef private List<Page> pages;
+	/**
+	 * Set of page ids. <br>
+	 * {@link Page}
+	 */
+	private Set<String> pages;
 
 	
-	public Collection(String title, UpcaseUser owner) {
+	//	@DBRef private List<Chapter> chapters;
+	//	@DBRef private List<Volume> volumes;
+
+	
+	public Collection() {
+		// default constructor
+	}
+	
+	public Collection(final String title) {
 		this.title = title;
 		this.creationDate = new Date();
 		this.lastModified = new Date();
-		this.contributable = false;
-		this.owner = owner;
-		this.pages = new ArrayList<>();
-		this.contributers = new ArrayList<>();
-		this.chapters = new ArrayList<>();
-		this.volumes = new ArrayList<>();
+		this.contributable = true;
+		this.pages = new HashSet<>();
+		this.contributers = new HashSet<>();
 	}
 	
-	public Collection(String title, UpcaseUser owner, List<Page> pages) {
+	public Collection(final String title, UpcaseUser owner) {
+		this.title = title;
+		this.creationDate = new Date();
+		this.lastModified = new Date();
+		this.contributable = true;
+		this.owner = owner.getId();
+		this.pages = new HashSet<>();
+		this.contributers = new HashSet<>();
+	}
+	
+	public Collection(final String title, UpcaseUser owner, Set<String> pageIds) {
 		super();
 		this.title = title;
 		this.creationDate = new Date();
 		this.lastModified = new Date();
-		this.contributable = false;
-		this.owner = owner;
-		this.pages = pages;
-		this.contributers = new ArrayList<>();
-		this.chapters = new ArrayList<>();
-		this.volumes = new ArrayList<>();
+		this.contributable = true;
+		this.owner = owner.getId();
+		this.pages = pageIds;
+		this.contributers = new HashSet<>();
+	}
+	
+	/**
+	 * The constructor used when creating a new collection
+	 * 
+	 * @param title
+	 * @param owner
+	 * @param description
+	 * @param pathToCollection
+	 * @param license
+	 */
+	public Collection(final String title, UpcaseUser owner, final String description, final String pathToCollection, final String license) {
+		super();
+		this.title = title;
+		this.creationDate = new Date();
+		this.lastModified = new Date();
+		this.contributable = true;
+		this.owner = owner.getId();
+		this.contributers = new HashSet<>();
+		this.description = description;
+		this.pathToCollection = pathToCollection;
+		this.license = license;
+	}
+	
+	public String getPathToCollection() {
+		return pathToCollection;
+	}
+	
+	public void setPathToCollection(final String pathToCollection) {
+		this.pathToCollection = pathToCollection;
+	}
+
+	public String getDescription() {
+		if(description == null || description.isEmpty())
+			return "";
+		return description;
+	}
+	
+	public void setDescription(final String description) {
+		this.description = description;
 	}
 	
 	public String getTitle() {
 		return title;
 	}
 	
-	public void setTitle(String title) {
+	public void setTitle(final String title) {
 		this.title = title;
 	}
 
@@ -63,7 +134,7 @@ public class Collection {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -91,48 +162,39 @@ public class Collection {
 		this.contributable = contributable;
 	}
 
-	public UpcaseUser getOwner() {
+	public String getOwner() {
 		return owner;
 	}
 
 	public void setOwner(UpcaseUser owner) {
-		this.owner = owner;
+		this.owner = owner.getId();
+	}
+	
+	public void setOwner(final String ownerId) {
+		this.owner = ownerId;
 	}
 
-	public List<UpcaseUser> getContributers() {
+	public Set<String> getContributers() {
 		return contributers;
 	}
 
-	public void setContributers(List<UpcaseUser> contributers) {
+	public void setContributers(Set<String> contributers) {
 		this.contributers = contributers;
 	}
 	
-	public void setContributer(UpcaseUser contributor) {
-		this.contributers.add(contributor);
+	public void setContributer(final String contributorId) {
+		this.contributers.add(contributorId);
 	}
 	
-	public List<Page> getPages() {
+	/**
+	 * @return page IDs
+	 */
+	public Set<String> getPages() {
 		return pages;
 	}
 
-	public void setPages(List<Page> pages) {
+	public void setPages(Set<String> pages) {
 		this.pages = pages;
-	}
-
-	public List<Chapter> getChapters() {
-		return chapters;
-	}
-
-	public void setChapters(List<Chapter> chapters) {
-		this.chapters = chapters;
-	}
-
-	public List<Volume> getVolumes() {
-		return volumes;
-	}
-
-	public void setVolumes(List<Volume> volumes) {
-		this.volumes = volumes;
 	}
 
 	@Override
@@ -185,6 +247,21 @@ public class Collection {
 	public String toString() {
 		return "Collection [id=" + id + ", creationDate=" + creationDate + ", contributable=" + contributable
 				+ ", title=" + title + ", pages=" + pages.size() + ", owner=" + owner + "]";
+	}
+
+	public boolean isPrivate() {
+		return _private;
+	}
+	public void setPrivate(boolean _private) {
+		this._private = _private;
+	}
+	
+	public void setLicense(String license) {
+		this.license = license;
+	}
+	
+	public String getLicense() {
+		return license;
 	}
 
 	

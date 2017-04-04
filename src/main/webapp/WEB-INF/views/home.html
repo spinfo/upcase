@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="de" xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
-<title>Home</title>
-<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet"
-	type="text/css" />
-<link href="../assets/css/upcase.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
+	<title>Home</title>
+	<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="../assets/css/upcase.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
 	<div sec:authorize="hasRole('ROLE_USER')">
@@ -27,7 +25,7 @@
 					<h4>
 						<small>Recent Collections</small>
 					</h4>
-					<div class="list-group-item">
+					<div class="list-group-item" th:if="${not #lists.isEmpty(collections)}">
 						<div
 							th:replace="fragments/recent-collections :: recent-collections"></div>
 					</div>
