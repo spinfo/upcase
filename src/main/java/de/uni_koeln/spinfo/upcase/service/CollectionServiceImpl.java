@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -24,6 +26,7 @@ import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Collection;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Page;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.UpcaseUser;
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.Word;
+import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.tree.Tree;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.CollectionRepository;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.PageRepository;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
@@ -37,29 +40,23 @@ public class CollectionServiceImpl implements CollectionService {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired
-	private UpcaseUserRepository upcaseUserRepository;
+	@Autowired private UpcaseUserRepository upcaseUserRepository;
 
-	@Autowired
-	private PageRepository pageRepository;
+	@Autowired private PageRepository pageRepository;
 
-	@Autowired
-	private CollectionRepository collectionRepository;
+	@Autowired private CollectionRepository collectionRepository;
 
-	@Autowired
-	private WordRepository wordRepository;
+	@Autowired private WordRepository wordRepository;
 	
-	@Autowired
-	private WordVersionRepository wordVersionRepository;
+	@Autowired private WordVersionRepository wordVersionRepository;
 
-	@Autowired
-	private OCRService ocrService;
+	@Autowired private OCRService ocrService;
 
-	@Autowired
-	private HOCRParser hOCRParser;
+	@Autowired private HOCRParser hOCRParser;
 
-	@Autowired
-	private Indexer indexer;
+	@Autowired private Indexer indexer;
+	
+	@Autowired private TreeService treeService;
 
 	@Override
 	public String createCollection(UploadForm uploadForm, String path) throws CollectionAlreadyExistsException {
@@ -114,6 +111,15 @@ public class CollectionServiceImpl implements CollectionService {
 
 			indexer.index(collection);
 
+			try {
+				Future<Tree> createTree = treeService.createTree(collection);
+				createTree.get();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+			
 			return collection.getId();
 
 		} catch (IllegalStateException | IOException e) {

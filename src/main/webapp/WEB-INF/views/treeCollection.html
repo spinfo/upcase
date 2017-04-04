@@ -6,12 +6,12 @@
 
 <title>TreeView</title>
 
-<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-<link href="../assets/css/upcase.css" rel="stylesheet" type="text/css" />
+<link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="../../assets/css/upcase.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
-<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 	
 <meta name="_csrf" th:content="${_csrf.token}" />
@@ -30,6 +30,13 @@
 
 	<script th:inline="javascript">
 		/*<![CDATA[*/
+		           
+		var tree = /*[[${tree}]]*/;
+		var collectionId = /*[[${collectionId}]]*/;
+		
+		var UPDATE_NODE_URL =  "/tree/collection/" + collectionId + "/update/";
+		var CREATE_NODE_URL =  "/tree/collection/" + collectionId + "/create/";
+		
 		$(document).ready(function() {
 			$('#tree_div').jstree({
 				'core' : {
@@ -41,13 +48,7 @@
 					'strings' : {
 				        'New node' : 'new group'
 					},
-					'data' : {
-						"url" : "/tree/?lazy",
-						"dataType" : "json",
-					    "data" : function (node) {
-					        return { "id" : node.id };
-					    }
-					}
+					'data' : tree
 				},
 				'contextmenu' : {
 					'items' : function(node) {
@@ -85,7 +86,7 @@
 			}).on("move_node.jstree", function(e, data) {
 				console.log("move.node: ", data.node);
 				var position = getPosition(data.node);
-				var node = new Node(data.node.id, data.node.text, data.parent, data.node.original.type, data.node.children, position);
+				var node = new Node(data.node.id, data.node.text, data.parent, data.node.original.type, position);
 				setRequestHeader();
 				$.ajax({
 					  method: "POST",
@@ -123,7 +124,7 @@
 			}).on("rename_node.jstree", function (e, data) {
 				console.log("rename.node: ", data.node);
 				var position = getPosition(data.node);
-				var node = new Node(data.node.id, data.node.text, data.node.parent, data.node.original.type, data.node.children, position);
+				var node = new Node(data.node.id, data.node.text, data.node.parent, data.node.original.type, position);
 				setRequestHeader();
 				$.ajax({
 					  method: "POST",
@@ -142,9 +143,6 @@
 			});
 		});
 		
-		var UPDATE_NODE_URL =  "/tree/update/";
-		var CREATE_NODE_URL =  "/tree/create/";
-			
 		function getPosition(node) {
 			var inst = $('#tree_div').jstree(true),
 		    tmp = inst.get_node(node.id),
@@ -191,12 +189,11 @@
 		
 		class Node {
 			
-			constructor(id, text, parent, type, children, position) {
+			constructor(id, text, parent, type, position) {
 				this.id = id;
 				this.text = text;
 				this.parent = parent;
 				this.type = type;
-				this.children = children.length > 0 ? true : false;
 				this.position = position;
 			}
 			
@@ -214,10 +211,6 @@
 			
 			getType() {
 				return this.type;
-			}
-			
-			isChildren() {
-				return this.children;
 			}
 			
 			getPosition() {
