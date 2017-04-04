@@ -3,9 +3,7 @@ package de.uni_koeln.spinfo.upcase.service;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,21 +32,15 @@ public class OCRService {
 
 	public List<List<String>> exctractHOCR(List<File> files) throws TesseractException {
 		init();
-//		Map<String, String> fileToHtml = new HashMap<>();
 		List<List<String>> hOCRs = new ArrayList<>();
-		
 		for (File file : files) {
 			if (filer.accept(file)) {
 				List<String> fileUrlHOCR = new ArrayList<>();
-				
 				String ocr = tesseract.doOCR(file);
 				fileUrlHOCR.add(file.getName());
 				fileUrlHOCR.add(ocr);
 				hOCRs.add(fileUrlHOCR);
-//				fileToHtml.put(file.getName(), ocr);
-				
 				logger.info("Extract text from " + file.getName());
-//				hOCRs.add(tesseract.doOCR(file));
 			}
 		}
 		return hOCRs;

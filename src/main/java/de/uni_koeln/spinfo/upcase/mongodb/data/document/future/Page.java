@@ -24,6 +24,9 @@ public class Page {
 	private int pageNumber;
 	private int physicalPageNumber;
 	private List<Word> words = new ArrayList<>();
+	/**
+	 * collectionID
+	 */
 	private String collection;
 	private String user;
 	private String title;
@@ -38,34 +41,34 @@ public class Page {
 	public Page(final String collection, final String imageUrl, int pageNumber, int physicalPageNumber) {
 		super();
 		this.lastModified = new Date();
-		this.collection = collection;
+		this.collection = collection; // collectionID
 		this.imageUrl = imageUrl;
 		this.pageNumber = pageNumber;
 		this.physicalPageNumber = physicalPageNumber;
 		this.words = new ArrayList<>();
 	}
 	
-	public Page(String imageUrl, int pageNumber, int physicalPageNumber, String collection, String user) {
-		super();
-		this.lastModified = new Date();
-		this.imageUrl = imageUrl;
-		this.pageNumber = pageNumber;
-		this.physicalPageNumber = physicalPageNumber;
-		this.collection = collection;
-		this.user = user;
-		this.words = new ArrayList<>();
-	}
-	
-	public Page(String imageUrl, int pageNumber, int physicalPageNumber, String collection, String user, List<Word> words) {
-		super();
-		this.lastModified = new Date();
-		this.imageUrl = imageUrl;
-		this.pageNumber = pageNumber;
-		this.physicalPageNumber = physicalPageNumber;
-		this.collection = collection;
-		this.user = user;
-		this.words = words;
-	}
+//	public Page(String imageUrl, int pageNumber, int physicalPageNumber, String collection, String user) {
+//		super();
+//		this.lastModified = new Date();
+//		this.imageUrl = imageUrl;
+//		this.pageNumber = pageNumber;
+//		this.physicalPageNumber = physicalPageNumber;
+//		this.collection = collection;
+//		this.user = user;
+//		this.words = new ArrayList<>();
+//	}
+//	
+//	public Page(String imageUrl, int pageNumber, int physicalPageNumber, String collection, String user, List<Word> words) {
+//		super();
+//		this.lastModified = new Date();
+//		this.imageUrl = imageUrl;
+//		this.pageNumber = pageNumber;
+//		this.physicalPageNumber = physicalPageNumber;
+//		this.collection = collection;
+//		this.user = user;
+//		this.words = words;
+//	}
 
 
 	public Map<String, Integer> getWordIdToIndex() {

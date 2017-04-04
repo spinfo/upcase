@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import de.uni_koeln.spinfo.upcase.mongodb.data.document.future.UpcaseUser;
 import de.uni_koeln.spinfo.upcase.mongodb.repository.future.UpcaseUserRepository;
-import de.uni_koeln.spinfo.upcase.mongodb.util.DataBase;
 
 public class LoginService implements UserDetailsService {
 	

@@ -13,7 +13,6 @@ class SSHConnection {
 
 	public void createConnection() throws JSchException {
 		JSch jsch = new JSch();
-		
 		// TODO: Externalize credentials into properties file
 		session = jsch.getSession("USER", "HOST");
 		session.setPassword("PWD");
@@ -29,6 +28,5 @@ class SSHConnection {
 		if(session != null && session.isConnected())
 			session.disconnect();
 	}
-
 
 }

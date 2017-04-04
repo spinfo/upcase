@@ -30,9 +30,17 @@ public class Collection {
 	private boolean _private = false;
 
 	//	@DBRef private List<UpcaseUser> contributers;
+	/**
+	 * Set of contributer ids. <br>
+	 * {@link UpcaseUser}
+	 */
 	private Set<String> contributers;
 	
 	//	@DBRef private List<Page> pages;
+	/**
+	 * Set of page ids. <br>
+	 * {@link Page}
+	 */
 	private Set<String> pages;
 
 	
@@ -178,6 +186,9 @@ public class Collection {
 		this.contributers.add(contributorId);
 	}
 	
+	/**
+	 * @return page IDs
+	 */
 	public Set<String> getPages() {
 		return pages;
 	}

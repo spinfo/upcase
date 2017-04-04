@@ -35,23 +35,17 @@ public class WordUpdateServiceImpl implements WordUpdateService {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired
-	private WordRepository wordRepository;
+	@Autowired private WordRepository wordRepository;
 
-	@Autowired
-	private WordVersionRepository wordVersionRepository;
+	@Autowired private WordVersionRepository wordVersionRepository;
 
-	@Autowired
-	private PageRepository pageRepository;
+	@Autowired private PageRepository pageRepository;
 
-	@Autowired
-	private UpcaseUserRepository upcaseUserRepository;
+	@Autowired private UpcaseUserRepository upcaseUserRepository;
 	
-	@Autowired
-	private CollectionRepository collectionRepository;
+	@Autowired private CollectionRepository collectionRepository;
 	
-	@Autowired
-	private Indexer indexer;
+	@Autowired private Indexer indexer;
 
 	@Override
 	public Word update(WordUpdate update) {

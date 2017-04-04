@@ -33,8 +33,8 @@ public class UpcaseUser implements UserDetails {
 	@Transient
 	public static final String COLLECTION = "ref_users";
 
-	@Id
-	private String id;
+	@Id private String id;
+	
 	private Date creationDate;
 	private Date lastLogin;
 	private String email; // username
